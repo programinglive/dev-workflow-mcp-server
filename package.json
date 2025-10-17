@@ -1,5 +1,5 @@
 {
-  "name": "dev-workflow-mcp-server",
+  "name": "@programinglive/dev-workflow-mcp-server",
   "version": "1.0.0",
   "description": "MCP server to enforce development workflow discipline",
   "type": "module",
@@ -22,6 +22,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4"
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@programinglive/commiter": "^1.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -69,7 +69,7 @@ await workflowState.load();
 // Create MCP server
 export const server = new Server(
   {
-    name: "dev-workflow-mcp-server",
+    name: "@programinglive/dev-workflow-mcp-server",
     version: "1.0.0",
   },
   {
