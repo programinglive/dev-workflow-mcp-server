@@ -1,0 +1,27 @@
+{
+  "name": "dev-workflow-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server to enforce development workflow discipline",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "dev-workflow-mcp": "./index.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check index.js",
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": [
+    "mcp",
+    "workflow",
+    "development",
+    "discipline"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  }
+}
