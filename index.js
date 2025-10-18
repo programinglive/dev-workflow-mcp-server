@@ -8,9 +8,11 @@ import {
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import { exec as execCallback } from "child_process";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { promisify } from "util";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,6 +67,23 @@ export class WorkflowState {
 
 export const workflowState = new WorkflowState();
 await workflowState.load();
+
+const exec = promisify(execCallback);
+
+async function hasStagedChanges() {
+  try {
+    const { stdout } = await exec("git status --porcelain");
+    return stdout
+      .split("\n")
+      .filter(Boolean)
+      .some((line) => {
+        const indexStatus = line[0];
+        return indexStatus && indexStatus !== " " && indexStatus !== "?";
+      });
+  } catch (error) {
+    return false;
+  }
+}
 
 // Create MCP server
 export const server = new Server(
@@ -374,6 +393,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: "text",
               text: "⚠️ Not ready to complete! Run 'check_ready_to_commit' first.",
+            },
+          ],
+        };
+      }
+
+      if (await hasStagedChanges()) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Staged files detected! Please commit or unstage all files before pushing. Run 'git status' to confirm a clean working tree, then try again.",
             },
           ],
         };
