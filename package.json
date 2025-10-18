@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "bin": {
-    "dev-workflow-mcp": "./index.js"
+    "dev-workflow-mcp": "index.js"
   },
   "scripts": {
     "test": "node --test",

@@ -235,3 +235,10 @@ MIT
 ## 🙏 Contributing
 
 Feel free to customize this server to match your specific workflow needs!
+
+## 📜 Project Governance
+
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Contributing Guide](./CONTRIBUTING.md)
+- [Security Policy](./SECURITY.md)
+- [License](./LICENSE)
