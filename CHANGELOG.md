@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.2](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.1...v1.0.2) (2025-10-19)
+
+
+### 🐛 Bug Fixes
+
+* guard run_tests arguments ([2004c59](https://github.com/programinglive/dev-workflow-mcp-server/commit/2004c590fabe359d068122cf240a731382f81ca0))
+* normalize tool call arguments ([44d5a3d](https://github.com/programinglive/dev-workflow-mcp-server/commit/44d5a3d35f191012445fa02cee6254afbc993c98))
+
+
+### 📝 Documentation
+
+* clarify tool argument requirements ([4528614](https://github.com/programinglive/dev-workflow-mcp-server/commit/45286146661ad850eccb04849c11819e91ddd580))
+
 ### [1.0.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.0...v1.0.1) (2025-10-18)
 
 
