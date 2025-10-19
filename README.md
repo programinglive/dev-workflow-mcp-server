@@ -57,6 +57,21 @@ After adding the configuration, restart the application to load the MCP server.
 
 ## 🛠️ Available Tools
 
+### Tool Argument Requirements
+
+All tool invocations validate their `arguments` payload before running:
+- Strings are parsed as JSON and must resolve to an object (key/value pairs).
+- Passing non-object data (numbers, arrays, plain text) triggers a guidance error.
+- Missing or malformed arguments safely default to empty input so the tool can respond with actionable reminders.
+
+Example (stringified JSON object):
+```
+{
+  "name": "start_task",
+  "arguments": "{\"description\":\"Add reporting endpoint\",\"type\":\"feature\"}"
+}
+```
+
 ### `start_task`
 Start a new coding task. This is your first step - be conscious about what you're coding.
 
