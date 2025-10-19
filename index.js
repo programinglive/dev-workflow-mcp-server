@@ -232,7 +232,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params;
+  const { name } = request.params;
+  const rawArgs = request.params.arguments;
+  const args =
+    rawArgs && typeof rawArgs === "object" ? rawArgs : {};
 
   switch (name) {
     case "start_task": {
@@ -291,9 +294,25 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      if (
+        typeof args.passed !== "boolean" ||
+        typeof args.testCommand !== "string" ||
+        args.testCommand.trim() === ""
+      ) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Please provide both 'passed' (boolean) and 'testCommand' (non-empty string) when recording test results.",
+            },
+          ],
+        };
+      }
+
       workflowState.state.testsPassed = args.passed;
       workflowState.state.testCommand = args.testCommand;
-      workflowState.state.testDetails = args.details || "";
+      workflowState.state.testDetails =
+        typeof args.details === "string" ? args.details : "";
 
       if (!args.passed) {
         workflowState.state.currentPhase = "testing";
