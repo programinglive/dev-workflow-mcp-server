@@ -70,6 +70,42 @@ await workflowState.load();
 
 const exec = promisify(execCallback);
 
+function normalizeRequestArgs(rawArgs) {
+  if (rawArgs === undefined || rawArgs === null) {
+    return { args: {}, error: null };
+  }
+
+  if (typeof rawArgs === "string") {
+    try {
+      const parsed = JSON.parse(rawArgs);
+      if (parsed && typeof parsed === "object") {
+        return { args: parsed, error: null };
+      }
+
+      return {
+        args: {},
+        error:
+          "⚠️ Tool arguments must be a JSON object. Please provide key/value pairs.",
+      };
+    } catch (parseError) {
+      return {
+        args: {},
+        error:
+          "⚠️ Unable to parse tool arguments. Please provide valid JSON-formatted data.",
+      };
+    }
+  }
+
+  if (typeof rawArgs === "object") {
+    return { args: rawArgs, error: null };
+  }
+
+  return {
+    args: {},
+    error: "⚠️ Unsupported tool arguments format. Expected a JSON object.",
+  };
+}
+
 async function hasStagedChanges() {
   try {
     const { stdout } = await exec("git status --porcelain");
@@ -232,114 +268,126 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name } = request.params;
-  const rawArgs = request.params.arguments;
-  const args =
-    rawArgs && typeof rawArgs === "object" ? rawArgs : {};
+  try {
+    const { name } = request.params;
+    const { args, error: argumentsError } = normalizeRequestArgs(
+      request.params.arguments
+    );
 
-  switch (name) {
-    case "start_task": {
-      workflowState.reset();
-      workflowState.state.currentPhase = "coding";
-      workflowState.state.taskDescription = args.description;
-      workflowState.state.taskType = args.type;
-      await workflowState.save();
-
+    if (argumentsError) {
       return {
         content: [
           {
             type: "text",
-            text: `✅ Task Started: ${args.description}\n\n🎯 Be conscious about what you're coding!\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Commit & push\n\nReminder: Focus on writing clean, maintainable code!`,
+            text: argumentsError,
           },
         ],
       };
     }
 
-    case "mark_bug_fixed": {
-      if (workflowState.state.currentPhase === "idle") {
-        return {
-          content: [
-            {
-              type: "text",
-              text: "⚠️ Please start a task first using 'start_task'!",
-            },
-          ],
-        };
-      }
-
-      workflowState.state.bugFixed = true;
-      workflowState.state.currentPhase = "testing";
-      workflowState.state.fixSummary = args.summary;
-      await workflowState.save();
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `✅ Feature/Bug marked as fixed!\n\n⚠️ CRITICAL REMINDER: You MUST create tests now!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ⏳ Create tests for: ${args.summary}\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Commit & push\n\n🚫 DO NOT SKIP TESTING!`,
-          },
-        ],
-      };
-    }
-
-    case "run_tests": {
-      if (!workflowState.state.bugFixed) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: "⚠️ Please mark your feature/bug as fixed first using 'mark_bug_fixed'!",
-            },
-          ],
-        };
-      }
-
-      if (
-        typeof args.passed !== "boolean" ||
-        typeof args.testCommand !== "string" ||
-        args.testCommand.trim() === ""
-      ) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: "⚠️ Please provide both 'passed' (boolean) and 'testCommand' (non-empty string) when recording test results.",
-            },
-          ],
-        };
-      }
-
-      workflowState.state.testsPassed = args.passed;
-      workflowState.state.testCommand = args.testCommand;
-      workflowState.state.testDetails =
-        typeof args.details === "string" ? args.details : "";
-
-      if (!args.passed) {
-        workflowState.state.currentPhase = "testing";
+    switch (name) {
+      case "start_task": {
+        workflowState.reset();
+        workflowState.state.currentPhase = "coding";
+        workflowState.state.taskDescription = args.description;
+        workflowState.state.taskType = args.type;
         await workflowState.save();
 
         return {
           content: [
             {
               type: "text",
-              text: `❌ TESTS FAILED!\n\n🚫 STOP! DO NOT COMMIT OR PUSH!\n\nYou must:\n1. Fix the failing tests\n2. Run tests again until they pass\n\nTest command: ${args.testCommand}\n\nNever skip or ignore failing tests!`,
+              text: `✅ Task Started: ${args.description}\n\n🎯 Be conscious about what you're coding!\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Commit & push\n\nReminder: Focus on writing clean, maintainable code!`,
             },
           ],
         };
       }
 
-      workflowState.state.currentPhase = "documentation";
-      await workflowState.save();
+      case "mark_bug_fixed": {
+        if (workflowState.state.currentPhase === "idle") {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "⚠️ Please start a task first using 'start_task'!",
+              },
+            ],
+          };
+        }
 
-      return {
-        content: [
-          {
-            type: "text",
-            text: `✅ All tests passed! 🎉\n\nTest command: ${args.testCommand}\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ⏳ Create/update documentation\n5. ⏳ Commit & push\n\nReminder: Document what you did before committing!`,
-          },
-        ],
-      };
-    }
+        workflowState.state.bugFixed = true;
+        workflowState.state.currentPhase = "testing";
+        workflowState.state.fixSummary = args.summary;
+        await workflowState.save();
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `✅ Feature/Bug marked as fixed!\n\n⚠️ CRITICAL REMINDER: You MUST create tests now!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ⏳ Create tests for: ${args.summary}\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Commit & push\n\n🚫 DO NOT SKIP TESTING!`,
+            },
+          ],
+        };
+      }
+
+      case "run_tests": {
+        if (!workflowState.state.bugFixed) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "⚠️ Please mark your feature/bug as fixed first using 'mark_bug_fixed'!",
+              },
+            ],
+          };
+        }
+
+        if (
+          typeof args.passed !== "boolean" ||
+          typeof args.testCommand !== "string" ||
+          args.testCommand.trim() === ""
+        ) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "⚠️ Please provide both 'passed' (boolean) and 'testCommand' (non-empty string) when recording test results.",
+              },
+            ],
+          };
+        }
+
+        workflowState.state.testsPassed = args.passed;
+        workflowState.state.testCommand = args.testCommand;
+        workflowState.state.testDetails =
+          typeof args.details === "string" ? args.details : "";
+
+        if (!args.passed) {
+          workflowState.state.currentPhase = "testing";
+          await workflowState.save();
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: `❌ TESTS FAILED!\n\n🚫 STOP! DO NOT COMMIT OR PUSH!\n\nYou must:\n1. Fix the failing tests\n2. Run tests again until they pass\n\nTest command: ${args.testCommand}\n\nNever skip or ignore failing tests!`,
+              },
+            ],
+          };
+        }
+
+        workflowState.state.currentPhase = "documentation";
+        await workflowState.save();
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `✅ All tests passed! 🎉\n\nTest command: ${args.testCommand}\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ⏳ Create/update documentation\n5. ⏳ Commit & push\n\nReminder: Document what you did before committing!`,
+            },
+          ],
+        };
+      }
 
     case "create_documentation": {
       if (!workflowState.state.testsPassed) {
@@ -515,8 +563,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
     }
 
-    default:
-      throw new Error(`Unknown tool: ${name}`);
+      default:
+        throw new Error(`Unknown tool: ${name}`);
+    }
+  } catch (error) {
+    console.error("Tool handler error:", error);
+    return {
+      content: [
+        {
+          type: "text",
+          text: "⚠️ Internal server error while processing the tool request. Please try again.",
+        },
+      ],
+    };
   }
 });
 
