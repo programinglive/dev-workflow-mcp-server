@@ -25,9 +25,14 @@ export class WorkflowState {
       currentPhase: "idle",
       taskDescription: "",
       bugFixed: false,
+      testsCreated: false,
       testsPassed: false,
       documentationCreated: false,
       readyToCommit: false,
+      readyCheckCompleted: false,
+      released: false,
+      releaseCommand: "",
+      releaseNotes: "",
       history: [],
     };
   }
@@ -35,7 +40,26 @@ export class WorkflowState {
   async load() {
     try {
       const data = await fs.readFile(this.stateFile, "utf-8");
-      this.state = JSON.parse(data);
+      const parsed = JSON.parse(data);
+      this.state = {
+        ...this.state,
+        ...parsed,
+      };
+      if (typeof this.state.testsCreated !== "boolean") {
+        this.state.testsCreated = false;
+      }
+      if (typeof this.state.readyCheckCompleted !== "boolean") {
+        this.state.readyCheckCompleted = false;
+      }
+      if (typeof this.state.released !== "boolean") {
+        this.state.released = false;
+      }
+      if (typeof this.state.releaseCommand !== "string") {
+        this.state.releaseCommand = "";
+      }
+      if (typeof this.state.releaseNotes !== "string") {
+        this.state.releaseNotes = "";
+      }
     } catch (error) {
       // File doesn't exist yet, use default state
     }
@@ -50,9 +74,14 @@ export class WorkflowState {
       currentPhase: "idle",
       taskDescription: "",
       bugFixed: false,
+      testsCreated: false,
       testsPassed: false,
       documentationCreated: false,
       readyToCommit: false,
+      readyCheckCompleted: false,
+      released: false,
+      releaseCommand: "",
+      releaseNotes: "",
       history: this.state.history,
     };
   }
@@ -175,6 +204,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
+        name: "create_tests",
+        description: "Mark that tests covering the change have been created.",
+        inputSchema: {
+          type: "object",
+          properties: {},
+        },
+      },
+      {
         name: "run_tests",
         description:
           "Record test results. NEVER commit if tests fail! Only proceed if all tests are green.",
@@ -224,6 +261,25 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {},
+        },
+      },
+      {
+        name: "perform_release",
+        description:
+          "Record release details after committing and pushing your changes.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            command: {
+              type: "string",
+              description: "Release command that was executed",
+            },
+            notes: {
+              type: "string",
+              description: "Optional release notes",
+            },
+          },
+          required: ["command"],
         },
       },
       {
@@ -297,7 +353,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: `✅ Task Started: ${args.description}\n\n🎯 Be conscious about what you're coding!\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Commit & push\n\nReminder: Focus on writing clean, maintainable code!`,
+              text: `✅ Task Started: ${args.description}\n\n🎯 Be conscious about what you're coding!\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Run 'check_ready_to_commit'\n7. ⏳ Commit & push, then run 'perform_release'\n8. ⏳ Complete task\n\nReminder: Focus on writing clean, maintainable code!`,
             },
           ],
         };
@@ -316,15 +372,48 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
 
         workflowState.state.bugFixed = true;
+        workflowState.state.testsCreated = false;
         workflowState.state.currentPhase = "testing";
         workflowState.state.fixSummary = args.summary;
+        workflowState.state.readyCheckCompleted = false;
+        workflowState.state.released = false;
+        workflowState.state.releaseCommand = "";
+        workflowState.state.releaseNotes = "";
+        workflowState.state.readyToCommit = false;
         await workflowState.save();
 
         return {
           content: [
             {
               type: "text",
-              text: `✅ Feature/Bug marked as fixed!\n\n⚠️ CRITICAL REMINDER: You MUST create tests now!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ⏳ Create tests for: ${args.summary}\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Commit & push\n\n🚫 DO NOT SKIP TESTING!`,
+              text: `✅ Feature/Bug marked as fixed!\n\n⚠️ CRITICAL REMINDER: You MUST create tests now!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ⏳ Create tests for: ${args.summary}\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Commit & push, then run 'perform_release'\n7. ⏳ Complete task\n\n🚫 DO NOT SKIP TESTING!`,
+            },
+          ],
+        };
+      }
+
+      case "create_tests": {
+        if (!workflowState.state.bugFixed) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "⚠️ Please mark your feature/bug as fixed first using 'mark_bug_fixed'!",
+              },
+            ],
+          };
+        }
+
+        workflowState.state.testsCreated = true;
+        workflowState.state.readyCheckCompleted = false;
+        workflowState.state.released = false;
+        await workflowState.save();
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: "✅ Tests recorded!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Commit & push, then run 'perform_release'\n7. ⏳ Complete task\n\n🧪 Run your test command and record the results using 'run_tests'.",
             },
           ],
         };
@@ -337,6 +426,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               {
                 type: "text",
                 text: "⚠️ Please mark your feature/bug as fixed first using 'mark_bug_fixed'!",
+              },
+            ],
+          };
+        }
+
+        if (!workflowState.state.testsCreated) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "⚠️ Please create tests first using 'create_tests' before recording test results!",
               },
             ],
           };
@@ -361,6 +461,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         workflowState.state.testCommand = args.testCommand;
         workflowState.state.testDetails =
           typeof args.details === "string" ? args.details : "";
+        workflowState.state.readyCheckCompleted = false;
+        workflowState.state.released = false;
 
         if (!args.passed) {
           workflowState.state.currentPhase = "testing";
@@ -383,7 +485,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: `✅ All tests passed! 🎉\n\nTest command: ${args.testCommand}\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ⏳ Create/update documentation\n5. ⏳ Commit & push\n\nReminder: Document what you did before committing!`,
+              text: `✅ All tests passed! 🎉\n\nTest command: ${args.testCommand}\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ⏳ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Commit & push, then run 'perform_release'\n7. ⏳ Complete task\n\nReminder: Document what you did before committing!`,
             },
           ],
         };
@@ -406,13 +508,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       workflowState.state.documentationSummary = args.summary;
       workflowState.state.currentPhase = "ready";
       workflowState.state.readyToCommit = true;
+      workflowState.state.readyCheckCompleted = false;
+      workflowState.state.released = false;
       await workflowState.save();
 
       return {
         content: [
           {
             type: "text",
-            text: `✅ Documentation created!\n\nType: ${args.documentationType}\nSummary: ${args.summary}\n\n🎉 You're ready to commit!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ✓ Create documentation\n5. ⏳ Run 'check_ready_to_commit' to verify\n6. ⏳ Commit & push\n7. ⏳ Mark as complete with 'complete_task'\n\nRemember: git add . && git commit && git push`,
+            text: `✅ Documentation created!\n\nType: ${args.documentationType}\nSummary: ${args.summary}\n\n🎉 You're ready to verify your work!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ✓ Create documentation\n5. ⏳ Run 'check_ready_to_commit' to verify\n6. ⏳ Commit & push, then run 'perform_release'\n7. ⏳ Mark as complete with 'complete_task'\n\nRemember: git add . && git commit && git push`,
           },
         ],
       };
@@ -423,6 +527,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const checks = [
         { name: "Task started", done: status.currentPhase !== "idle" },
         { name: "Feature/bug fixed", done: status.bugFixed },
+        { name: "Tests created", done: status.testsCreated },
         { name: "Tests created and passed", done: status.testsPassed },
         { name: "Documentation created", done: status.documentationCreated },
       ];
@@ -432,12 +537,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         .map((c) => `${c.done ? "✅" : "❌"} ${c.name}`)
         .join("\n");
 
+      workflowState.state.readyCheckCompleted = allDone;
+      if (allDone && !workflowState.state.released) {
+        workflowState.state.currentPhase = "release";
+      }
+      if (!allDone) {
+        workflowState.state.readyCheckCompleted = false;
+      }
+      await workflowState.save();
+
       if (allDone) {
         return {
           content: [
             {
               type: "text",
-              text: `🎉 ALL CHECKS PASSED! You're ready to commit!\n\n${checkList}\n\n✅ You can now:\n1. git add .\n2. git commit -m "your message"\n3. git push\n4. Run 'complete_task' to finish\n\nTask: ${status.taskDescription}`,
+              text: `🎉 ALL CHECKS PASSED!\n\n${checkList}\n\n✅ Next actions:\n1. git add .\n2. git commit -m "your message"\n3. git push\n4. Run 'perform_release' to record the release\n5. Finish with 'complete_task'\n\nTask: ${status.taskDescription}`,
             },
           ],
         };
@@ -453,6 +567,46 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
     }
 
+    case "perform_release": {
+      if (workflowState.state.currentPhase === "idle") {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Please start a task first using 'start_task'!",
+            },
+          ],
+        };
+      }
+
+      if (!workflowState.state.readyCheckCompleted) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Please run 'check_ready_to_commit' and ensure all checks pass before releasing!",
+            },
+          ],
+        };
+      }
+
+      workflowState.state.released = true;
+      workflowState.state.releaseCommand = args.command;
+      workflowState.state.releaseNotes =
+        typeof args.notes === "string" ? args.notes : "";
+      workflowState.state.currentPhase = "ready_to_complete";
+      await workflowState.save();
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `🚀 Release recorded!\n\nCommand: ${args.command}\n${workflowState.state.releaseNotes ? `Notes: ${workflowState.state.releaseNotes}\n` : ""}\n✅ Next: Run 'complete_task' to wrap up.`,
+          },
+        ],
+      };
+    }
+
     case "complete_task": {
       if (!workflowState.state.readyToCommit) {
         return {
@@ -460,6 +614,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: "text",
               text: "⚠️ Not ready to complete! Run 'check_ready_to_commit' first.",
+            },
+          ],
+        };
+      }
+
+      if (!workflowState.state.readyCheckCompleted) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Please run 'check_ready_to_commit' and ensure all checks pass before completing the task!",
+            },
+          ],
+        };
+      }
+
+      if (!workflowState.state.released) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Release not recorded! Run 'perform_release' after committing and pushing.",
             },
           ],
         };
@@ -483,6 +659,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         testCommand: workflowState.state.testCommand,
         documentationType: workflowState.state.documentationType,
         commitMessage: args.commitMessage,
+        releaseCommand: workflowState.state.releaseCommand,
+        releaseNotes: workflowState.state.releaseNotes,
       });
 
       const completedTask = workflowState.state.taskDescription;
@@ -518,14 +696,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         coding: "🔨 Currently coding",
         testing: "🧪 Ready for testing",
         documentation: "📝 Ready for documentation",
-        ready: "✅ Ready to commit",
+        ready: "✅ Ready for verification",
+        release: "🚀 Ready to release",
+        ready_to_complete: "✅ Release completed",
       };
 
       return {
         content: [
           {
             type: "text",
-            text: `📋 Current Workflow Status\n\nTask: ${status.taskDescription}\nPhase: ${phaseMessages[status.currentPhase]}\n\nProgress:\n${status.bugFixed ? "✅" : "⏳"} Feature/bug fixed\n${status.testsPassed ? "✅" : "⏳"} Tests passed\n${status.documentationCreated ? "✅" : "⏳"} Documentation created\n${status.readyToCommit ? "✅" : "⏳"} Ready to commit\n\nNext: ${getNextStep(status)}`,
+            text: `📋 Current Workflow Status\n\nTask: ${status.taskDescription}\nPhase: ${phaseMessages[status.currentPhase]}\n\nProgress:\n${status.bugFixed ? "✅" : "⏳"} Feature/bug fixed\n${status.testsCreated ? "✅" : "⏳"} Tests created\n${status.testsPassed ? "✅" : "⏳"} Tests passed\n${status.documentationCreated ? "✅" : "⏳"} Documentation created\n${status.readyCheckCompleted ? "✅" : "⏳"} Ready check completed\n${status.released ? "✅" : "⏳"} Release recorded\n\nNext: ${getNextStep(status)}`,
           },
         ],
       };
@@ -582,10 +762,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 // Helper function
 export function getNextStep(status) {
   if (!status.bugFixed) return "Mark feature/bug as fixed";
-  if (!status.testsPassed) return "Create and run tests";
+  if (!status.testsCreated) return "Create tests";
+  if (!status.testsPassed) return "Run tests";
   if (!status.documentationCreated) return "Create documentation";
-  if (!status.readyToCommit) return "Check if ready to commit";
-  return "Commit and push!";
+  if (!status.readyCheckCompleted) return "Run 'check_ready_to_commit'";
+  if (!status.released) return "Run 'perform_release'";
+  return "Complete the task";
 }
 
 // Define prompts
