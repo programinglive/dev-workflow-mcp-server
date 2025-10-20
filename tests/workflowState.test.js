@@ -3,7 +3,12 @@ import assert from "node:assert/strict";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { WorkflowState, getNextStep } from "../index.js";
+import {
+  WorkflowState,
+  getNextStep,
+  containsTestFilesInStatus,
+  createCommitMessageParts,
+} from "../index.js";
 
 async function withWorkflowState(callback) {
   const tempDir = await mkdtemp(path.join(tmpdir(), "workflow-state-"));
@@ -117,4 +122,47 @@ test("getNextStep guides workflow progression", () => {
 
   const afterRelease = { ...afterCommit, released: true };
   assert.equal(getNextStep(afterRelease), "Complete the task");
+});
+
+test("containsTestFilesInStatus detects modified test files", () => {
+  const statusOutput = [
+    " M src/app.test.js",
+    "A  tests/helpers/util.js",
+    "R  src/old.js -> src/new.spec.ts",
+  ].join("\n");
+
+  assert.equal(containsTestFilesInStatus(statusOutput), true);
+});
+
+test("containsTestFilesInStatus returns false when no test files present", () => {
+  const statusOutput = [
+    " M src/app.js",
+    "A  docs/README.md",
+    "?? assets/logo.png",
+  ].join("\n");
+
+  assert.equal(containsTestFilesInStatus(statusOutput), false);
+});
+
+test("createCommitMessageParts generates test prefixed summary with details", () => {
+  const changes = [
+    { status: "M", path: "src/app.test.js" },
+    { status: "A", path: "tests/helpers/util.js" },
+  ];
+
+  const { summary, body } = createCommitMessageParts(changes);
+
+  assert.equal(summary.startsWith("test:"), true);
+  assert.equal(body.includes("- modified src/app.test.js"), true);
+  assert.equal(body.includes("- added tests/helpers/util.js"), true);
+});
+
+test("createCommitMessageParts respects provided summary when present", () => {
+  const changes = [{ status: "M", path: "docs/guide.md" }];
+  const provided = "docs: update guide";
+
+  const { summary, body } = createCommitMessageParts(changes, provided);
+
+  assert.equal(summary, provided);
+  assert.equal(body.includes("- modified docs/guide.md"), true);
 });

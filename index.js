@@ -186,6 +186,208 @@ async function hasWorkingChanges() {
   }
 }
 
+function isTestFilePath(filePath) {
+  if (!filePath) {
+    return false;
+  }
+
+  if (/\.(test|spec)\.[^.]+$/i.test(filePath)) {
+    return true;
+  }
+
+  return /(\/|^)(__tests__|tests?|spec)\//i.test(filePath);
+}
+
+function extractPathFromStatusLine(line) {
+  if (!line || line.length < 4) {
+    return "";
+  }
+
+  const rawPath = line.slice(3).trim();
+  if (!rawPath) {
+    return "";
+  }
+
+  if (rawPath.includes(" -> ")) {
+    const parts = rawPath.split(" -> ");
+    return parts[parts.length - 1].trim();
+  }
+
+  return rawPath;
+}
+
+export function containsTestFilesInStatus(statusOutput) {
+  if (typeof statusOutput !== "string" || statusOutput.trim() === "") {
+    return false;
+  }
+
+  return statusOutput
+    .split("\n")
+    .map((line) => extractPathFromStatusLine(line))
+    .some((path) => isTestFilePath(path));
+}
+
+function isDocumentationFilePath(filePath) {
+  if (!filePath) {
+    return false;
+  }
+
+  const normalized = filePath.toLowerCase();
+  return (
+    normalized.startsWith("docs/") ||
+    normalized.startsWith("documentation/") ||
+    normalized.endsWith(".md") ||
+    normalized.endsWith(".rst") ||
+    normalized.endsWith(".adoc") ||
+    normalized.includes("readme")
+  );
+}
+
+function parseNameStatusLine(line) {
+  if (!line) {
+    return null;
+  }
+
+  const parts = line.split("\t").map((part) => part.trim());
+  const status = parts[0];
+  if (!status) {
+    return null;
+  }
+
+  if (status.startsWith("R") || status.startsWith("C")) {
+    const originalPath = parts[1] || "";
+    const newPath = parts[2] || originalPath;
+    return {
+      status,
+      path: newPath,
+      originalPath,
+    };
+  }
+
+  return {
+    status,
+    path: parts[1] || "",
+    originalPath: "",
+  };
+}
+
+function formatFileList(paths) {
+  const uniquePaths = [...new Set(paths.filter(Boolean))];
+
+  if (uniquePaths.length === 0) {
+    return "updates";
+  }
+
+  if (uniquePaths.length === 1) {
+    return uniquePaths[0];
+  }
+
+  if (uniquePaths.length === 2) {
+    return `${uniquePaths[0]} and ${uniquePaths[1]}`;
+  }
+
+  if (uniquePaths.length === 3) {
+    return `${uniquePaths[0]}, ${uniquePaths[1]}, and ${uniquePaths[2]}`;
+  }
+
+  const remaining = uniquePaths.length - 3;
+  return `${uniquePaths[0]}, ${uniquePaths[1]}, ${uniquePaths[2]} +${remaining} more`;
+}
+
+function determineCommitType(changes) {
+  const hasTestChange = changes.some((change) =>
+    [change.path, change.originalPath].some((p) => isTestFilePath(p))
+  );
+  const hasDocsChange = changes.some((change) =>
+    [change.path, change.originalPath].some((p) => isDocumentationFilePath(p))
+  );
+
+  if (hasTestChange) {
+    return "test";
+  }
+
+  if (hasDocsChange) {
+    return "docs";
+  }
+
+  return "chore";
+}
+
+function describeChange(change) {
+  const statusCode = change.status || "";
+  const path = change.path || change.originalPath || "";
+
+  if (statusCode.startsWith("R")) {
+    return `renamed ${change.originalPath} -> ${change.path}`;
+  }
+
+  if (statusCode.startsWith("C")) {
+    return `copied ${change.originalPath} -> ${change.path}`;
+  }
+
+  switch (statusCode[0]) {
+    case "A":
+      return `added ${path}`;
+    case "M":
+      return `modified ${path}`;
+    case "D":
+      return `removed ${path}`;
+    case "U":
+      return `updated ${path}`;
+    default:
+      return `${statusCode} ${path}`.trim();
+  }
+}
+
+export function createCommitMessageParts(changes, providedSummary = "") {
+  const summaryInput = typeof providedSummary === "string" ? providedSummary.trim() : "";
+
+  if (!Array.isArray(changes) || changes.length === 0) {
+    return {
+      summary: summaryInput,
+      body: "",
+    };
+  }
+
+  const commitType = determineCommitType(changes);
+  const summaryPaths = changes
+    .map((change) => change.path || change.originalPath)
+    .filter(Boolean);
+  const generatedSummary = `${commitType}: update ${formatFileList(summaryPaths)}`;
+  const summary = summaryInput || generatedSummary;
+
+  const detailLines = changes
+    .map((change) => describeChange(change))
+    .filter((line) => line && line.trim().length > 0)
+    .map((line) => `- ${line}`);
+
+  return {
+    summary,
+    body: detailLines.join("\n"),
+  };
+}
+
+async function getStagedChanges() {
+  try {
+    const { stdout } = await exec("git diff --cached --name-status");
+    return stdout
+      .split("\n")
+      .map((line) => parseNameStatusLine(line))
+      .filter(Boolean);
+  } catch (error) {
+    return [];
+  }
+}
+
+async function hasTestChanges() {
+  try {
+    const { stdout } = await exec("git status --porcelain");
+    return containsTestFilesInStatus(stdout);
+  } catch (error) {
+    return false;
+  }
+}
+
 async function getCurrentBranch() {
   try {
     const { stdout } = await exec("git rev-parse --abbrev-ref HEAD");
@@ -325,7 +527,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 "Optional branch name to push to (defaults to current branch)",
             },
           },
-          required: ["commitMessage"],
+          required: [],
         },
       },
       {
@@ -671,19 +873,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
-      const commitMessage =
+      const providedCommitMessage =
         typeof args.commitMessage === "string" ? args.commitMessage.trim() : "";
-
-      if (!commitMessage) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: "⚠️ Please provide a non-empty 'commitMessage' when using 'commit_and_push'.",
-            },
-          ],
-        };
-      }
 
       if (!(await hasWorkingChanges())) {
         return {
@@ -691,6 +882,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: "text",
               text: "⚠️ No changes detected. Make sure you have modifications to commit before running 'commit_and_push'.",
+            },
+          ],
+        };
+      }
+
+      if (!(await hasTestChanges())) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Please include test updates in your changes before running 'commit_and_push'. Ensure at least one test file is modified.",
             },
           ],
         };
@@ -709,8 +911,29 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      const stagedChanges = await getStagedChanges();
+      const { summary: generatedSummary, body: commitBody } =
+        createCommitMessageParts(stagedChanges, providedCommitMessage);
+
+      if (!generatedSummary) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Unable to generate commit message. Please provide a 'commitMessage' manually.",
+            },
+          ],
+        };
+      }
+
       try {
-        await exec(`git commit -m ${shellEscape(commitMessage)}`);
+        if (commitBody) {
+          await exec(
+            `git commit -m ${shellEscape(generatedSummary)} -m ${shellEscape(commitBody)}`
+          );
+        } else {
+          await exec(`git commit -m ${shellEscape(generatedSummary)}`);
+        }
       } catch (error) {
         const output = error.stderr || error.stdout || error.message || "Unknown error";
         if (output.includes("nothing to commit")) {
@@ -737,9 +960,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const requestedBranch =
         typeof args.branch === "string" ? args.branch.trim() : "";
       const currentBranch = await getCurrentBranch();
-      const pushBranch = requestedBranch || currentBranch;
-      const pushCommand = pushBranch
-        ? `git push origin ${shellEscape(pushBranch)}`
+      const pushCommand = requestedBranch
+        ? `git push origin ${shellEscape(requestedBranch)}`
         : "git push";
 
       try {
@@ -756,8 +978,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       workflowState.state.commitAndPushCompleted = true;
-      workflowState.state.lastCommitMessage = commitMessage;
-      workflowState.state.lastPushBranch = pushBranch || currentBranch || "";
+      workflowState.state.lastCommitMessage = generatedSummary;
+      workflowState.state.lastPushBranch =
+        requestedBranch || currentBranch || "";
       workflowState.state.currentPhase = workflowState.state.released
         ? "ready_to_complete"
         : "release";
@@ -767,7 +990,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [
           {
             type: "text",
-            text: `✅ Commit & push completed!\n\nCommit message: ${commitMessage}\nPushed to: ${pushBranch || currentBranch || "(default upstream)"}\n\nNext: Run 'perform_release' to record the release.`,
+            text: `✅ Commit & push completed!\n\nCommit message: ${generatedSummary}\nPushed to: ${
+              requestedBranch || currentBranch || "(default upstream)"
+            }\n\nNext: Run 'perform_release' to record the release.`,
           },
         ],
       };
@@ -807,8 +1032,35 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      const releaseCommand =
+        typeof args.command === "string" ? args.command.trim() : "";
+
+      if (!releaseCommand) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Please provide a non-empty 'command' when using 'perform_release'.",
+            },
+          ],
+        };
+      }
+
+      try {
+        await exec(releaseCommand);
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `❌ Release command failed:\n\n${error.stderr || error.stdout || error.message}`,
+            },
+          ],
+        };
+      }
+
       workflowState.state.released = true;
-      workflowState.state.releaseCommand = args.command;
+      workflowState.state.releaseCommand = releaseCommand;
       workflowState.state.releaseNotes =
         typeof args.notes === "string" ? args.notes : "";
       workflowState.state.currentPhase = "ready_to_complete";
@@ -818,7 +1070,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [
           {
             type: "text",
-            text: `🚀 Release recorded!\n\nCommand: ${args.command}\n${workflowState.state.releaseNotes ? `Notes: ${workflowState.state.releaseNotes}\n` : ""}\n✅ Next: Run 'complete_task' to wrap up.`,
+            text: `🚀 Release recorded!\n\nCommand: ${releaseCommand}\n${workflowState.state.releaseNotes ? `Notes: ${workflowState.state.releaseNotes}\n` : ""}\n✅ Next: Run 'complete_task' to wrap up.`,
           },
         ],
       };
