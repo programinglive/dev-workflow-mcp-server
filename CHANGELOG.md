@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.4](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.3...v1.0.4) (2025-10-20)
+
+
+### ✨ Features
+
+* enforce release step after ready check ([0725496](https://github.com/programinglive/dev-workflow-mcp-server/commit/07254967becd515cb2a4261d62af01dfeb842175))
+
+
+### 🐛 Bug Fixes
+
+* support windows-friendly commit quoting ([47881fd](https://github.com/programinglive/dev-workflow-mcp-server/commit/47881fd0db54da3fabe368b1a135902e47ef873e))
+
 ### [1.0.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.2...v1.0.3) (2025-10-20)
 
 
