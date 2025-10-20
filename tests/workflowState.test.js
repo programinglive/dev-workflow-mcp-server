@@ -8,6 +8,8 @@ import {
   getNextStep,
   containsTestFilesInStatus,
   createCommitMessageParts,
+  determineReleaseTypeFromCommit,
+  workingTreeSummary,
 } from "../index.js";
 
 async function withWorkflowState(callback) {
@@ -165,4 +167,38 @@ test("createCommitMessageParts respects provided summary when present", () => {
 
   assert.equal(summary, provided);
   assert.equal(body.includes("- modified docs/guide.md"), true);
+});
+
+test("determineReleaseTypeFromCommit returns major for breaking change", () => {
+  const message = "feat!: overhaul API\n\nBREAKING CHANGE: new behavior";
+  assert.equal(determineReleaseTypeFromCommit(message), "major");
+});
+
+test("determineReleaseTypeFromCommit returns minor for feat", () => {
+  const message = "feat: add dashboard";
+  assert.equal(determineReleaseTypeFromCommit(message), "minor");
+});
+
+test("determineReleaseTypeFromCommit returns patch for fix", () => {
+  const message = "fix: resolve login issue";
+  assert.equal(determineReleaseTypeFromCommit(message), "patch");
+});
+
+test("determineReleaseTypeFromCommit defaults to patch for other commit types", () => {
+  const message = "chore: update dependencies";
+  assert.equal(determineReleaseTypeFromCommit(message), "patch");
+});
+
+test("workingTreeSummary reports no changes for empty output", () => {
+  const summary = workingTreeSummary("\n  \n");
+  assert.equal(summary.hasChanges, false);
+  assert.deepEqual(summary.lines, []);
+});
+
+test("workingTreeSummary lists trimmed status lines", () => {
+  const statusOutput = " M src/app.js\nA  tests/new.test.js\n";
+  const summary = workingTreeSummary(statusOutput);
+
+  assert.equal(summary.hasChanges, true);
+  assert.deepEqual(summary.lines, ["M src/app.js", "A tests/new.test.js"]);
 });

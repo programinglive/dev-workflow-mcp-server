@@ -186,6 +186,25 @@ async function hasWorkingChanges() {
   }
 }
 
+export function workingTreeSummary(statusOutput) {
+  if (typeof statusOutput !== "string" || statusOutput.trim() === "") {
+    return {
+      hasChanges: false,
+      lines: [],
+    };
+  }
+
+  const lines = statusOutput
+    .split("\n")
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  return {
+    hasChanges: lines.length > 0,
+    lines,
+  };
+}
+
 function isTestFilePath(filePath) {
   if (!filePath) {
     return false;
@@ -385,6 +404,58 @@ async function hasTestChanges() {
     return containsTestFilesInStatus(stdout);
   } catch (error) {
     return false;
+  }
+}
+
+function normalizeCommitHeader(message) {
+  if (typeof message !== "string") {
+    return "";
+  }
+
+  const header = message.split("\n")[0] || "";
+  return header.trim();
+}
+
+function containsBreakingChange(message) {
+  if (typeof message !== "string") {
+    return false;
+  }
+
+  return /breaking change/i.test(message);
+}
+
+export function determineReleaseTypeFromCommit(message) {
+  const header = normalizeCommitHeader(message).toLowerCase();
+  const hasBreaking = containsBreakingChange(message) || /!/.test(header.split(":")[0] || "");
+
+  if (hasBreaking) {
+    return "major";
+  }
+
+  const typeMatch = header.match(/^([a-z]+)(\(|:)/i);
+  const commitType = typeMatch ? typeMatch[1] : "";
+
+  if (commitType === "feat") {
+    return "minor";
+  }
+
+  if (commitType === "fix" || commitType === "perf") {
+    return "patch";
+  }
+
+  if (!commitType && containsBreakingChange(message)) {
+    return "major";
+  }
+
+  return "patch";
+}
+
+async function getLastCommitMessage() {
+  try {
+    const { stdout } = await exec("git log -1 --pretty=%B");
+    return stdout.trim();
+  } catch (error) {
+    return "";
   }
 }
 
@@ -1046,8 +1117,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      if (await hasWorkingChanges()) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Working tree not clean! Please commit or stash all changes before running 'perform_release'.",
+            },
+          ],
+        };
+      }
+
+      const lastCommitMessage = await getLastCommitMessage();
+      const releaseType = determineReleaseTypeFromCommit(
+        lastCommitMessage || workflowState.state.lastCommitMessage
+      );
+
+      const finalCommand = releaseCommand.includes("--release-as")
+        ? releaseCommand
+        : `${releaseCommand} -- --release-as ${releaseType}`;
+
       try {
-        await exec(releaseCommand);
+        await exec(finalCommand);
       } catch (error) {
         return {
           content: [
@@ -1060,7 +1151,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       workflowState.state.released = true;
-      workflowState.state.releaseCommand = releaseCommand;
+      workflowState.state.releaseCommand = finalCommand;
       workflowState.state.releaseNotes =
         typeof args.notes === "string" ? args.notes : "";
       workflowState.state.currentPhase = "ready_to_complete";
@@ -1070,7 +1161,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [
           {
             type: "text",
-            text: `🚀 Release recorded!\n\nCommand: ${releaseCommand}\n${workflowState.state.releaseNotes ? `Notes: ${workflowState.state.releaseNotes}\n` : ""}\n✅ Next: Run 'complete_task' to wrap up.`,
+            text: `🚀 Release recorded!\n\nCommand: ${finalCommand}\nRelease type: ${releaseType}\n${workflowState.state.releaseNotes ? `Notes: ${workflowState.state.releaseNotes}\n` : ""}\n✅ Next: Run 'complete_task' to wrap up.`,
           },
         ],
       };
