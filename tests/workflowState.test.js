@@ -28,6 +28,9 @@ test("WorkflowState persists data across save/load", async () => {
     state.state.released = true;
     state.state.releaseCommand = "npm run release";
     state.state.releaseNotes = "Automated release";
+    state.state.commitAndPushCompleted = true;
+    state.state.lastCommitMessage = "test: persistence";
+    state.state.lastPushBranch = "main";
     await state.save();
 
     const reloaded = new WorkflowState(state.stateFile);
@@ -41,6 +44,9 @@ test("WorkflowState persists data across save/load", async () => {
     assert.equal(reloaded.state.released, true);
     assert.equal(reloaded.state.releaseCommand, "npm run release");
     assert.equal(reloaded.state.releaseNotes, "Automated release");
+    assert.equal(reloaded.state.commitAndPushCompleted, true);
+    assert.equal(reloaded.state.lastCommitMessage, "test: persistence");
+    assert.equal(reloaded.state.lastPushBranch, "main");
   });
 });
 
@@ -52,6 +58,7 @@ test("WorkflowState reset keeps history but clears progress", async () => {
     state.state.documentationCreated = true;
     state.state.readyCheckCompleted = true;
     state.state.released = true;
+    state.state.commitAndPushCompleted = true;
     state.addToHistory({ taskDescription: "Sample task" });
 
     state.reset();
@@ -62,6 +69,7 @@ test("WorkflowState reset keeps history but clears progress", async () => {
     assert.equal(state.state.documentationCreated, false);
     assert.equal(state.state.readyCheckCompleted, false);
     assert.equal(state.state.released, false);
+    assert.equal(state.state.commitAndPushCompleted, false);
     assert.equal(state.state.history.length, 1);
     assert.equal(state.state.history[0].taskDescription, "Sample task");
   });
@@ -74,6 +82,7 @@ test("getNextStep guides workflow progression", () => {
     testsPassed: false,
     documentationCreated: false,
     readyCheckCompleted: false,
+    commitAndPushCompleted: false,
     released: false,
   };
 
@@ -101,8 +110,11 @@ test("getNextStep guides workflow progression", () => {
   assert.equal(getNextStep(afterDocs), "Run 'check_ready_to_commit'");
 
   const afterReadyCheck = { ...afterDocs, readyCheckCompleted: true };
-  assert.equal(getNextStep(afterReadyCheck), "Run 'perform_release'");
+  assert.equal(getNextStep(afterReadyCheck), "Run 'commit_and_push'");
 
-  const afterRelease = { ...afterReadyCheck, released: true };
+  const afterCommit = { ...afterReadyCheck, commitAndPushCompleted: true };
+  assert.equal(getNextStep(afterCommit), "Run 'perform_release'");
+
+  const afterRelease = { ...afterCommit, released: true };
   assert.equal(getNextStep(afterRelease), "Complete the task");
 });

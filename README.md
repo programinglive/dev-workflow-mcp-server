@@ -11,7 +11,8 @@ This MCP server guides you through a disciplined development workflow:
 3. **Create Tests** - Always test your changes
 4. **Run Tests** - Tests must pass (GREEN)
 5. **Document** - Update documentation
-6. **Commit & Push** - Only when all steps are complete
+6. **Commit & Push** - Let the server drive the git commands once verification passes
+7. **Release** - Record the release details before closing out the task
 
 ## 🚀 Installation
 
@@ -152,6 +153,11 @@ Mark that the bug/feature is fixed. **Reminder: Now you MUST create tests!**
 **Parameters:**
 - `summary` (string, required): Brief summary of what was fixed/implemented
 
+### `create_tests`
+Confirm that you've created the necessary tests covering your change. Required before recording test results.
+
+**Parameters:** _none_
+
 ### `run_tests`
 Record test results. **NEVER commit if tests fail!** Only proceed if all tests are green.
 
@@ -177,6 +183,20 @@ Mark that documentation has been created/updated. This is required before commit
 
 ### `check_ready_to_commit`
 Check if all workflow steps are completed and you're ready to commit & push.
+
+### `commit_and_push`
+Automatically run `git add`, `git commit`, and `git push` after the ready check passes.
+
+**Parameters:**
+- `commitMessage` (string, required): Conventional commit message to use
+- `branch` (string, optional): Target branch to push (defaults to current branch)
+
+### `perform_release`
+Record the release after you've committed and pushed. Required before you can complete the task.
+
+**Parameters:**
+- `command` (string, required): Release command that was executed (e.g., `npm run release`)
+- `notes` (string, optional): Additional release notes
 
 ### `complete_task`
 Mark the task as complete after successful commit & push. Resets workflow for next task.
@@ -240,13 +260,16 @@ Here's how you'd use this MCP server in a typical coding session:
    ```
 
 8. **Commit & Push:**
-   ```bash
-   git add .
-   git commit -m "feat: add user profile page with tests and docs"
-   git push
+   ```
+   "Commit and push: commitMessage='feat: add user profile page with tests and docs'"
    ```
 
-9. **Complete:**
+9. **Record release:**
+   ```
+   "Record release: command='npm run release', notes='v1.2.3'"
+   ```
+
+10. **Complete:**
    ```
    "Complete the task with commit message: 'feat: add user profile page'"
    ```

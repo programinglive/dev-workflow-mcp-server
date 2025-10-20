@@ -33,6 +33,9 @@ export class WorkflowState {
       released: false,
       releaseCommand: "",
       releaseNotes: "",
+      commitAndPushCompleted: false,
+      lastCommitMessage: "",
+      lastPushBranch: "",
       history: [],
     };
   }
@@ -54,11 +57,20 @@ export class WorkflowState {
       if (typeof this.state.released !== "boolean") {
         this.state.released = false;
       }
+      if (typeof this.state.commitAndPushCompleted !== "boolean") {
+        this.state.commitAndPushCompleted = false;
+      }
       if (typeof this.state.releaseCommand !== "string") {
         this.state.releaseCommand = "";
       }
       if (typeof this.state.releaseNotes !== "string") {
         this.state.releaseNotes = "";
+      }
+      if (typeof this.state.lastCommitMessage !== "string") {
+        this.state.lastCommitMessage = "";
+      }
+      if (typeof this.state.lastPushBranch !== "string") {
+        this.state.lastPushBranch = "";
       }
     } catch (error) {
       // File doesn't exist yet, use default state
@@ -82,6 +94,9 @@ export class WorkflowState {
       released: false,
       releaseCommand: "",
       releaseNotes: "",
+      commitAndPushCompleted: false,
+      lastCommitMessage: "",
+      lastPushBranch: "",
       history: this.state.history,
     };
   }
@@ -98,6 +113,18 @@ export const workflowState = new WorkflowState();
 await workflowState.load();
 
 const exec = promisify(execCallback);
+
+const isWindows = process.platform === "win32";
+
+function shellEscape(value) {
+  const stringValue = String(value);
+  if (isWindows) {
+    // Use PowerShell-friendly single quotes, escape embedded single quotes by doubling
+    return `'${stringValue.replace(/'/g, "''")}'`;
+  }
+
+  return `'${stringValue.replace(/'/g, "'\\''")}'`;
+}
 
 function normalizeRequestArgs(rawArgs) {
   if (rawArgs === undefined || rawArgs === null) {
@@ -147,6 +174,24 @@ async function hasStagedChanges() {
       });
   } catch (error) {
     return false;
+  }
+}
+
+async function hasWorkingChanges() {
+  try {
+    const { stdout } = await exec("git status --porcelain");
+    return stdout.split("\n").some((line) => line && line.trim().length > 0);
+  } catch (error) {
+    return false;
+  }
+}
+
+async function getCurrentBranch() {
+  try {
+    const { stdout } = await exec("git rev-parse --abbrev-ref HEAD");
+    return stdout.trim();
+  } catch (error) {
+    return "";
   }
 }
 
@@ -264,6 +309,26 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
+        name: "commit_and_push",
+        description:
+          "Automatically run git add, commit, and push once the ready check passes.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            commitMessage: {
+              type: "string",
+              description: "Commit message to use",
+            },
+            branch: {
+              type: "string",
+              description:
+                "Optional branch name to push to (defaults to current branch)",
+            },
+          },
+          required: ["commitMessage"],
+        },
+      },
+      {
         name: "perform_release",
         description:
           "Record release details after committing and pushing your changes.",
@@ -347,6 +412,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         workflowState.state.currentPhase = "coding";
         workflowState.state.taskDescription = args.description;
         workflowState.state.taskType = args.type;
+        workflowState.state.commitAndPushCompleted = false;
+        workflowState.state.lastCommitMessage = "";
+        workflowState.state.lastPushBranch = "";
         await workflowState.save();
 
         return {
@@ -380,6 +448,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         workflowState.state.releaseCommand = "";
         workflowState.state.releaseNotes = "";
         workflowState.state.readyToCommit = false;
+        workflowState.state.commitAndPushCompleted = false;
+        workflowState.state.lastCommitMessage = "";
+        workflowState.state.lastPushBranch = "";
         await workflowState.save();
 
         return {
@@ -407,6 +478,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         workflowState.state.testsCreated = true;
         workflowState.state.readyCheckCompleted = false;
         workflowState.state.released = false;
+        workflowState.state.commitAndPushCompleted = false;
+        workflowState.state.lastCommitMessage = "";
+        workflowState.state.lastPushBranch = "";
         await workflowState.save();
 
         return {
@@ -463,6 +537,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           typeof args.details === "string" ? args.details : "";
         workflowState.state.readyCheckCompleted = false;
         workflowState.state.released = false;
+        workflowState.state.commitAndPushCompleted = false;
+        workflowState.state.lastCommitMessage = "";
+        workflowState.state.lastPushBranch = "";
 
         if (!args.passed) {
           workflowState.state.currentPhase = "testing";
@@ -510,6 +587,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       workflowState.state.readyToCommit = true;
       workflowState.state.readyCheckCompleted = false;
       workflowState.state.released = false;
+      workflowState.state.commitAndPushCompleted = false;
+      workflowState.state.lastCommitMessage = "";
+      workflowState.state.lastPushBranch = "";
       await workflowState.save();
 
       return {
@@ -538,11 +618,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         .join("\n");
 
       workflowState.state.readyCheckCompleted = allDone;
-      if (allDone && !workflowState.state.released) {
-        workflowState.state.currentPhase = "release";
-      }
-      if (!allDone) {
-        workflowState.state.readyCheckCompleted = false;
+      if (allDone) {
+        workflowState.state.currentPhase = workflowState.state.commitAndPushCompleted
+          ? workflowState.state.released
+            ? "ready_to_complete"
+            : "release"
+          : "commit";
       }
       await workflowState.save();
 
@@ -551,7 +632,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text",
-              text: `🎉 ALL CHECKS PASSED!\n\n${checkList}\n\n✅ Next actions:\n1. git add .\n2. git commit -m "your message"\n3. git push\n4. Run 'perform_release' to record the release\n5. Finish with 'complete_task'\n\nTask: ${status.taskDescription}`,
+              text: `🎉 ALL CHECKS PASSED!\n\n${checkList}\n\n✅ Next actions:\n1. Run 'commit_and_push' with your commit message\n2. Run 'perform_release' to record the release\n3. Finish with 'complete_task'\n\nTip: Provide the optional 'branch' argument to push to a non-default branch.\n\nTask: ${status.taskDescription}`,
             },
           ],
         };
@@ -567,6 +648,131 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
     }
 
+    case "commit_and_push": {
+      if (!workflowState.state.readyToCommit) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Not ready yet! Run 'check_ready_to_commit' and complete all steps first.",
+            },
+          ],
+        };
+      }
+
+      if (!workflowState.state.readyCheckCompleted) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Please run 'check_ready_to_commit' and resolve any outstanding items before committing!",
+            },
+          ],
+        };
+      }
+
+      const commitMessage =
+        typeof args.commitMessage === "string" ? args.commitMessage.trim() : "";
+
+      if (!commitMessage) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Please provide a non-empty 'commitMessage' when using 'commit_and_push'.",
+            },
+          ],
+        };
+      }
+
+      if (!(await hasWorkingChanges())) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ No changes detected. Make sure you have modifications to commit before running 'commit_and_push'.",
+            },
+          ],
+        };
+      }
+
+      try {
+        await exec("git add .");
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `❌ Failed to stage files:\n\n${error.stderr || error.stdout || error.message}`,
+            },
+          ],
+        };
+      }
+
+      try {
+        await exec(`git commit -m ${shellEscape(commitMessage)}`);
+      } catch (error) {
+        const output = error.stderr || error.stdout || error.message || "Unknown error";
+        if (output.includes("nothing to commit")) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "⚠️ Nothing to commit. Make additional changes before running 'commit_and_push'.",
+              },
+            ],
+          };
+        }
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `❌ git commit failed:\n\n${output}`,
+            },
+          ],
+        };
+      }
+
+      const requestedBranch =
+        typeof args.branch === "string" ? args.branch.trim() : "";
+      const currentBranch = await getCurrentBranch();
+      const pushBranch = requestedBranch || currentBranch;
+      const pushCommand = pushBranch
+        ? `git push origin ${shellEscape(pushBranch)}`
+        : "git push";
+
+      try {
+        await exec(pushCommand);
+      } catch (error) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `❌ git push failed:\n\n${error.stderr || error.stdout || error.message}`,
+            },
+          ],
+        };
+      }
+
+      workflowState.state.commitAndPushCompleted = true;
+      workflowState.state.lastCommitMessage = commitMessage;
+      workflowState.state.lastPushBranch = pushBranch || currentBranch || "";
+      workflowState.state.currentPhase = workflowState.state.released
+        ? "ready_to_complete"
+        : "release";
+      await workflowState.save();
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `✅ Commit & push completed!\n\nCommit message: ${commitMessage}\nPushed to: ${pushBranch || currentBranch || "(default upstream)"}\n\nNext: Run 'perform_release' to record the release.`,
+          },
+        ],
+      };
+    }
+
     case "perform_release": {
       if (workflowState.state.currentPhase === "idle") {
         return {
@@ -574,6 +780,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: "text",
               text: "⚠️ Please start a task first using 'start_task'!",
+            },
+          ],
+        };
+      }
+
+      if (!workflowState.state.commitAndPushCompleted) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Please run 'commit_and_push' after the ready check before recording a release!",
             },
           ],
         };
@@ -625,6 +842,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: "text",
               text: "⚠️ Please run 'check_ready_to_commit' and ensure all checks pass before completing the task!",
+            },
+          ],
+        };
+      }
+
+      if (!workflowState.state.commitAndPushCompleted) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "⚠️ Commit and push not completed! Run 'commit_and_push' first.",
             },
           ],
         };
@@ -697,6 +925,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         testing: "🧪 Ready for testing",
         documentation: "📝 Ready for documentation",
         ready: "✅ Ready for verification",
+        commit: "📦 Ready to commit & push",
         release: "🚀 Ready to release",
         ready_to_complete: "✅ Release completed",
       };
@@ -705,7 +934,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [
           {
             type: "text",
-            text: `📋 Current Workflow Status\n\nTask: ${status.taskDescription}\nPhase: ${phaseMessages[status.currentPhase]}\n\nProgress:\n${status.bugFixed ? "✅" : "⏳"} Feature/bug fixed\n${status.testsCreated ? "✅" : "⏳"} Tests created\n${status.testsPassed ? "✅" : "⏳"} Tests passed\n${status.documentationCreated ? "✅" : "⏳"} Documentation created\n${status.readyCheckCompleted ? "✅" : "⏳"} Ready check completed\n${status.released ? "✅" : "⏳"} Release recorded\n\nNext: ${getNextStep(status)}`,
+            text: `📋 Current Workflow Status\n\nTask: ${status.taskDescription}\nPhase: ${phaseMessages[status.currentPhase]}\n\nProgress:\n${status.bugFixed ? "✅" : "⏳"} Feature/bug fixed\n${status.testsCreated ? "✅" : "⏳"} Tests created\n${status.testsPassed ? "✅" : "⏳"} Tests passed\n${status.documentationCreated ? "✅" : "⏳"} Documentation created\n${status.readyCheckCompleted ? "✅" : "⏳"} Ready check completed\n${status.commitAndPushCompleted ? "✅" : "⏳"} Commit & push completed\n${status.released ? "✅" : "⏳"} Release recorded\n\nNext: ${getNextStep(status)}`,
           },
         ],
       };
@@ -766,6 +995,7 @@ export function getNextStep(status) {
   if (!status.testsPassed) return "Run tests";
   if (!status.documentationCreated) return "Create documentation";
   if (!status.readyCheckCompleted) return "Run 'check_ready_to_commit'";
+  if (!status.commitAndPushCompleted) return "Run 'commit_and_push'";
   if (!status.released) return "Run 'perform_release'";
   return "Complete the task";
 }
