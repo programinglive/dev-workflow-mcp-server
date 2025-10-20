@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.2...v1.0.3) (2025-10-20)
+
+
+### 🧹 Chores
+
+* add gitignore ([5f695fb](https://github.com/programinglive/dev-workflow-mcp-server/commit/5f695fbc71515c7f1ffbc44fd74b52314c966ee6))
+
+
+### 📝 Documentation
+
+* clarify cross-platform installation ([52b5ee7](https://github.com/programinglive/dev-workflow-mcp-server/commit/52b5ee7061e8f968ff94e6c226586fc1b7e2a057))
+
 ### [1.0.2](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.1...v1.0.2) (2025-10-19)
 
 
