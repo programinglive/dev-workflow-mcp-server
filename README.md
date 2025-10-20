@@ -23,33 +23,93 @@ npm install
 
 ### 2. Configure in Windsurf/Claude Desktop
 
-Add to your MCP settings file:
+Point your MCP client to the server entry point. Replace `<PROJECT_ROOT>` with the absolute path to this repository on your machine.
 
-**For Windsurf** (`~/Library/Application Support/Windsurf/config.json`):
+#### macOS
 
-```json
-{
-  "mcpServers": {
-    "dev-workflow": {
-      "command": "node",
-      "args": ["/Users/mahardhika/code/project/mine/app/CascadeProjects/windsurf-project/index.js"]
-    }
-  }
-}
-```
-
-**For Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+- **Windsurf** (`~/Library/Application Support/Windsurf/config.json`):
 
 ```json
 {
   "mcpServers": {
     "dev-workflow": {
       "command": "node",
-      "args": ["/Users/mahardhika/code/project/mine/app/CascadeProjects/windsurf-project/index.js"]
+      "args": ["<PROJECT_ROOT>/index.js"]
     }
   }
 }
 ```
+
+- **Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "dev-workflow": {
+      "command": "node",
+      "args": ["<PROJECT_ROOT>/index.js"]
+    }
+  }
+}
+```
+
+#### Windows
+
+- **Windsurf** (`%APPDATA%\Windsurf\config.json`):
+
+```json
+{
+  "mcpServers": {
+    "dev-workflow": {
+      "command": "node",
+      "args": ["<PROJECT_ROOT>\\index.js"]
+    }
+  }
+}
+```
+
+- **Claude Desktop** (`%APPDATA%\Claude\claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "dev-workflow": {
+      "command": "node",
+      "args": ["<PROJECT_ROOT>\\index.js"]
+    }
+  }
+}
+```
+
+#### Linux
+
+- **Windsurf** (`~/.config/windsurf/config.json`):
+
+```json
+{
+  "mcpServers": {
+    "dev-workflow": {
+      "command": "node",
+      "args": ["<PROJECT_ROOT>/index.js"]
+    }
+  }
+}
+```
+
+- **Claude Desktop** (`~/.config/claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "dev-workflow": {
+      "command": "node",
+      "args": ["<PROJECT_ROOT>/index.js"]
+    }
+  }
+}
+```
+
+> **Note:** On Windows paths in JSON require escaped backslashes (e.g., `"C:\\path\\to\\project"`).
 
 ### 3. Restart Windsurf/Claude Desktop
 
