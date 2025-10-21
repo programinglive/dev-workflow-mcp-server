@@ -38,6 +38,8 @@ test("WorkflowState persists data across save/load", async () => {
     state.state.commitAndPushCompleted = true;
     state.state.lastCommitMessage = "test: persistence";
     state.state.lastPushBranch = "main";
+    state.state.testsSkipped = true;
+    state.state.testsSkippedReason = "Legacy app uses manual QA";
     await state.save();
 
     const reloaded = new WorkflowState(state.stateFile);
@@ -54,6 +56,11 @@ test("WorkflowState persists data across save/load", async () => {
     assert.equal(reloaded.state.commitAndPushCompleted, true);
     assert.equal(reloaded.state.lastCommitMessage, "test: persistence");
     assert.equal(reloaded.state.lastPushBranch, "main");
+    assert.equal(reloaded.state.testsSkipped, true);
+    assert.equal(
+      reloaded.state.testsSkippedReason,
+      "Legacy app uses manual QA"
+    );
   });
 });
 
@@ -66,6 +73,8 @@ test("WorkflowState reset keeps history but clears progress", async () => {
     state.state.readyCheckCompleted = true;
     state.state.released = true;
     state.state.commitAndPushCompleted = true;
+    state.state.testsSkipped = true;
+    state.state.testsSkippedReason = "Manual QA";
     state.addToHistory({ taskDescription: "Sample task" });
 
     state.reset();
@@ -77,9 +86,27 @@ test("WorkflowState reset keeps history but clears progress", async () => {
     assert.equal(state.state.readyCheckCompleted, false);
     assert.equal(state.state.released, false);
     assert.equal(state.state.commitAndPushCompleted, false);
+    assert.equal(state.state.testsSkipped, false);
+    assert.equal(state.state.testsSkippedReason, "");
     assert.equal(state.state.history.length, 1);
     assert.equal(state.state.history[0].taskDescription, "Sample task");
   });
+});
+
+test("getNextStep treats skipped tests as satisfied", () => {
+  const skippedState = {
+    bugFixed: true,
+    testsCreated: true,
+    testsPassed: true,
+    testsSkipped: true,
+    testsSkippedReason: "Legacy system",
+    documentationCreated: false,
+    readyCheckCompleted: false,
+    commitAndPushCompleted: false,
+    released: false,
+  };
+
+  assert.equal(getNextStep(skippedState), "Create documentation");
 });
 
 test("getNextStep guides workflow progression", () => {

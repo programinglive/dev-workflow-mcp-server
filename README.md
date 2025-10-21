@@ -158,6 +158,12 @@ Confirm that you've created the necessary tests covering your change. Required b
 
 **Parameters:** _none_
 
+### `skip_tests`
+Record an explicit justification when automated tests aren't feasible. Marks testing as satisfied so you can proceed with documentation and verification, while flagging the task for manual QA.
+
+**Parameters:**
+- `reason` (string, required): Why automated tests were skipped
+
 ### `run_tests`
 Record test results. **NEVER commit if tests fail!** Only proceed if all tests are green.
 
@@ -204,6 +210,12 @@ Mark the task as complete after successful commit & push. Resets workflow for ne
 **Parameters:**
 - `commitMessage` (string, required): The commit message used
 
+### `drop_task`
+Abandon the current task without completing the workflow. Preserves an audit entry with context, then resets the state so you can start fresh.
+
+**Parameters:**
+- `reason` (string, optional): Additional detail about why the task was dropped
+
 ### `get_workflow_status`
 Get current workflow status and what needs to be done next.
 
@@ -249,29 +261,34 @@ Here's how you'd use this MCP server in a typical coding session:
    ```
    - If tests fail, the server will **block** you from proceeding!
 
-6. **Document:**
+7. **Document:**
    ```
    "Create documentation: type=README, summary='Added user profile section to docs'"
    ```
 
-7. **Check readiness:**
+8. **Check readiness:**
    ```
    "Check if I'm ready to commit"
    ```
 
-8. **Commit & Push:**
+9. **Commit & Push:**
    ```
    "Commit and push: commitMessage='feat: add user profile page with tests and docs'"
    ```
 
-9. **Record release:**
+10. **Record release:**
    ```
    "Record release: command='npm run release', notes='v1.2.3'"
    ```
 
-10. **Complete:**
+11. **Complete:**
    ```
    "Complete the task with commit message: 'feat: add user profile page'"
+   ```
+
+12. **Drop task (optional):**
+   ```
+   "Drop task: reason='Switching to a different feature'"
    ```
 
 ## 🎯 Key Features
@@ -294,7 +311,7 @@ Here's how you'd use this MCP server in a typical coding session:
 ## 💡 Tips
 
 1. **Always start with `start_task`** - This sets your intention
-2. **Never skip tests** - The server will remind you!
+2. **Never skip tests without justification** - Use `skip_tests` only when absolutely necessary and document the reason for manual QA
 3. **Use `get_workflow_status`** - Check where you are anytime
 4. **Review history** - Learn from your past tasks
 5. **Follow the prompts** - They contain best practices
