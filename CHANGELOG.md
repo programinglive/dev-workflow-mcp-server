@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.8](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.7...v1.0.8) (2025-10-21)
+
+
+### ✨ Features
+
+* allow skipping tests and dropping workflow tasks ([2b8b27c](https://github.com/programinglive/dev-workflow-mcp-server/commit/2b8b27cca611d2fe266c1b814c21b6fec2472856))
+
 ### [1.0.7](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.6...v1.0.7) (2025-10-20)
 
 ### [1.0.6](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.5...v1.0.6) (2025-10-20)
