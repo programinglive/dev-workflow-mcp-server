@@ -23,5 +23,6 @@ Thumbs.db
 .env.*
 .vscode/
 .idea/
+.workflow-state.json
 *.tgz
 *.tsbuildinfo

@@ -333,6 +333,7 @@ The server maintains state in `.workflow-state.json`:
 - History of completed tasks
 
 This file is automatically created and managed by the server.
+It contains local, machine-specific progress and is ignored by git so each environment can manage its own workflow history without cross-contamination.
 
 ## 🤝 Integration with Your Rules
 
