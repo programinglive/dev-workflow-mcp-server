@@ -94,6 +94,33 @@ test("commit_and_push records commit without pushing", async () => {
   });
 });
 
+test("continue_workflow warns when workflow is idle", async () => {
+  await withWorkflowState(async (workflowState) => {
+    const git = {
+      hasWorkingChanges: async () => false,
+      hasTestChanges: async () => false,
+      getStagedChanges: async () => [],
+      getCurrentBranch: async () => "main",
+      getLastCommitMessage: async () => "",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    const response = await handleToolCall({
+      request: createRequest("continue_workflow", {}),
+      normalizeRequestArgs,
+      workflowState,
+      exec: async () => ({ stdout: "" }),
+      git,
+      utils,
+    });
+
+    assert.ok(
+      response.content[0].text.includes("No active workflow"),
+      "Idle workflow should prompt user to start a task"
+    );
+  });
+});
+
 test("perform_release runs release command before pushing with tags", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.currentPhase = "release";

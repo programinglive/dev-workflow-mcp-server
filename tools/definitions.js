@@ -198,5 +198,14 @@ export function getToolList() {
         },
       },
     },
+    {
+      name: "continue_workflow",
+      description:
+        "Get guidance on the next workflow step. Automatically performs the ready check when appropriate.",
+      inputSchema: {
+        type: "object",
+        properties: {},
+      },
+    },
   ];
 }

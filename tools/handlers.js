@@ -27,6 +27,82 @@ function summarizeHistory(history, limit) {
   return `📜 Workflow History (last ${recent.length} tasks)\n\n${historyText}`;
 }
 
+function getContinueGuidance(status) {
+  switch (status.currentPhase) {
+    case "coding": {
+      const task = status.taskDescription ? ` "${status.taskDescription}"` : "";
+      return `Finish implementing${task} and then run 'mark_bug_fixed' with a brief summary of the change.`;
+    }
+    case "testing":
+      if (!status.testsCreated) {
+        return "Create automated coverage now using 'create_tests' before recording any results.";
+      }
+
+      if (status.testsPassed) {
+        return "With tests green, move on to 'create_documentation' and capture what changed.";
+      }
+
+      if (status.testsSkipped) {
+        return "Document why tests were skipped using 'create_documentation' so the workflow can proceed.";
+      }
+
+      return status.testCommand
+        ? `Fix any failing tests and re-run '${status.testCommand}'. Once they pass, record the results with 'run_tests'.`
+        : "Run your automated tests and record the outcome with 'run_tests'. Fix any failures before moving forward.";
+    case "documentation":
+      return status.testsSkipped
+        ? `Document the change (including manual QA for skipped tests) with 'create_documentation'. Reason recorded: ${
+            status.testsSkippedReason || "(none provided)"
+          }.`
+        : "Capture your updates with 'create_documentation' (provide the documentation type and a short summary).";
+    case "ready":
+      return "Run 'check_ready_to_commit' to verify all prerequisite steps before committing.";
+    case "commit":
+      return "All checks passed—run 'commit_and_push' with your commit message (and optional branch).";
+    case "release":
+      return "Commit recorded. Execute 'perform_release' with the release command you ran to publish changes.";
+    case "ready_to_complete":
+      return "Release recorded. Finish up by calling 'complete_task' with the commit message you used.";
+    default:
+      return "Review your workflow progress and complete the next required step.";
+  }
+}
+
+async function handleContinueWorkflow(workflowState) {
+  const status = workflowState.state;
+
+  if (!status || status.currentPhase === "idle") {
+    return textResponse("⚠️ No active workflow. Use 'start_task' to kick off a new task before continuing.");
+  }
+
+  if (status.currentPhase === "ready") {
+    return handleReadyCheck(workflowState);
+  }
+
+  const sections = [
+    `📊 Current Phase: ${status.currentPhase}`,
+    `📝 Task: ${status.taskDescription || "(none)"}`,
+  ];
+
+  if (status.testsSkipped) {
+    sections.push(`⚠️ Tests skipped: ${status.testsSkippedReason || "(no reason provided)"}`);
+  }
+
+  if (
+    status.currentPhase === "testing" &&
+    status.testsCreated &&
+    !status.testsPassed &&
+    typeof status.testCommand === "string" &&
+    status.testCommand.trim() !== ""
+  ) {
+    sections.push(`🧪 Last test command: ${status.testCommand}`);
+  }
+
+  sections.push(`➡️ ${getContinueGuidance(status)}`);
+
+  return textResponse(sections.join("\n\n"));
+}
+
 async function handleStartTask(args, workflowState) {
   workflowState.reset();
   workflowState.state.currentPhase = "coding";
@@ -519,6 +595,8 @@ export async function handleToolCall({
         return handleGetWorkflowStatus(workflowState);
       case "view_history":
         return handleViewHistory(args, workflowState);
+      case "continue_workflow":
+        return handleContinueWorkflow(workflowState);
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
