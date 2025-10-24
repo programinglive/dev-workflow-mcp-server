@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.10](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.9...v1.0.10) (2025-10-24)
+
+
+### ♻️ Refactors
+
+* modularize workflow server ([f0c9401](https://github.com/programinglive/dev-workflow-mcp-server/commit/f0c940123a8e6f961555cc7ba4d6dec2deb854e7))
+
+
+### ✅ Tests
+
+* cover release push flow ([933ff11](https://github.com/programinglive/dev-workflow-mcp-server/commit/933ff1126af08a49d1ce38a4eedcc738b0064efb))
+
 ### [1.0.9](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.8...v1.0.9) (2025-10-23)
 
 
