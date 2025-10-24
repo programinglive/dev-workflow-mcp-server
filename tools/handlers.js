@@ -309,28 +309,18 @@ async function handleCommitAndPush(args, context) {
 
   const requestedBranch = typeof args.branch === "string" ? args.branch.trim() : "";
   const currentBranch = await git.getCurrentBranch();
-  const pushCommand = requestedBranch
-    ? `git push origin ${utils.shellEscape(requestedBranch)}`
-    : "git push";
-
-  try {
-    await exec(pushCommand);
-  } catch (error) {
-    return textResponse(
-      `❌ git push failed:\n\n${error.stderr || error.stdout || error.message}`
-    );
-  }
+  const branchForPush = requestedBranch || currentBranch || "";
 
   workflowState.state.commitAndPushCompleted = true;
   workflowState.state.lastCommitMessage = generatedSummary;
-  workflowState.state.lastPushBranch = requestedBranch || currentBranch || "";
+  workflowState.state.lastPushBranch = branchForPush;
   workflowState.state.currentPhase = workflowState.state.released ? "ready_to_complete" : "release";
   await workflowState.save();
 
   return textResponse(
-    `✅ Commit & push completed!\n\nCommit message: ${generatedSummary}\nPushed to: ${
-      requestedBranch || currentBranch || "(default upstream)"
-    }\n\nNext: Run 'perform_release' to record the release.`
+    `✅ Commit recorded!\n\nCommit message: ${generatedSummary}\nTarget branch: ${
+      branchForPush || "(default upstream)"
+    }\n\nNext: Run 'perform_release' to handle the release and push with tags.`
   );
 }
 
@@ -396,6 +386,19 @@ async function handlePerformRelease(args, context) {
   } catch (error) {
     return textResponse(
       `❌ Release command failed:\n\n${error.stderr || error.stdout || error.message}`
+    );
+  }
+
+  const branchForPush = workflowState.state.lastPushBranch || (await git.getCurrentBranch()) || "";
+  const pushCommand = branchForPush
+    ? `git push --follow-tags origin ${utils.shellEscape(branchForPush)}`
+    : "git push --follow-tags";
+
+  try {
+    await exec(pushCommand);
+  } catch (error) {
+    return textResponse(
+      `❌ git push (with tags) failed:\n\n${error.stderr || error.stdout || error.message}`
     );
   }
 
