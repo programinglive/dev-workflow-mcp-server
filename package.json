@@ -15,9 +15,9 @@
     "prepare": "husky",
     "postinstall": "node install.js",
     "release": "standard-version",
-    "release:major": "npm run release -- --release-as major",
-    "release:minor": "npm run release -- --release-as minor",
-    "release:patch": "npm run release -- --release-as patch"
+    "release:major": "node release-wrapper.js major",
+    "release:minor": "node release-wrapper.js minor",
+    "release:patch": "node release-wrapper.js patch"
   },
   "keywords": [
     "mcp",

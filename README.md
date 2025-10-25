@@ -149,6 +149,19 @@ If you're using this package, add this to your project's `.gitignore`:
 
 This keeps workflow state local to each developer's machine.
 
+## 🚫 Releasing Without the Workflow Steps
+
+The package ships with a release guard (`release-wrapper.js`) that backs the `npm run release:*` scripts. The guard refuses to run unless:
+
+- The current workflow phase is **release**
+- `check_ready_to_commit` and `commit_and_push` have been completed
+- A release has not already been recorded for the active task
+
+If any requirements are missing, the guard exits with guidance to return to the MCP tools. This prevents accidentally bumping versions or tagging releases outside the managed workflow. To release correctly:
+
+1. Use `perform_release {"command":"patch"}` (or `minor`/`major`) via the MCP client.
+2. The guard runs automatically, verifies the workflow state, and records the release before letting you finish with `complete_task`.
+
 ## 🛠️ Available Tools
 
 ### Tool Argument Requirements

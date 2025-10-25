@@ -5,8 +5,30 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+function resolveDefaultStateFile() {
+  if (process.env.DEV_WORKFLOW_STATE_FILE) {
+    return path.resolve(process.env.DEV_WORKFLOW_STATE_FILE);
+  }
+
+  const cwd = process.cwd();
+  if (!cwd.includes(`node_modules${path.sep}`)) {
+    return path.join(cwd, ".workflow-state.json");
+  }
+
+  if (process.env.INIT_CWD) {
+    return path.join(process.env.INIT_CWD, ".workflow-state.json");
+  }
+
+  const [beforeNodeModules] = cwd.split(`node_modules${path.sep}`);
+  if (beforeNodeModules) {
+    return path.join(beforeNodeModules, ".workflow-state.json");
+  }
+
+  return path.join(__dirname, ".workflow-state.json");
+}
+
 export class WorkflowState {
-  constructor(stateFilePath = path.join(__dirname, ".workflow-state.json")) {
+  constructor(stateFilePath = resolveDefaultStateFile()) {
     this.stateFile = stateFilePath;
     this.state = {
       currentPhase: "idle",
