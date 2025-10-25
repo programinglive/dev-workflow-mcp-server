@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.0...v1.1.1) (2025-10-25)
+
+
+### ✨ Features
+
+* add force_complete_task tool ([f731a7d](https://github.com/programinglive/dev-workflow-mcp-server/commit/f731a7d2e48295963b8573d4a2abd3ebd42ba5ab))
+
 ## [1.1.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.11...v1.1.0) (2025-10-25)
 
 
