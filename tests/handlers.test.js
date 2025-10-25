@@ -437,7 +437,7 @@ test("perform_release respects explicit releaseType option", async () => {
   });
 });
 
-test("perform_release auto-detects commit when tree is clean", async () => {
+test("perform_release requires commit_and_push completion when tree is clean", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.currentPhase = "release";
     workflowState.state.commitAndPushCompleted = false;
@@ -449,10 +449,6 @@ test("perform_release auto-detects commit when tree is clean", async () => {
     const commands = [];
     const execStub = async (command) => {
       commands.push(command);
-      if (command === "git status --porcelain") {
-        return { stdout: "" };
-      }
-
       return { stdout: "" };
     };
 
@@ -475,15 +471,12 @@ test("perform_release auto-detects commit when tree is clean", async () => {
       utils,
     });
 
-    const pushCommand = commands.find((command) => command.startsWith("git push --follow-tags"));
-    assert.ok(pushCommand, "git push with tags should still run");
-    assert.equal(workflowState.state.commitAndPushCompleted, true);
-    assert.equal(workflowState.state.lastCommitMessage, "chore: already pushed");
-    assert.equal(workflowState.state.lastPushBranch, "main");
-    assert.equal(workflowState.state.currentPhase, "ready_to_complete");
+    assert.equal(commands.length, 0, "no release commands should run when commit_and_push not completed");
+    assert.equal(workflowState.state.currentPhase, "commit");
+    assert.equal(workflowState.state.commitAndPushCompleted, false);
     assert.ok(
-      response.content[0].text.includes("Detected clean working tree"),
-      "response should mention auto-detected commit"
+      response.content[0].text.includes("Please run 'commit_and_push' after the ready check"),
+      "response should instruct user to run commit_and_push"
     );
   });
 });
