@@ -24,7 +24,7 @@ Each project gets its own isolated workflow state file.
 npm install @programinglive/dev-workflow-mcp-server
 ```
 
-This will automatically create a `.workflow-state.json` file in your project root, keeping workflow history separate per project.
+This will automatically create a `.workflow-state.json` file in the **project where you ran `npm install`** (using npm's `INIT_CWD`), keeping workflow history separate per project. If you're installing the package itself (inside `node_modules`), the script skips creation so it never pollutes the shared package directory.
 
 ### Option 2: Install from Source
 

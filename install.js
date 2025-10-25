@@ -14,8 +14,17 @@ const __dirname = path.dirname(__filename);
 
 async function install() {
   try {
-    // Get the project root (where npm install was run)
-    const projectRoot = process.cwd();
+    // npm sets INIT_CWD to the directory where `npm install` was originally invoked.
+    // Fallback to process.cwd() if it's not present (e.g., older npm versions).
+    const projectRoot = process.env.INIT_CWD || process.cwd();
+
+    // If INIT_CWD points inside node_modules, this script is being executed
+    // while installing the package itself. In that case, skip creating a state file.
+    if (projectRoot.includes(`node_modules${path.sep}`)) {
+      console.log('ℹ️ Skipping workflow state creation inside node_modules.');
+      return;
+    }
+
     const stateFile = path.join(projectRoot, '.workflow-state.json');
 
     // Check if state file already exists
