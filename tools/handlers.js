@@ -68,7 +68,7 @@ function getContinueGuidance(status) {
   }
 }
 
-async function handleContinueWorkflow(workflowState) {
+async function handleContinueWorkflow(workflowState, context) {
   const status = workflowState.state;
 
   if (!status || status.currentPhase === "idle") {
@@ -77,6 +77,16 @@ async function handleContinueWorkflow(workflowState) {
 
   if (status.currentPhase === "ready") {
     return handleReadyCheck(workflowState);
+  }
+
+  if (status.currentPhase === "commit") {
+    return handleCommitAndPush({}, context);
+  }
+
+  if (status.currentPhase === "release") {
+    return textResponse(
+      "⚠️ Release phase requires explicit command. Run 'perform_release' with your release command (e.g., 'npm run release')."
+    );
   }
 
   const sections = [
@@ -643,7 +653,7 @@ export async function handleToolCall({
       case "view_history":
         return handleViewHistory(args, workflowState);
       case "continue_workflow":
-        return handleContinueWorkflow(workflowState);
+        return handleContinueWorkflow(workflowState, { workflowState, exec, git, utils });
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
