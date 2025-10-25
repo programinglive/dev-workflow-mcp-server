@@ -231,3 +231,53 @@ test("perform_release runs release command before pushing with tags", async () =
     );
   });
 });
+
+test("perform_release auto-detects commit when tree is clean", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.currentPhase = "release";
+    workflowState.state.commitAndPushCompleted = false;
+    workflowState.state.readyCheckCompleted = true;
+    workflowState.state.lastPushBranch = "";
+    workflowState.state.lastCommitMessage = "";
+    await workflowState.save();
+
+    const commands = [];
+    const execStub = async (command) => {
+      commands.push(command);
+      if (command === "git status --porcelain") {
+        return { stdout: "" };
+      }
+
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [],
+      getCurrentBranch: async () => "main",
+      getLastCommitMessage: async () => "chore: already pushed",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    const response = await handleToolCall({
+      request: createRequest("perform_release", { command: "npm run release" }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    const pushCommand = commands.find((command) => command.startsWith("git push --follow-tags"));
+    assert.ok(pushCommand, "git push with tags should still run");
+    assert.equal(workflowState.state.commitAndPushCompleted, true);
+    assert.equal(workflowState.state.lastCommitMessage, "chore: already pushed");
+    assert.equal(workflowState.state.lastPushBranch, "main");
+    assert.equal(workflowState.state.currentPhase, "ready_to_complete");
+    assert.ok(
+      response.content[0].text.includes("Detected clean working tree"),
+      "response should mention auto-detected commit"
+    );
+  });
+});

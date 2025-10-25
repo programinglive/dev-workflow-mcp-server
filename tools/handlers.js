@@ -431,16 +431,33 @@ async function handlePerformRelease(args, context) {
     return textResponse("⚠️ Please start a task first using 'start_task'!");
   }
 
-  if (!workflowState.state.commitAndPushCompleted) {
-    return textResponse(
-      "⚠️ Please run 'commit_and_push' after the ready check before recording a release!"
-    );
-  }
-
   if (!workflowState.state.readyCheckCompleted) {
     return textResponse(
       "⚠️ Please run 'check_ready_to_commit' and ensure all checks pass before releasing!"
     );
+  }
+
+  let autoDetectedCommit = false;
+
+  if (!workflowState.state.commitAndPushCompleted) {
+    const hasWorkingChanges = await git.hasWorkingChanges();
+
+    if (hasWorkingChanges) {
+      return textResponse(
+        "⚠️ Please run 'commit_and_push' after the ready check before recording a release!"
+      );
+    }
+
+    const lastCommitMessage = await git.getLastCommitMessage();
+    const currentBranch = await git.getCurrentBranch();
+
+    workflowState.state.commitAndPushCompleted = true;
+    workflowState.state.lastCommitMessage =
+      lastCommitMessage || workflowState.state.lastCommitMessage || "";
+    workflowState.state.lastPushBranch = currentBranch || workflowState.state.lastPushBranch || "";
+    workflowState.state.currentPhase = "release";
+    autoDetectedCommit = true;
+    await workflowState.save();
   }
 
   const releaseCommand = typeof args.command === "string" ? args.command.trim() : "";
@@ -510,10 +527,16 @@ async function handlePerformRelease(args, context) {
 
   const message = summarizeHistory(workflowState.state.history, args.limit || 10);
   if (!message) {
-    return textResponse("📜 No workflow history yet.");
+    const autoNote = autoDetectedCommit
+      ? "\n\nℹ️ Detected clean working tree and treated commit/push as already completed."
+      : "";
+    return textResponse(`📜 No workflow history yet.${autoNote}`);
   }
 
-  return textResponse(message);
+  const autoNote = autoDetectedCommit
+    ? "\n\nℹ️ Detected clean working tree and treated commit/push as already completed."
+    : "";
+  return textResponse(`${message}${autoNote}`);
 }
 
 async function handleCompleteTask(args, workflowState) {
