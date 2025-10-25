@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.11...v1.1.0) (2025-10-25)
+
+
+### 📝 Documentation
+
+* clarify commit and push step ([c741f61](https://github.com/programinglive/dev-workflow-mcp-server/commit/c741f618813479c5df2bcca94c3dffc8881e97c8))
+
+
+### 🐛 Bug Fixes
+
+* allow commit_and_push on clean tree ([a831974](https://github.com/programinglive/dev-workflow-mcp-server/commit/a831974f66313ebe8752d416752076df63902bea))
+* auto-detect commit in perform_release when tree is clean ([0db7038](https://github.com/programinglive/dev-workflow-mcp-server/commit/0db7038148f68963f53e52a5f73623dea7ad3462))
+
+
+### ✨ Features
+
+* check staged changes when resetting workflow to commit phase ([05d02fd](https://github.com/programinglive/dev-workflow-mcp-server/commit/05d02fd7ec6177af3fb1fd86ec093e1e37b56cbd))
+* continue_workflow auto-executes next step in commit phase ([a5b49ed](https://github.com/programinglive/dev-workflow-mcp-server/commit/a5b49edaae7cb51ea3aa49d9b1b64587843441ce))
+
 ### [1.0.11](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.0.10...v1.0.11) (2025-10-25)
 
 
