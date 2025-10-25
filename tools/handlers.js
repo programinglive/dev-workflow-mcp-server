@@ -7,6 +7,27 @@ const textResponse = (text) => ({
   ],
 });
 
+async function resetToCommitIfWorkingChanges(workflowState, git) {
+  if (!workflowState.state.commitAndPushCompleted) {
+    return false;
+  }
+
+  const hasWorkingChanges = await git.hasWorkingChanges();
+  const hasStagedChanges = await git.hasStagedChanges();
+  
+  if (!hasWorkingChanges && !hasStagedChanges) {
+    return false;
+  }
+
+  workflowState.state.commitAndPushCompleted = false;
+  workflowState.state.released = false;
+  workflowState.state.currentPhase = "commit";
+  workflowState.state.releaseCommand = "";
+  workflowState.state.releaseNotes = "";
+  await workflowState.save();
+  return true;
+}
+
 function formatChecklist(checks) {
   return checks.map((c) => `${c.done ? "✅" : "❌"} ${c.name}`).join("\n");
 }
@@ -73,6 +94,12 @@ async function handleContinueWorkflow(workflowState, context) {
 
   if (!status || status.currentPhase === "idle") {
     return textResponse("⚠️ No active workflow. Use 'start_task' to kick off a new task before continuing.");
+  }
+
+  if (await resetToCommitIfWorkingChanges(workflowState, context.git)) {
+    return textResponse(
+      "⚠️ Detected new changes after the last commit. Workflow moved back to the commit phase. Run 'commit_and_push' to capture the latest updates before continuing."
+    );
   }
 
   if (status.currentPhase === "ready") {
@@ -441,6 +468,12 @@ async function handlePerformRelease(args, context) {
     return textResponse("⚠️ Please start a task first using 'start_task'!");
   }
 
+  if (await resetToCommitIfWorkingChanges(workflowState, git)) {
+    return textResponse(
+      "⚠️ Detected new changes after the last commit. Please run 'commit_and_push' again before recording a release."
+    );
+  }
+
   if (!workflowState.state.readyCheckCompleted) {
     return textResponse(
       "⚠️ Please run 'check_ready_to_commit' and ensure all checks pass before releasing!"
@@ -470,7 +503,44 @@ async function handlePerformRelease(args, context) {
     await workflowState.save();
   }
 
-  const releaseCommand = typeof args.command === "string" ? args.command.trim() : "";
+  const rawReleaseCommand = typeof args.command === "string" ? args.command.trim() : "";
+  const releaseTypeArg =
+    typeof args.releaseType === "string" ? args.releaseType.trim().toLowerCase() : "";
+  const presetArg = typeof args.preset === "string" ? args.preset.trim().toLowerCase() : "";
+  const recognizedTypes = new Set(["major", "minor", "patch"]);
+
+  const tokens = rawReleaseCommand
+    .toLowerCase()
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  let releaseType = "";
+  if (recognizedTypes.has(releaseTypeArg)) {
+    releaseType = releaseTypeArg;
+  } else if (recognizedTypes.has(presetArg)) {
+    releaseType = presetArg;
+  } else if (tokens.length > 0) {
+    const possibleType = tokens[tokens.length - 1];
+    if (recognizedTypes.has(possibleType)) {
+      releaseType = possibleType;
+    }
+  }
+
+  let releaseCommand = rawReleaseCommand;
+  if (releaseCommand && recognizedTypes.has(releaseCommand.toLowerCase())) {
+    releaseType = releaseCommand.toLowerCase();
+    releaseCommand = "";
+  }
+
+  const scriptTypeMatch = /release:(major|minor|patch)/i.exec(releaseCommand);
+  if (scriptTypeMatch) {
+    releaseType = scriptTypeMatch[1].toLowerCase();
+  }
+
+  if (!releaseCommand && releaseType) {
+    releaseCommand = `npm run release:${releaseType}`;
+  }
 
   if (!releaseCommand) {
     return textResponse("⚠️ Please provide a non-empty 'command' when using 'perform_release'.");
@@ -500,13 +570,16 @@ async function handlePerformRelease(args, context) {
   }
 
   const lastCommitMessage = await git.getLastCommitMessage();
-  const releaseType = utils.determineReleaseTypeFromCommit(
-    lastCommitMessage || workflowState.state.lastCommitMessage
-  );
+  if (!releaseType) {
+    releaseType = utils.determineReleaseTypeFromCommit(
+      lastCommitMessage || workflowState.state.lastCommitMessage
+    );
+  }
 
-  const finalCommand = releaseCommand.includes("--release-as")
-    ? releaseCommand
-    : `${releaseCommand} -- --release-as ${releaseType}`;
+  const finalCommand =
+    releaseCommand.includes("--release-as") || /release:(major|minor|patch)/i.test(releaseCommand)
+      ? releaseCommand
+      : `${releaseCommand} -- --release-as ${releaseType}`;
 
   try {
     await exec(finalCommand);

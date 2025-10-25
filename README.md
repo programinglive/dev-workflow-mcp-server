@@ -11,7 +11,7 @@ This MCP server guides you through a disciplined development workflow:
 3. **Create Tests** - Always test your changes
 4. **Run Tests** - Tests must pass (GREEN)
 5. **Document** - Update documentation
-6. **Commit & Push** - Let the server stage, commit, **and push** your changes once verification passes
+6. **Commit & Push** - Let the server stage, commit, **and push** your changes once verification passes (if you make new edits afterward, the workflow moves back to this step automatically)
 7. **Release** - After the push succeeds, record the release details before closing out the task
 
 ## 🚀 Installation

@@ -58,6 +58,7 @@ test("commit_and_push commits changes and pushes", async () => {
 
     const git = {
       hasWorkingChanges: async () => true,
+      hasStagedChanges: async () => false,
       hasTestChanges: async () => true,
       getStagedChanges: async () => [{ status: "M", path: "src/index.js" }],
       getCurrentBranch: async () => "main",
@@ -95,10 +96,56 @@ test("commit_and_push commits changes and pushes", async () => {
   });
 });
 
+test("perform_release blocks when new changes detected", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.currentPhase = "release";
+    workflowState.state.commitAndPushCompleted = true;
+    workflowState.state.readyCheckCompleted = true;
+    await workflowState.save();
+
+    const commands = [];
+    const execStub = async (command) => {
+      commands.push(command);
+      if (command === "git status --porcelain") {
+        return { stdout: "?? new-file.js" };
+      }
+
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => true,
+      hasStagedChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [],
+      getCurrentBranch: async () => "main",
+      getLastCommitMessage: async () => "fix: adjust layout",
+      workingTreeSummary: () => ({ hasChanges: true, lines: ["?? new-file.js"] }),
+    };
+
+    const response = await handleToolCall({
+      request: createRequest("perform_release", { command: "patch" }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    assert.ok(
+      response.content[0].text.includes("run 'commit_and_push' again"),
+      "response should instruct to recommit"
+    );
+    assert.equal(workflowState.state.currentPhase, "commit");
+    assert.equal(workflowState.state.commitAndPushCompleted, false);
+  });
+});
+
 test("continue_workflow warns when workflow is idle", async () => {
   await withWorkflowState(async (workflowState) => {
     const git = {
       hasWorkingChanges: async () => false,
+      hasStagedChanges: async () => false,
       hasTestChanges: async () => false,
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
@@ -122,6 +169,41 @@ test("continue_workflow warns when workflow is idle", async () => {
   });
 });
 
+test("continue_workflow resets to commit when new changes detected", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.currentPhase = "release";
+    workflowState.state.commitAndPushCompleted = true;
+    workflowState.state.readyCheckCompleted = true;
+    await workflowState.save();
+
+    const git = {
+      hasWorkingChanges: async () => true,
+      hasStagedChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [],
+      getCurrentBranch: async () => "main",
+      getLastCommitMessage: async () => "fix: adjust layout",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    const response = await handleToolCall({
+      request: createRequest("continue_workflow", {}),
+      normalizeRequestArgs,
+      workflowState,
+      exec: async () => ({ stdout: "" }),
+      git,
+      utils,
+    });
+
+    assert.ok(
+      response.content[0].text.includes("Workflow moved back to the commit phase"),
+      "response should warn that workflow reset to commit"
+    );
+    assert.equal(workflowState.state.currentPhase, "commit");
+    assert.equal(workflowState.state.commitAndPushCompleted, false);
+  });
+});
+
 test("commit_and_push recognizes already committed work", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.readyToCommit = true;
@@ -140,6 +222,7 @@ test("commit_and_push recognizes already committed work", async () => {
 
     const git = {
       hasWorkingChanges: async () => false,
+      hasStagedChanges: async () => false,
       hasTestChanges: async () => true,
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
@@ -188,6 +271,7 @@ test("perform_release runs release command before pushing with tags", async () =
 
     const git = {
       hasWorkingChanges: async () => false,
+      hasStagedChanges: async () => false,
       hasTestChanges: async () => true,
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
@@ -232,6 +316,98 @@ test("perform_release runs release command before pushing with tags", async () =
   });
 });
 
+test("perform_release accepts shorthand patch command", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.currentPhase = "release";
+    workflowState.state.commitAndPushCompleted = true;
+    workflowState.state.readyCheckCompleted = true;
+    workflowState.state.lastCommitMessage = "fix: adjust labels";
+    await workflowState.save();
+
+    const commands = [];
+    const execStub = async (command) => {
+      commands.push(command);
+      if (command === "git status --porcelain") {
+        return { stdout: "" };
+      }
+
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => false,
+      hasStagedChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [],
+      getCurrentBranch: async () => "main",
+      getLastCommitMessage: async () => "fix: adjust labels",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    await handleToolCall({
+      request: createRequest("perform_release", { command: "patch" }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    const releaseCommand = commands.find((command) => command.startsWith("npm run release:patch"));
+    assert.ok(releaseCommand, "shorthand patch command should map to release:patch script");
+    const pushCommand = commands.find((command) => command.startsWith("git push --follow-tags"));
+    assert.ok(pushCommand, "git push with tags should run after shorthand release");
+  });
+});
+
+test("perform_release respects explicit releaseType option", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.currentPhase = "release";
+    workflowState.state.commitAndPushCompleted = true;
+    workflowState.state.readyCheckCompleted = true;
+    await workflowState.save();
+
+    const commands = [];
+    const execStub = async (command) => {
+      commands.push(command);
+      if (command === "git status --porcelain") {
+        return { stdout: "" };
+      }
+
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => false,
+      hasStagedChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [],
+      getCurrentBranch: async () => "main",
+      getLastCommitMessage: async () => "feat: import improvements",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    await handleToolCall({
+      request: createRequest("perform_release", {
+        command: "npm run release",
+        releaseType: "minor",
+      }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    const releaseCommand = commands.find((command) => command.startsWith("npm run release"));
+    assert.ok(releaseCommand, "release command should run");
+    assert.ok(
+      releaseCommand.includes("-- --release-as minor"),
+      "release command should append provided releaseType"
+    );
+  });
+});
+
 test("perform_release auto-detects commit when tree is clean", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.currentPhase = "release";
@@ -253,6 +429,7 @@ test("perform_release auto-detects commit when tree is clean", async () => {
 
     const git = {
       hasWorkingChanges: async () => false,
+      hasStagedChanges: async () => false,
       hasTestChanges: async () => true,
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
