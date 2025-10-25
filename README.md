@@ -16,13 +16,25 @@ This MCP server guides you through a disciplined development workflow:
 
 ## 🚀 Installation
 
-### 1. Install Dependencies
+### Option 1: Install as Dependency in Your Project (Recommended)
+
+Each project gets its own isolated workflow state file.
 
 ```bash
+npm install @programinglive/dev-workflow-mcp-server
+```
+
+This will automatically create a `.workflow-state.json` file in your project root, keeping workflow history separate per project.
+
+### Option 2: Install from Source
+
+```bash
+git clone https://github.com/programinglive/dev-workflow-mcp-server.git
+cd dev-workflow-mcp-server
 npm install
 ```
 
-### 2. Configure in Windsurf/Claude Desktop
+### 3. Configure in Windsurf/Claude Desktop
 
 Point your MCP client to the server entry point. Replace `<PROJECT_ROOT>` with the absolute path to this repository on your machine.
 
@@ -112,9 +124,30 @@ Point your MCP client to the server entry point. Replace `<PROJECT_ROOT>` with t
 
 > **Note:** On Windows paths in JSON require escaped backslashes (e.g., `"C:\\path\\to\\project"`).
 
-### 3. Restart Windsurf/Claude Desktop
+### 4. Restart Windsurf/Claude Desktop
 
 After adding the configuration, restart the application to load the MCP server.
+
+## 📁 Project-Specific Workflow State
+
+When you install this package in a project, a `.workflow-state.json` file is automatically created in your project root. This file:
+
+- **Stores workflow history** specific to that project
+- **Tracks task progress** independently per project
+- **Should be gitignored** (already in `.gitignore` by default)
+- **Persists across sessions** so your workflow state is preserved
+
+Each project maintains its own isolated workflow history, so you can work on multiple projects without mixing their histories.
+
+### Adding to .gitignore
+
+If you're using this package, add this to your project's `.gitignore`:
+
+```
+.workflow-state.json
+```
+
+This keeps workflow state local to each developer's machine.
 
 ## 🛠️ Available Tools
 
