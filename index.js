@@ -139,7 +139,8 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
 
 6. 🚀 COMMIT & PUSH
    - Use 'check_ready_to_commit' to verify
-   - git add . && git commit && git push
+   - Use 'commit_and_push' (stages, commits, and pushes)
+   - Then use 'perform_release' to handle versioning and tags
    - Use 'complete_task' to finish
 
 Remember: No shortcuts! Each step is important for code quality.`,

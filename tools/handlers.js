@@ -116,7 +116,7 @@ async function handleStartTask(args, workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `✅ Task Started: ${args.description}\n\n🎯 Be conscious about what you're coding!\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Run 'check_ready_to_commit'\n7. ⏳ Commit & push, then run 'perform_release'\n8. ⏳ Complete task\n\nReminder: Focus on writing clean, maintainable code!`
+    `✅ Task Started: ${args.description}\n\n🎯 Be conscious about what you're coding!\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Run 'check_ready_to_commit'\n7. ⏳ Run 'commit_and_push' (commits and pushes)\n8. ⏳ Run 'perform_release' (handles versioning and tags)\n9. ⏳ Complete task\n\nReminder: Focus on writing clean, maintainable code!`
   );
 }
 
@@ -141,7 +141,7 @@ async function handleMarkBugFixed(args, workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `✅ Feature/Bug marked as fixed!\n\n⚠️ CRITICAL REMINDER: You MUST create tests now!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ⏳ Create tests for: ${args.summary}\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Commit & push, then run 'perform_release'\n7. ⏳ Complete task\n\n🚫 DO NOT SKIP TESTING!`
+    `✅ Feature/Bug marked as fixed!\n\n⚠️ CRITICAL REMINDER: You MUST create tests now!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ⏳ Create tests for: ${args.summary}\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Complete task\n\n🚫 DO NOT SKIP TESTING!`
   );
 }
 
@@ -161,7 +161,7 @@ async function handleCreateTests(workflowState) {
   await workflowState.save();
 
   return textResponse(
-    "✅ Tests recorded!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Commit & push, then run 'perform_release'\n7. ⏳ Complete task\n\n🧪 Run your test command and record the results using 'run_tests'."
+    "✅ Tests recorded!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Complete task\n\n🧪 Run your test command and record the results using 'run_tests'."
   );
 }
 
@@ -204,7 +204,7 @@ Next Steps:
 2. ⚠️ Tests skipped (ensure manual QA)
 3. ⏳ Create/update documentation
 4. ⏳ Run 'check_ready_to_commit'
-5. ⏳ Commit & push
+5. ⏳ Run 'commit_and_push'
 6. ⏳ Run 'perform_release'
 7. ⏳ Complete task`
   );
@@ -253,7 +253,7 @@ async function handleRunTests(args, workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `✅ All tests passed! 🎉\n\nTest command: ${args.testCommand}\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ⏳ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Commit & push, then run 'perform_release'\n7. ⏳ Complete task\n\nReminder: Document what you did before committing!`
+    `✅ All tests passed! 🎉\n\nTest command: ${args.testCommand}\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ⏳ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Complete task\n\nReminder: Document what you did before committing!`
   );
 }
 
@@ -275,7 +275,7 @@ async function handleCreateDocumentation(args, workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `✅ Documentation created!\n\nType: ${args.documentationType}\nSummary: ${args.summary}\n\n🎉 You're ready to verify your work!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ✓ Create documentation\n5. ⏳ Run 'check_ready_to_commit' to verify\n6. ⏳ Commit & push, then run 'perform_release'\n7. ⏳ Mark as complete with 'complete_task'\n\nRemember: git add . && git commit && git push`
+    `✅ Documentation created!\n\nType: ${args.documentationType}\nSummary: ${args.summary}\n\n🎉 You're ready to verify your work!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ✓ Create documentation\n5. ⏳ Run 'check_ready_to_commit' to verify\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Mark as complete with 'complete_task'`
   );
 }
 
@@ -312,7 +312,7 @@ async function handleReadyCheck(workflowState) {
 
   if (allDone) {
     return textResponse(
-      `🎉 ALL CHECKS PASSED!\n\n${checkList}\n\n✅ Next actions:\n1. Run 'commit_and_push' with your commit message\n2. Run 'perform_release' to record the release\n3. Finish with 'complete_task'\n\nTip: Provide the optional 'branch' argument to push to a non-default branch.\n\nTask: ${status.taskDescription}`
+      `🎉 ALL CHECKS PASSED!\n\n${checkList}\n\n✅ Next actions:\n1. Run 'commit_and_push' (commits and pushes your changes)\n2. Run 'perform_release' (handles versioning, tags, and final push)\n3. Finish with 'complete_task'\n\nTip: Provide the optional 'branch' argument to 'commit_and_push' to push to a non-default branch.\n\nTask: ${status.taskDescription}`
     );
   }
 
@@ -387,6 +387,17 @@ async function handleCommitAndPush(args, context) {
   const currentBranch = await git.getCurrentBranch();
   const branchForPush = requestedBranch || currentBranch || "";
 
+  try {
+    const pushCommand = branchForPush
+      ? `git push origin ${utils.shellEscape(branchForPush)}`
+      : "git push";
+    await exec(pushCommand);
+  } catch (error) {
+    return textResponse(
+      `❌ git push failed:\n\n${error.stderr || error.stdout || error.message}`
+    );
+  }
+
   workflowState.state.commitAndPushCompleted = true;
   workflowState.state.lastCommitMessage = generatedSummary;
   workflowState.state.lastPushBranch = branchForPush;
@@ -394,9 +405,9 @@ async function handleCommitAndPush(args, context) {
   await workflowState.save();
 
   return textResponse(
-    `✅ Commit recorded!\n\nCommit message: ${generatedSummary}\nTarget branch: ${
+    `✅ Commit and push completed!\n\nCommit message: ${generatedSummary}\nPushed to: ${
       branchForPush || "(default upstream)"
-    }\n\nNext: Run 'perform_release' to handle the release and push with tags.`
+    }\n\nNext: Run 'perform_release' to handle the release and push tags.`
   );
 }
 

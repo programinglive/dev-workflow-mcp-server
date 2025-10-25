@@ -40,7 +40,7 @@ function createRequest(name, args) {
   };
 }
 
-test("commit_and_push records commit without pushing", async () => {
+test("commit_and_push commits changes and pushes", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.readyToCommit = true;
     workflowState.state.readyCheckCompleted = true;
@@ -74,10 +74,11 @@ test("commit_and_push records commit without pushing", async () => {
       utils,
     });
 
-    assert.equal(
-      commands.some((command) => command.startsWith("git push")),
-      false,
-      "git push should not be executed during commit"
+    const pushCommand = commands.find((command) => command.startsWith("git push"));
+    assert.ok(pushCommand, "git push should be executed during commit");
+    assert.ok(
+      pushCommand.startsWith("git push origin"),
+      "push command should target origin"
     );
     assert.equal(
       commands.some((command) => command.startsWith("git commit")),
@@ -85,8 +86,8 @@ test("commit_and_push records commit without pushing", async () => {
       "git commit should be executed"
     );
     assert.ok(
-      response.content[0].text.includes("Commit recorded!"),
-      "response should confirm commit recording"
+      response.content[0].text.includes("Commit and push completed!"),
+      "response should confirm commit and push"
     );
     assert.equal(workflowState.state.commitAndPushCompleted, true);
     assert.equal(workflowState.state.lastCommitMessage.length > 0, true);
