@@ -96,6 +96,35 @@ test("commit_and_push commits changes and pushes", async () => {
   });
 });
 
+test("force_complete_task records entry and resets state", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.taskDescription = "Improve caching";
+    workflowState.state.taskType = "feature";
+    workflowState.state.lastCommitMessage = "chore: wip";
+    workflowState.state.currentPhase = "release";
+    await workflowState.save();
+
+    const response = await handleToolCall({
+      request: createRequest("force_complete_task", {
+        commitMessage: "chore: force finish",
+        reason: "Deadline hit",
+      }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: async () => ({ stdout: "" }),
+      git: {},
+      utils,
+    });
+
+    assert.ok(response.content[0].text.includes("Task force-completed."));
+    assert.equal(workflowState.state.currentPhase, "idle");
+    assert.equal(workflowState.state.history.length, 1);
+    assert.equal(workflowState.state.history[0].commitMessage, "chore: force finish");
+    assert.equal(workflowState.state.history[0].forced, true);
+    assert.equal(workflowState.state.history[0].forceReason, "Deadline hit");
+  });
+});
+
 test("perform_release blocks when new changes detected", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.currentPhase = "release";

@@ -638,6 +638,32 @@ async function handleCompleteTask(args, workflowState) {
   );
 }
 
+async function handleForceCompleteTask(args, workflowState) {
+  const commitMessageArg =
+    typeof args.commitMessage === "string" ? args.commitMessage.trim() : "";
+  const reason = typeof args.reason === "string" ? args.reason.trim() : "";
+
+  const commitMessage =
+    commitMessageArg || workflowState.state.lastCommitMessage || "(no commit recorded)";
+
+  workflowState.addToHistory({
+    taskDescription: workflowState.state.taskDescription,
+    taskType: workflowState.state.taskType,
+    commitMessage,
+    forced: true,
+    forceReason: reason,
+  });
+
+  workflowState.reset();
+  await workflowState.save();
+
+  const reasonText = reason ? reason : "(none provided)";
+
+  return textResponse(
+    `⚠️ Task force-completed.\n\nRecorded commit message: ${commitMessage}\nReason: ${reasonText}\nWorkflow state reset. Start a new task when ready.`
+  );
+}
+
 async function handleDropTask(args, workflowState) {
   workflowState.addToHistory({
     taskDescription: workflowState.state.taskDescription,
@@ -719,6 +745,8 @@ export async function handleToolCall({
         return handlePerformRelease(args, { workflowState, exec, git, utils });
       case "complete_task":
         return handleCompleteTask(args, workflowState);
+      case "force_complete_task":
+        return handleForceCompleteTask(args, workflowState);
       case "drop_task":
         return handleDropTask(args, workflowState);
       case "get_workflow_status":

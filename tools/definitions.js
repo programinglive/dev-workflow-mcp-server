@@ -164,6 +164,24 @@ export function getToolList() {
       },
     },
     {
+      name: "force_complete_task",
+      description:
+        "Force completion of the current task even if workflow steps are incomplete. Records history entry and resets the workflow.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          commitMessage: {
+            type: "string",
+            description: "Commit message or summary to record (optional)",
+          },
+          reason: {
+            type: "string",
+            description: "Why the task was force completed",
+          },
+        },
+      },
+    },
+    {
       name: "drop_task",
       description:
         "Abandon the current task and reset the workflow without completing it.",
