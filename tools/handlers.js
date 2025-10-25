@@ -334,9 +334,26 @@ async function handleCommitAndPush(args, context) {
   const providedCommitMessage =
     typeof args.commitMessage === "string" ? args.commitMessage.trim() : "";
 
-  if (!(await git.hasWorkingChanges())) {
+  const requestedBranch = typeof args.branch === "string" ? args.branch.trim() : "";
+  const currentBranch = await git.getCurrentBranch();
+  const branchForPush = requestedBranch || currentBranch || "";
+
+  const hasWorkingChanges = await git.hasWorkingChanges();
+
+  if (!hasWorkingChanges) {
+    const lastCommitMessage = await git.getLastCommitMessage();
+    const effectiveCommitMessage = lastCommitMessage || providedCommitMessage;
+
+    workflowState.state.commitAndPushCompleted = true;
+    workflowState.state.lastCommitMessage = effectiveCommitMessage || "";
+    workflowState.state.lastPushBranch = branchForPush;
+    workflowState.state.currentPhase = workflowState.state.released ? "ready_to_complete" : "release";
+    await workflowState.save();
+
     return textResponse(
-      "⚠️ No changes detected. Make sure you have modifications to commit before running 'commit_and_push'."
+      `ℹ️ No changes detected. Assuming commit and push already completed.\nLast commit: ${
+        effectiveCommitMessage || "(unavailable)"
+      }\n\nNext: Run 'perform_release' to handle the release and push tags.`
     );
   }
 
@@ -382,10 +399,6 @@ async function handleCommitAndPush(args, context) {
 
     return textResponse(`❌ git commit failed:\n\n${output}`);
   }
-
-  const requestedBranch = typeof args.branch === "string" ? args.branch.trim() : "";
-  const currentBranch = await git.getCurrentBranch();
-  const branchForPush = requestedBranch || currentBranch || "";
 
   try {
     const pushCommand = branchForPush

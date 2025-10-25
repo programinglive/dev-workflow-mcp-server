@@ -122,6 +122,51 @@ test("continue_workflow warns when workflow is idle", async () => {
   });
 });
 
+test("commit_and_push recognizes already committed work", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.readyToCommit = true;
+    workflowState.state.readyCheckCompleted = true;
+    workflowState.state.testsSkipped = false;
+    workflowState.state.testsCreated = true;
+    workflowState.state.testsPassed = true;
+    workflowState.state.currentPhase = "commit";
+    await workflowState.save();
+
+    const commands = [];
+    const execStub = async (command) => {
+      commands.push(command);
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [],
+      getCurrentBranch: async () => "main",
+      getLastCommitMessage: async () => "fix: previous work",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    const response = await handleToolCall({
+      request: createRequest("commit_and_push", { commitMessage: "" }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    assert.equal(commands.length, 0, "no git commands should run when work is already committed");
+    assert.ok(
+      response.content[0].text.includes("No changes detected"),
+      "response should note that no changes were detected"
+    );
+    assert.equal(workflowState.state.commitAndPushCompleted, true);
+    assert.equal(workflowState.state.lastCommitMessage, "fix: previous work");
+    assert.equal(workflowState.state.currentPhase, "release");
+  });
+});
+
 test("perform_release runs release command before pushing with tags", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.currentPhase = "release";
