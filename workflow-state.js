@@ -4,6 +4,16 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const STATE_FILENAME = ".workflow-state.json";
+
+function isRootPath(candidate) {
+  if (!candidate) {
+    return true;
+  }
+
+  const resolved = path.resolve(candidate);
+  return path.parse(resolved).root === resolved;
+}
 
 function resolveDefaultStateFile() {
   if (process.env.DEV_WORKFLOW_STATE_FILE) {
@@ -11,20 +21,20 @@ function resolveDefaultStateFile() {
   }
 
   const cwd = process.cwd();
-  if (!cwd.includes(`node_modules${path.sep}`)) {
-    return path.join(cwd, ".workflow-state.json");
+  if (!cwd.includes(`node_modules${path.sep}`) && !isRootPath(cwd)) {
+    return path.join(cwd, STATE_FILENAME);
   }
 
-  if (process.env.INIT_CWD) {
-    return path.join(process.env.INIT_CWD, ".workflow-state.json");
+  if (process.env.INIT_CWD && !isRootPath(process.env.INIT_CWD)) {
+    return path.join(process.env.INIT_CWD, STATE_FILENAME);
   }
 
   const [beforeNodeModules] = cwd.split(`node_modules${path.sep}`);
-  if (beforeNodeModules) {
-    return path.join(beforeNodeModules, ".workflow-state.json");
+  if (beforeNodeModules && !isRootPath(beforeNodeModules)) {
+    return path.join(beforeNodeModules, STATE_FILENAME);
   }
 
-  return path.join(__dirname, ".workflow-state.json");
+  return path.join(__dirname, STATE_FILENAME);
 }
 
 export class WorkflowState {
