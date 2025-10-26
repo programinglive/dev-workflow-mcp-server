@@ -290,7 +290,7 @@ async function handleRunTests(args, workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `✅ All tests passed! 🎉\n\nTest command: ${args.testCommand}\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ⏳ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Complete task\n\nReminder: Document what you did before committing!`
+    `✅ All tests passed! 🎉\n\nTest command: ${args.testCommand}\n\n📝 Now create documentation using 'create_documentation' with:\n- documentationType: "README", "inline-comments", "API-docs", "changelog", or "other"\n- summary: Brief description of what was documented\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ⏳ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Complete task`
   );
 }
 
