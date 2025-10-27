@@ -149,6 +149,8 @@ If you're using this package, add this to your project's `.gitignore`:
 
 This keeps workflow state local to each developer's machine.
 
+> **Need to override the location?** Set `DEV_WORKFLOW_STATE_FILE=/absolute/path/to/your/project/.workflow-state.json` before launching the server (or inside your MCP client config). The server will honor that path, letting you keep the package installed centrally while maintaining per-project workflow history.
+
 ## 🚫 Releasing Without the Workflow Steps
 
 The package ships with a release guard (`release-wrapper.js`) that backs the `npm run release:*` scripts. The guard refuses to run unless:
