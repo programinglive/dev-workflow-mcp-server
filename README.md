@@ -34,6 +34,11 @@ cd dev-workflow-mcp-server
 npm install
 ```
 
+#### Two Usage Modes
+
+- **Local (source)**: Point your MCP client to `index.js`. This runs directly from source and requires no build step. Recommended for MCP usage.
+- **Production (built)**: Run `npm run build` once to generate `dist/`. This creates an optimized bundle but isn’t needed for MCP usage.
+
 ### 3. Configure in Windsurf/Claude Desktop
 
 Point your MCP client to the server entry point. Replace `<PROJECT_ROOT>` with the absolute path to this repository on your machine.
@@ -128,6 +133,31 @@ Point your MCP client to the server entry point. Replace `<PROJECT_ROOT>` with t
 
 After adding the configuration, restart the application to load the MCP server.
 
+## 🏗️ Build System
+
+This project includes a Vite-based build system for creating optimized distributions.
+
+### Scripts
+
+- `npm run build` - Bundle the source into `dist/index.mjs` for distribution
+- `npm run dev` - Run in development mode with file watching
+- `npm run local` - Alias for running from source (same as `npm start`)
+
+### Build Output
+
+Running `npm run build` generates:
+- `dist/index.mjs` - Optimized ES module bundle
+- Source maps and other build artifacts
+
+The build bundles all source files while externalizing Node.js built-in modules and dependencies, resulting in a single file distribution.
+
+### Usage
+
+For MCP server usage, point your client at `index.js` (source) to avoid stdio transport compatibility issues. The built `dist/index.mjs` is primarily for:
+- npm package distribution
+- Performance optimization
+- Embedding in other projects
+
 ## 📁 Project-Specific Workflow State
 
 When you install this package in a project, a `.state/workflow-state.json` file is automatically created in your project root. This file:
@@ -169,6 +199,41 @@ This keeps workflow state local to each developer's machine.
 - `view_history` - View completed tasks
 - `continue_workflow` - Get next-step guidance
 - `rerun_workflow` - Reset and restart the current task from the beginning
+- `run_full_workflow` - Execute every workflow step in sequence with a single command (requires supplying the details for each phase)
+
+### `run_full_workflow`
+
+Use this when you already have all the information needed for each workflow phase and want to execute them in one go.
+
+```json
+{
+  "summary": "Add payment webhooks",
+  "testCommand": "npm test",
+  "documentationType": "README",
+  "documentationSummary": "Document webhook configuration",
+  "commitMessage": "feat: add payment webhooks",
+  "releaseCommand": "npm run release:minor",
+  "releaseNotes": "Release webhook support",
+  "branch": "feature/payments",
+  "testsPassed": true,
+  "testDetails": "node --test; 42 tests",
+  "releaseType": "minor",
+  "preset": "minor"
+}
+```
+
+The tool will:
+
+1. `mark_bug_fixed` using `summary`
+2. `create_tests`
+3. `run_tests` with `testsPassed`, `testCommand`, and optional `testDetails`
+4. `create_documentation` with `documentationType` and `documentationSummary`
+5. `check_ready_to_commit`
+6. `commit_and_push` with `commitMessage` and optional `branch`
+7. `perform_release` with `releaseCommand`, plus optional `releaseNotes`, `releaseType`, and `preset`
+8. `complete_task` reusing `commitMessage`
+
+All arguments except the optional flags are required and must be non-empty strings.
 
 ## 🚫 Releasing Without the Workflow Steps
 

@@ -96,6 +96,110 @@ test("commit_and_push commits changes and pushes", async () => {
   });
 });
 
+test("run_full_workflow executes all steps successfully", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.taskDescription = "Ship feature";
+    workflowState.state.taskType = "feature";
+    workflowState.state.currentPhase = "coding";
+    await workflowState.save();
+
+    const commands = [];
+    let workingChanges = true;
+    const execStub = async (command) => {
+      commands.push(command);
+      if (command.startsWith("git commit") || command.startsWith("git push")) {
+        workingChanges = false;
+      }
+      if (command === "git status --porcelain") {
+        return { stdout: workingChanges ? " M src/app.js" : "" };
+      }
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => workingChanges,
+      hasStagedChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [{ status: "M", path: "src/app.js" }],
+      getCurrentBranch: async () => "main",
+      getLastCommitMessage: async () => "",
+      workingTreeSummary: () =>
+        workingChanges
+          ? { hasChanges: true, lines: ["M src/app.js"] }
+          : { hasChanges: false, lines: [] },
+    };
+
+    const response = await handleToolCall({
+      request: createRequest("run_full_workflow", {
+        summary: "Implement feature",
+        testCommand: "npm test",
+        documentationType: "README",
+        documentationSummary: "Document feature",
+        commitMessage: "feat: add feature",
+        releaseCommand: "npm run release:patch",
+        releaseNotes: "Automated release",
+      }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    assert.ok(
+      response.content[0].text.includes("✅ Full workflow completed successfully"),
+      "run_full_workflow should report success"
+    );
+    assert.ok(
+      commands.some((command) => command.startsWith("git add")),
+      "git add should be executed"
+    );
+    assert.ok(
+      commands.some((command) => command.startsWith("git commit")),
+      "git commit should be executed"
+    );
+    assert.ok(
+      commands.some((command) => command.startsWith("git push")),
+      "git push should be executed"
+    );
+    assert.ok(
+      commands.some((command) => command.startsWith("npm run release")),
+      "release command should be executed"
+    );
+    assert.equal(workflowState.state.currentPhase, "idle");
+  });
+});
+
+test("run_full_workflow validates required arguments", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.taskDescription = "Ship feature";
+    workflowState.state.taskType = "feature";
+    workflowState.state.currentPhase = "coding";
+    await workflowState.save();
+
+    const response = await handleToolCall({
+      request: createRequest("run_full_workflow", {
+        summary: "",
+        testCommand: "npm test",
+        documentationType: "README",
+        documentationSummary: "Doc",
+        commitMessage: "feat: add feature",
+        releaseCommand: "npm run release:patch",
+      }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: async () => ({ stdout: "" }),
+      git: {},
+      utils,
+    });
+
+    assert.ok(
+      response.content[0].text.includes("Provide a non-empty 'summary'"),
+      "run_full_workflow should validate required fields"
+    );
+  });
+});
+
 test("force_complete_task records entry and resets state", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.taskDescription = "Improve caching";

@@ -234,5 +234,72 @@ export function getToolList() {
         properties: {},
       },
     },
+    {
+      name: "run_full_workflow",
+      description:
+        "Execute every workflow step in sequence using the provided arguments (mark fixed → tests → run tests → docs → ready check → commit → release → complete).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          summary: {
+            type: "string",
+            description: "Brief summary recorded when marking the bug/feature as fixed",
+          },
+          testsPassed: {
+            type: "boolean",
+            description: "Whether tests passed (defaults to true)",
+          },
+          testCommand: {
+            type: "string",
+            description: "Command used to run tests",
+          },
+          testDetails: {
+            type: "string",
+            description: "Additional test output or notes",
+          },
+          documentationType: {
+            type: "string",
+            enum: ["README", "inline-comments", "API-docs", "changelog", "other"],
+            description: "Type of documentation created",
+          },
+          documentationSummary: {
+            type: "string",
+            description: "Summary of documentation updates",
+          },
+          commitMessage: {
+            type: "string",
+            description: "Commit message used for commit_and_push and complete_task",
+          },
+          branch: {
+            type: "string",
+            description: "Optional branch name to push to",
+          },
+          releaseCommand: {
+            type: "string",
+            description: "Release command executed during perform_release",
+          },
+          releaseNotes: {
+            type: "string",
+            description: "Optional release notes to record",
+          },
+          releaseType: {
+            type: "string",
+            description: "Optional release type override (major/minor/patch)",
+          },
+          preset: {
+            type: "string",
+            description: "Optional preset argument for perform_release",
+          },
+        },
+        required: [
+          "summary",
+          "testCommand",
+          "documentationType",
+          "documentationSummary",
+          "commitMessage",
+          "releaseCommand",
+        ],
+      },
+    },
   ];
 }

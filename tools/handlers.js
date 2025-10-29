@@ -715,6 +715,127 @@ async function handleRerunWorkflow(workflowState) {
   );
 }
 
+function isErrorResponse(response) {
+  const text = response?.content?.[0]?.text || "";
+  return /^\s*[⚠️❌]/u.test(text);
+}
+
+function summarizeResponse(label, response) {
+  const text = response?.content?.[0]?.text || "";
+  const firstLine = text.split("\n")[0] || "";
+  return `${label}: ${firstLine}`;
+}
+
+async function handleRunFullWorkflow(args, { workflowState, exec, git, utils }) {
+  const description = workflowState.state.taskDescription;
+  if (!description) {
+    return textResponse("⚠️ Please start a task first using 'start_task' before running the full workflow.");
+  }
+
+  const requiredStrings = [
+    { key: "summary", message: "Provide a non-empty 'summary' for mark_bug_fixed." },
+    { key: "testCommand", message: "Provide a non-empty 'testCommand' for run_tests." },
+    { key: "documentationType", message: "Provide 'documentationType' for create_documentation." },
+    { key: "documentationSummary", message: "Provide a non-empty 'documentationSummary'." },
+    { key: "commitMessage", message: "Provide a non-empty 'commitMessage'." },
+    { key: "releaseCommand", message: "Provide a non-empty 'releaseCommand'." },
+  ];
+
+  for (const { key, message } of requiredStrings) {
+    const value = args[key];
+    if (typeof value !== "string" || value.trim() === "") {
+      return textResponse(`⚠️ ${message}`);
+    }
+  }
+
+  const steps = [];
+
+  const testsPassed = typeof args.testsPassed === "boolean" ? args.testsPassed : true;
+  const testDetails = typeof args.testDetails === "string" ? args.testDetails : "";
+  const releaseArgs = {
+    command: args.releaseCommand,
+  };
+  if (typeof args.releaseNotes === "string" && args.releaseNotes.trim() !== "") {
+    releaseArgs.notes = args.releaseNotes;
+  }
+  if (typeof args.releaseType === "string" && args.releaseType.trim() !== "") {
+    releaseArgs.releaseType = args.releaseType;
+  }
+  if (typeof args.preset === "string" && args.preset.trim() !== "") {
+    releaseArgs.preset = args.preset;
+  }
+
+  const markResponse = await handleMarkBugFixed({ summary: args.summary }, workflowState);
+  if (isErrorResponse(markResponse)) {
+    return markResponse;
+  }
+  steps.push(summarizeResponse("mark_bug_fixed", markResponse));
+
+  const testsResponse = await handleCreateTests(workflowState);
+  if (isErrorResponse(testsResponse)) {
+    return testsResponse;
+  }
+  steps.push(summarizeResponse("create_tests", testsResponse));
+
+  const runTestsResponse = await handleRunTests(
+    {
+      passed: testsPassed,
+      testCommand: args.testCommand,
+      details: testDetails,
+    },
+    workflowState
+  );
+  if (isErrorResponse(runTestsResponse)) {
+    return runTestsResponse;
+  }
+  steps.push(summarizeResponse("run_tests", runTestsResponse));
+
+  const docResponse = await handleCreateDocumentation(
+    {
+      documentationType: args.documentationType,
+      summary: args.documentationSummary,
+    },
+    workflowState
+  );
+  if (isErrorResponse(docResponse)) {
+    return docResponse;
+  }
+  steps.push(summarizeResponse("create_documentation", docResponse));
+
+  const readyResponse = await handleReadyCheck(workflowState);
+  if (isErrorResponse(readyResponse)) {
+    return readyResponse;
+  }
+  steps.push(summarizeResponse("check_ready_to_commit", readyResponse));
+
+  const commitResponse = await handleCommitAndPush(
+    {
+      commitMessage: args.commitMessage,
+      branch: typeof args.branch === "string" ? args.branch : "",
+    },
+    { workflowState, exec, git, utils }
+  );
+  if (isErrorResponse(commitResponse)) {
+    return commitResponse;
+  }
+  steps.push(summarizeResponse("commit_and_push", commitResponse));
+
+  const releaseResponse = await handlePerformRelease(releaseArgs, { workflowState, exec, git, utils });
+  if (isErrorResponse(releaseResponse)) {
+    return releaseResponse;
+  }
+  steps.push(summarizeResponse("perform_release", releaseResponse));
+
+  const completeResponse = await handleCompleteTask({ commitMessage: args.commitMessage }, workflowState);
+  if (isErrorResponse(completeResponse)) {
+    return completeResponse;
+  }
+  steps.push(summarizeResponse("complete_task", completeResponse));
+
+  const summary = steps.map((line, index) => `${index + 1}. ${line}`).join("\n");
+  return textResponse(`✅ Full workflow completed successfully!\n\n${summary}`);
+}
+
 export async function handleToolCall({
   request,
   normalizeRequestArgs,
@@ -764,6 +885,8 @@ export async function handleToolCall({
         return handleContinueWorkflow(workflowState, { workflowState, exec, git, utils });
       case "rerun_workflow":
         return handleRerunWorkflow(workflowState);
+      case "run_full_workflow":
+        return handleRunFullWorkflow(args, { workflowState, exec, git, utils });
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
