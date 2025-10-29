@@ -285,6 +285,7 @@ export class WorkflowState {
     }
 
     await ensureCompatibilityLinks(this.stateFile);
+    await this.updateProjectSummary();
   }
 
   async save() {
@@ -296,8 +297,8 @@ export class WorkflowState {
   async updateProjectSummary() {
     const summaryPath = path.join(path.dirname(this.stateFile), PROJECT_SUMMARY_FILENAME);
     const summary = this.generateProjectSummaryData();
+    await fs.mkdir(path.dirname(summaryPath), { recursive: true });
     await fs.writeFile(summaryPath, JSON.stringify(summary, null, 2));
-    await ensureCompatibilityLinks(summaryPath);
   }
 
   generateProjectSummaryData() {

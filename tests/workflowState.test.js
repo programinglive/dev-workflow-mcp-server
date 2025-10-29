@@ -68,6 +68,28 @@ test("WorkflowState mirrors state file to compatibility locations", async () => 
   await rm(tempRoot, { recursive: true, force: true });
 });
 
+test("WorkflowState generates project summary on load and updates on save", async () => {
+  await withWorkflowState(async (state) => {
+    const summaryPath = path.join(path.dirname(state.stateFile), "project-summary.json");
+
+    const initialSummary = JSON.parse(await readFile(summaryPath, "utf-8"));
+    assert.equal(initialSummary.totalTasks, 0);
+    assert.deepEqual(initialSummary.taskTypes, {});
+
+    state.addToHistory({
+      taskDescription: "Seed summary",
+      taskType: "feature",
+      commitMessage: "feat: seed",
+    });
+    await state.save();
+
+    const updatedSummary = JSON.parse(await readFile(summaryPath, "utf-8"));
+    assert.equal(updatedSummary.totalTasks, 1);
+    assert.equal(updatedSummary.taskTypes.feature, 1);
+    assert.equal(updatedSummary.recentTasks[0].description, "Seed summary");
+  });
+});
+
 test("WorkflowState persists data across save/load", async () => {
   await withWorkflowState(async (state) => {
     state.state.currentPhase = "testing";
