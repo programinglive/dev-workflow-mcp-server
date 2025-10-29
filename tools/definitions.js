@@ -319,5 +319,14 @@ export function getToolList() {
         properties: {},
       },
     },
+    {
+      name: "project_summary_db",
+      description:
+        "Get the per-user project knowledge summary from SQLite. Use DEV_WORKFLOW_USER_ID env var to isolate users.",
+      inputSchema: {
+        type: "object",
+        properties: {},
+      },
+    },
   ];
 }

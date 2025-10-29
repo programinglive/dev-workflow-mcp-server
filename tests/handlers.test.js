@@ -96,6 +96,69 @@ test("commit_and_push commits changes and pushes", async () => {
   });
 });
 
+test("run_full_workflow iterates until commit/release complete with clean tree", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.taskDescription = "Ship feature";
+    workflowState.state.taskType = "feature";
+    workflowState.state.currentPhase = "commit";
+    workflowState.state.bugFixed = true;
+    workflowState.state.testsCreated = true;
+    workflowState.state.testsPassed = true;
+    workflowState.state.documentationCreated = true;
+    workflowState.state.readyToCommit = true;
+    workflowState.state.readyCheckCompleted = true;
+    workflowState.state.commitAndPushCompleted = false;
+    workflowState.state.released = false;
+    workflowState.state.documentationType = "README";
+    workflowState.state.documentationSummary = "Docs";
+    workflowState.state.fixSummary = "Feature done";
+    await workflowState.save();
+
+    const commands = [];
+    const execStub = async (command) => {
+      commands.push(command);
+      if (command === "git status --porcelain") {
+        return { stdout: "" };
+      }
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => false,
+      hasStagedChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [],
+      getCurrentBranch: async () => "main",
+      getLastCommitMessage: async () => "chore: existing",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    const response = await handleToolCall({
+      request: createRequest("run_full_workflow", {
+        summary: "Feature done",
+        testCommand: "npm test",
+        documentationType: "README",
+        documentationSummary: "Docs",
+        commitMessage: "feat: ship feature",
+        releaseCommand: "npm run release:patch",
+      }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    assert.ok(
+      response.content[0].text.includes("✅ Full workflow completed successfully"),
+      "run_full_workflow should finish even when commit is already clean"
+    );
+    assert.equal(commands.includes("npm run release:patch"), true, "release command should run");
+    assert.equal(workflowState.state.currentPhase, "idle");
+    assert.equal(workflowState.state.history.length, 1);
+  });
+});
+
 test("project_summary_data reads persisted file and falls back", async () => {
   await withWorkflowState(async (workflowState) => {
     // Seed some history

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dev Workflow Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="container mx-auto p-4 max-w-4xl">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold flex items-center gap-2">
+        <i data-lucide="activity"></i>
+        Dev Workflow Dashboard
+      </h1>
+      <p class="text-gray-600">Project history and summary from SQLite</p>
+    </header>
+
+    <section class="mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <i data-lucide="user"></i>
+          User
+        </h2>
+        <div class="flex flex-wrap gap-2 items-center">
+          <input id="userId" type="text" placeholder="default" class="border rounded px-3 py-1 w-full max-w-xs" />
+          <button id="loadBtn" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Reload</button>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">Leave empty to load the default user automatically.</p>
+      </div>
+    </section>
+
+    <section id="summarySection" class="mb-8 hidden">
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <i data-lucide="bar-chart-2"></i>
+          Project Summary
+        </h2>
+        <div id="summaryContent" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <section id="historySection" class="hidden">
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <i data-lucide="clock"></i>
+          Recent History
+        </h2>
+        <div id="historyContent" class="space-y-3"></div>
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    function el(id) { return document.getElementById(id); }
+
+    function formatSummary(data) {
+      if (!data) return '<p class="text-gray-500">No summary available.</p>';
+      const taskTypes = Object.entries(data.taskTypes || {}).map(([t, c]) => `${t}: ${c}`).join(', ');
+      const recent = (data.recentTasks || []).map(t => `<li>${t.description} (${t.type})</li>`).join('');
+      return `
+        <div><strong>Total tasks:</strong> ${data.totalTasks}</div>
+        <div><strong>Task mix:</strong> ${taskTypes || '—'}</div>
+        <div><strong>Last active:</strong> ${data.lastActive ? new Date(data.lastActive).toLocaleDateString() : 'Never'}</div>
+        <div><strong>Updated:</strong> ${data.updatedAt ? new Date(data.updatedAt).toLocaleString() : '—'}</div>
+        <div class="mt-4"><strong>Recent tasks:</strong><ul class="list-disc list-inside">${recent || '<li>No recent tasks</li>'}</ul></div>
+      `;
+    }
+
+    function formatHistory(rows) {
+      if (!rows || rows.length === 0) return '<p class="text-gray-500">No history yet.</p>';
+      return rows.map(row => `
+        <div class="border-b pb-2">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="font-medium">${row.task_description}</div>
+              <div class="text-sm text-gray-600">${row.task_type} • ${new Date(row.timestamp).toLocaleString()}</div>
+              <div class="text-sm text-gray-500">Commit: ${row.commit_message || '(none)'}</div>
+            </div>
+            ${row.forced ? '<span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Forced</span>' : ''}
+            ${row.dropped ? '<span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Dropped</span>' : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function fetchJson(path, params = {}) {
+      const url = new URL(path, window.location.origin);
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          url.searchParams.set(key, value);
+        }
+      });
+      const res = await fetch(url.toString());
+      if (!res.ok) {
+        throw new Error(`Request failed: ${res.status}`);
+      }
+      return res.json();
+    }
+
+    async function load() {
+      const userId = el('userId').value || 'default';
+      try {
+        const [{ summary }, { history }] = await Promise.all([
+          fetchJson('/api/summary', { user: userId }),
+          fetchJson('/api/history', { user: userId, limit: 20 }),
+        ]);
+
+        el('summaryContent').innerHTML = formatSummary(summary);
+        el('historyContent').innerHTML = formatHistory(history);
+
+        el('summarySection').classList.remove('hidden');
+        el('historySection').classList.remove('hidden');
+      } catch (error) {
+        el('summaryContent').innerHTML = `<p class="text-red-500">Failed to load summary: ${error.message}</p>`;
+        el('historyContent').innerHTML = '<p class="text-gray-500">History unavailable.</p>';
+        el('summarySection').classList.remove('hidden');
+        el('historySection').classList.remove('hidden');
+      }
+    }
+
+    el('loadBtn').addEventListener('click', load);
+    el('userId').addEventListener('keydown', e => { if (e.key === 'Enter') load(); });
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+    load();
+  </script>
+</body>
+</html>

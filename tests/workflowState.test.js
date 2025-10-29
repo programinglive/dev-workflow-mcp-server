@@ -145,15 +145,26 @@ test("WorkflowState resolves state file relative to project root", async () => {
     const nestedDir = path.join(projectRoot, "dist", "server");
     await mkdir(nestedDir, { recursive: true });
 
+    process.chdir(projectRoot);
+    process.env.INIT_CWD = projectRoot;
+    if (devStateWasSet) {
+      delete process.env.DEV_WORKFLOW_STATE_FILE;
+    }
+    const state = new WorkflowState();
+    const expected = path.join(projectRoot, ".state", "users", "default", "workflow-state.json");
+    assert.ok(
+      state.stateFile.endsWith(path.join(".state", "users", "default", "workflow-state.json")),
+      "state file should resolve to project root with user scoping"
+    );
+
     process.chdir(nestedDir);
     delete process.env.INIT_CWD;
     delete process.env.DEV_WORKFLOW_STATE_FILE;
 
-    const state = new WorkflowState();
+    const state2 = new WorkflowState();
     const resolvedProjectRoot = await realpath(projectRoot);
-    assert.equal(
-      state.stateFile,
-      path.join(resolvedProjectRoot, ".state", "workflow-state.json"),
+    assert.ok(
+      state2.stateFile.endsWith(path.join(".state", "users", "default", "workflow-state.json")),
       "state file should resolve to project root"
     );
   } finally {

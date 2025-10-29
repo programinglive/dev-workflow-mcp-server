@@ -10,6 +10,15 @@ const STATE_FILENAME = "workflow-state.json";
 const LEGACY_STATE_FILENAME = ".workflow-state.json";
 const PROJECT_SUMMARY_FILENAME = "project-summary.json";
 
+function getUserScopedDir(baseDir) {
+  const userId = process.env.DEV_WORKFLOW_USER_ID || "default";
+  return path.join(baseDir, "users", userId);
+}
+
+function getCurrentUserId() {
+  return process.env.DEV_WORKFLOW_USER_ID || "default";
+}
+
 async function migrateLegacyStateFile(targetPath) {
   const stateDir = path.dirname(targetPath);
   if (path.basename(stateDir) !== STATE_DIR) {
@@ -192,33 +201,30 @@ async function ensureCompatibilityLinks(primaryPath) {
   }
 }
 
-function resolveDefaultStateFile() {
-  if (process.env.DEV_WORKFLOW_STATE_FILE) {
-    return path.resolve(process.env.DEV_WORKFLOW_STATE_FILE);
+export function resolveStateFile() {
+  const customPath = process.env.DEV_WORKFLOW_STATE_FILE;
+  if (customPath) {
+    return path.resolve(customPath);
   }
 
-  const candidates = [process.cwd(), process.env.INIT_CWD, __dirname];
+  const initCwd = process.env.INIT_CWD || process.cwd();
+  let projectRoot = initCwd;
 
-  for (const candidate of candidates) {
-    if (!candidate || isRootPath(candidate)) {
-      continue;
+  while (projectRoot !== path.dirname(projectRoot)) {
+    const packageJsonPath = path.join(projectRoot, "package.json");
+    if (existsSync(packageJsonPath)) {
+      break;
     }
-
-    const projectRoot = findProjectRoot(candidate);
-    if (projectRoot) {
-      return path.join(projectRoot, STATE_DIR, STATE_FILENAME);
-    }
-
-    if (!candidate.includes(`node_modules${path.sep}`)) {
-      return path.join(path.resolve(candidate), STATE_DIR, STATE_FILENAME);
-    }
+    projectRoot = path.dirname(projectRoot);
   }
 
-  return path.join(process.cwd(), STATE_DIR, STATE_FILENAME);
+  const stateDir = path.join(projectRoot, STATE_DIR);
+  const userDir = getUserScopedDir(stateDir);
+  return path.join(userDir, STATE_FILENAME);
 }
 
 export class WorkflowState {
-  constructor(stateFilePath = resolveDefaultStateFile()) {
+  constructor(stateFilePath = resolveStateFile()) {
     this.stateFile = stateFilePath;
     this.state = {
       currentPhase: "idle",
@@ -238,6 +244,7 @@ export class WorkflowState {
       lastCommitMessage: "",
       lastPushBranch: "",
       history: [],
+      taskType: "",
     };
   }
 
@@ -292,6 +299,7 @@ export class WorkflowState {
     await fs.writeFile(this.stateFile, JSON.stringify(this.state, null, 2));
     await ensureCompatibilityLinks(this.stateFile);
     await this.updateProjectSummary();
+    await this.syncToDatabase();
   }
 
   async updateProjectSummary() {
@@ -299,6 +307,19 @@ export class WorkflowState {
     const summary = this.generateProjectSummaryData();
     await fs.mkdir(path.dirname(summaryPath), { recursive: true });
     await fs.writeFile(summaryPath, JSON.stringify(summary, null, 2));
+  }
+
+  async syncToDatabase() {
+    try {
+      const { insertHistoryEntry, updateSummaryForUser } = await import("./db/index.js");
+      const userId = getCurrentUserId();
+      for (const entry of this.state.history || []) {
+        insertHistoryEntry(userId, entry);
+      }
+      updateSummaryForUser(userId);
+    } catch {
+      // SQLite not available; skip sync
+    }
   }
 
   generateProjectSummaryData() {
