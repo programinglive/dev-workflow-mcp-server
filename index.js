@@ -32,8 +32,7 @@ export { createCommitMessageParts, determineReleaseTypeFromCommit } from "./comm
 export { containsTestFilesInStatus, workingTreeSummary } from "./git-helpers.js";
 export { WorkflowState } from "./workflow-state.js";
 
-export const workflowState = new WorkflowState();
-await workflowState.load();
+export let workflowState = null;
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -184,6 +183,17 @@ Use 'check_ready_to_commit' to verify workflow completion.
 
 // Start server
 export async function main() {
+  try {
+    // Initialize workflow state
+    workflowState = new WorkflowState();
+    await workflowState.load();
+    await workflowState.ensurePrimaryFile();
+  } catch (error) {
+    console.error("Warning: Failed to initialize workflow state:", error.message);
+    // Continue anyway - workflow state is optional for MCP to function
+    workflowState = new WorkflowState();
+  }
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Dev Workflow MCP Server running on stdio");

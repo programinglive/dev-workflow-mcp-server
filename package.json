@@ -45,7 +45,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@programinglive/commiter": "^1.0.6"
+    "@programinglive/commiter": "^1.1.0"
   },
   "standard-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}} 🚀",

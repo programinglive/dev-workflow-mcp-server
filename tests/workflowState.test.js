@@ -68,6 +68,107 @@ test("WorkflowState mirrors state file to compatibility locations", async () => 
   await rm(tempRoot, { recursive: true, force: true });
 });
 
+test("WorkflowState avoids filesystem root when no project markers found", async () => {
+  const tempRoot = await mkdtemp(path.join(tmpdir(), "workflow-rootless-"));
+  const moduleDir = path.join(tempRoot, "module");
+  await mkdir(moduleDir, { recursive: true });
+
+  const sourceModulePath = fileURLToPath(new URL("../workflow-state.js", import.meta.url));
+  await copyFile(sourceModulePath, path.join(moduleDir, "workflow-state.js"));
+
+  const moduleUrl = pathToFileURL(path.join(moduleDir, "workflow-state.js"));
+  const { WorkflowState: TempWorkflowState } = await import(moduleUrl.href);
+
+  const originalCwd = process.cwd();
+  const initWasSet = Object.prototype.hasOwnProperty.call(process.env, "INIT_CWD");
+  const originalInitCwd = process.env.INIT_CWD;
+
+  try {
+    const cwdWithoutMarkers = path.join(tempRoot, "random", "deep");
+    await mkdir(cwdWithoutMarkers, { recursive: true });
+
+    process.chdir(cwdWithoutMarkers);
+    process.env.INIT_CWD = cwdWithoutMarkers;
+
+    const state = new TempWorkflowState();
+    const resolvedTempRoot = await realpath(tempRoot);
+
+    assert.ok(
+      state.stateFile.startsWith(path.join(resolvedTempRoot, ".state")),
+      "state file should resolve under temp root when no project markers exist"
+    );
+    assert.ok(
+      !state.stateFile.startsWith(path.join(path.sep, ".state")),
+      "state file should not resolve to filesystem root"
+    );
+  } finally {
+    process.chdir(originalCwd);
+    if (initWasSet) {
+      process.env.INIT_CWD = originalInitCwd;
+    } else {
+      delete process.env.INIT_CWD;
+    }
+
+    await rm(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test("resolveUserId persists generated ID", async () => {
+  const projectRoot = await mkdtemp(path.join(tmpdir(), "workflow-userid-"));
+  await writeFile(path.join(projectRoot, "package.json"), JSON.stringify({ name: "temp" }));
+
+  const originalCwd = process.cwd();
+  const initWasSet = Object.prototype.hasOwnProperty.call(process.env, "INIT_CWD");
+  const originalInitCwd = process.env.INIT_CWD;
+  const userEnvWasSet = Object.prototype.hasOwnProperty.call(process.env, "DEV_WORKFLOW_USER_ID");
+  const originalUserEnv = process.env.DEV_WORKFLOW_USER_ID;
+
+  try {
+    process.chdir(projectRoot);
+    process.env.INIT_CWD = projectRoot;
+    if (userEnvWasSet) {
+      delete process.env.DEV_WORKFLOW_USER_ID;
+    }
+
+    const firstModuleHref = new URL("../workflow-state.js?resolveUserId1", import.meta.url).href;
+    const { WorkflowState: FirstWorkflowState } = await import(firstModuleHref);
+
+    const state = new FirstWorkflowState();
+    await state.ensurePrimaryFile();
+
+    const userDir = path.dirname(state.stateFile);
+    const userId = path.basename(userDir);
+    assert.ok(userId.startsWith("user-"), "Generated user ID should use user- prefix");
+
+    const userIdFile = path.join(projectRoot, ".state", "user-id");
+    const persistedId = (await readFile(userIdFile, "utf-8")).trim();
+    assert.equal(persistedId, userId, "user-id file should match generated user ID");
+
+    const secondModuleHref = new URL("../workflow-state.js?resolveUserId2", import.meta.url).href;
+    const { WorkflowState: SecondWorkflowState } = await import(secondModuleHref);
+
+    const reloadedState = new SecondWorkflowState();
+    await reloadedState.ensurePrimaryFile();
+
+    assert.equal(reloadedState.stateFile, state.stateFile, "State file path should persist across reloads");
+    const reloadedUserId = path.basename(path.dirname(reloadedState.stateFile));
+    assert.equal(reloadedUserId, userId, "Reloaded module should reuse persisted user ID");
+  } finally {
+    process.chdir(originalCwd);
+    if (initWasSet) {
+      process.env.INIT_CWD = originalInitCwd;
+    } else {
+      delete process.env.INIT_CWD;
+    }
+    if (userEnvWasSet) {
+      process.env.DEV_WORKFLOW_USER_ID = originalUserEnv;
+    } else {
+      delete process.env.DEV_WORKFLOW_USER_ID;
+    }
+    await rm(projectRoot, { recursive: true, force: true });
+  }
+});
+
 test("WorkflowState generates project summary on load and updates on save", async () => {
   await withWorkflowState(async (state) => {
     const summaryPath = path.join(path.dirname(state.stateFile), "project-summary.json");
@@ -151,10 +252,9 @@ test("WorkflowState resolves state file relative to project root", async () => {
       delete process.env.DEV_WORKFLOW_STATE_FILE;
     }
     const state = new WorkflowState();
-    const expected = path.join(projectRoot, ".state", "users", "default", "workflow-state.json");
     assert.ok(
-      state.stateFile.endsWith(path.join(".state", "users", "default", "workflow-state.json")),
-      "state file should resolve to project root with user scoping"
+      state.stateFile.startsWith(path.join(projectRoot, ".state", "users")),
+      "state file should resolve under project .state/users directory"
     );
 
     process.chdir(nestedDir);
@@ -164,7 +264,7 @@ test("WorkflowState resolves state file relative to project root", async () => {
     const state2 = new WorkflowState();
     const resolvedProjectRoot = await realpath(projectRoot);
     assert.ok(
-      state2.stateFile.endsWith(path.join(".state", "users", "default", "workflow-state.json")),
+      state2.stateFile.startsWith(path.join(resolvedProjectRoot, ".state", "users")),
       "state file should resolve to project root"
     );
   } finally {

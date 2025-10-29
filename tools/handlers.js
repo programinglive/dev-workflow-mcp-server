@@ -195,6 +195,29 @@ async function handleMarkBugFixed(args, workflowState) {
     return textResponse("⚠️ Please start a task first using 'start_task'!");
   }
 
+  // Idempotent behavior: if already marked fixed, do not reset downstream flags.
+  if (workflowState.state.bugFixed) {
+    const summary = typeof args.summary === "string" ? args.summary : "";
+    if (summary && summary.trim() !== "") {
+      workflowState.state.fixSummary = summary;
+    }
+
+    // Preserve existing progress and set an appropriate phase.
+    if (workflowState.state.testsPassed && workflowState.state.documentationCreated) {
+      workflowState.state.currentPhase = "ready";
+      workflowState.state.readyToCommit = true;
+    } else if (workflowState.state.testsCreated) {
+      workflowState.state.currentPhase = "testing";
+    }
+    workflowState.state.readyCheckCompleted = false;
+    workflowState.state.commitAndPushCompleted = false;
+    await workflowState.save();
+
+    return textResponse(
+      "ℹ️ Already marked as fixed; kept existing tests/documentation. Continue with the next step."
+    );
+  }
+
   workflowState.state.bugFixed = true;
   workflowState.state.testsCreated = false;
   workflowState.state.currentPhase = "testing";
@@ -391,14 +414,12 @@ async function handleReadyCheck(workflowState) {
 
 async function handleCommitAndPush(args, context) {
   const { workflowState, exec, git, utils } = context;
-  if (!workflowState.state.readyToCommit) {
-    return textResponse("⚠️ Not ready yet! Run 'check_ready_to_commit' and complete all steps first.");
-  }
-
-  if (!workflowState.state.readyCheckCompleted) {
-    return textResponse(
-      "⚠️ Please run 'check_ready_to_commit' and resolve any outstanding items before committing!"
-    );
+  if (!workflowState.state.readyToCommit || !workflowState.state.readyCheckCompleted) {
+    // Be smart: auto-run the ready check and proceed if it passes.
+    const readyResponse = await handleReadyCheck(workflowState);
+    if (workflowState.state.currentPhase !== "commit") {
+      return readyResponse;
+    }
   }
 
   const providedCommitMessage =
@@ -794,6 +815,8 @@ async function handleRunFullWorkflow(args, { workflowState, exec, git, utils }) 
     return textResponse("⚠️ Please start a task first using 'start_task' before running the full workflow.");
   }
 
+  await workflowState.ensurePrimaryFile();
+
   const requiredStrings = [
     { key: "summary", message: "Provide a non-empty 'summary' for mark_bug_fixed." },
     { key: "testCommand", message: "Provide a non-empty 'testCommand' for run_tests." },
@@ -909,7 +932,11 @@ async function handleRunFullWorkflow(args, { workflowState, exec, git, utils }) 
   }
 
   const summary = steps.map((line, index) => `${index + 1}. ${line}`).join("\n");
-  return textResponse(`✅ Full workflow completed successfully!\n\n${summary}`);
+  const celebration = workflowState.state.history?.length
+    ? "🎉 Cheers! We solved another issue and captured it in the knowledge base."
+    : "";
+  const message = [`✅ Full workflow completed successfully!`, celebration, summary].filter(Boolean).join("\n\n");
+  return textResponse(message);
 }
 
 export async function handleToolCall({

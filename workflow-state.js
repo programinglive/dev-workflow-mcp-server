@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import { existsSync } from "fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -9,14 +9,141 @@ const STATE_DIR = ".state";
 const STATE_FILENAME = "workflow-state.json";
 const LEGACY_STATE_FILENAME = ".workflow-state.json";
 const PROJECT_SUMMARY_FILENAME = "project-summary.json";
+const USER_ID_FILENAME = "user-id";
+
+let cachedUserId = null;
+let cachedUserStateDir = null;
+
+function generateUserId() {
+  const timestamp = Date.now().toString(16);
+  const randomSuffix = Math.random().toString(16).slice(2, 10);
+  return `user-${timestamp}-${randomSuffix}`;
+}
+
+function resolveUserId(stateDir) {
+  const envUserId = (process.env.DEV_WORKFLOW_USER_ID || "").trim();
+  if (envUserId) {
+    cachedUserId = envUserId;
+    cachedUserStateDir = stateDir;
+    return envUserId;
+  }
+
+  if (cachedUserId && cachedUserStateDir === stateDir) {
+    return cachedUserId;
+  }
+
+  const userIdFile = path.join(stateDir, USER_ID_FILENAME);
+
+  try {
+    if (existsSync(userIdFile)) {
+      const stored = readFileSync(userIdFile, "utf-8").trim();
+      if (stored) {
+        cachedUserId = stored;
+        cachedUserStateDir = stateDir;
+        return stored;
+      }
+    }
+  } catch {
+    // Ignore read errors; we'll generate a new ID below.
+  }
+
+  const usersDir = path.join(stateDir, "users");
+
+  try {
+    const entries = readdirSync(usersDir, { withFileTypes: true });
+    const candidateDirs = entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+    if (candidateDirs.length === 1) {
+      const legacyId = candidateDirs[0];
+      try {
+        mkdirSync(stateDir, { recursive: true });
+        writeFileSync(userIdFile, legacyId, "utf-8");
+      } catch {
+        // Persisting the legacy ID is best-effort.
+      }
+      cachedUserId = legacyId;
+      cachedUserStateDir = stateDir;
+      return legacyId;
+    }
+  } catch (error) {
+    if (error?.code !== "ENOENT") {
+      // Unexpected error accessing users directory – fall through to generate new ID.
+    }
+  }
+
+  const legacyDefaultPath = path.join(usersDir, "default", STATE_FILENAME);
+  if (existsSync(legacyDefaultPath)) {
+    try {
+      mkdirSync(stateDir, { recursive: true });
+      writeFileSync(userIdFile, "default", "utf-8");
+    } catch {
+      // Best-effort persistence; continue with in-memory fallback.
+    }
+    cachedUserId = "default";
+    cachedUserStateDir = stateDir;
+    return "default";
+  }
+
+  const generatedId = generateUserId();
+  try {
+    mkdirSync(stateDir, { recursive: true });
+    writeFileSync(userIdFile, generatedId, "utf-8");
+  } catch {
+    // Ignore persistence errors; continue with in-memory ID.
+  }
+
+  cachedUserId = generatedId;
+  cachedUserStateDir = stateDir;
+  return generatedId;
+}
+
+function hasProjectMarkers(candidate) {
+  if (!candidate) {
+    return false;
+  }
+
+  const resolved = path.resolve(candidate);
+  return (
+    existsSync(path.join(resolved, "package.json")) || existsSync(path.join(resolved, ".git"))
+  );
+}
+
+function selectProjectRoot(candidates) {
+  for (const candidate of candidates) {
+    if (!candidate) {
+      continue;
+    }
+
+    const resolved = path.resolve(candidate);
+    if (isRootPath(resolved) && !hasProjectMarkers(resolved)) {
+      continue;
+    }
+
+    return resolved;
+  }
+
+  return null;
+}
 
 function getUserScopedDir(baseDir) {
-  const userId = process.env.DEV_WORKFLOW_USER_ID || "default";
+  const userId = resolveUserId(baseDir);
   return path.join(baseDir, "users", userId);
 }
 
 function getCurrentUserId() {
-  return process.env.DEV_WORKFLOW_USER_ID || "default";
+  const envUserId = (process.env.DEV_WORKFLOW_USER_ID || "").trim();
+  if (envUserId) {
+    return envUserId;
+  }
+
+  if (cachedUserId) {
+    return cachedUserId;
+  }
+
+  if (cachedUserStateDir) {
+    return resolveUserId(cachedUserStateDir);
+  }
+
+  return "default";
 }
 
 async function migrateLegacyStateFile(targetPath) {
@@ -104,9 +231,6 @@ function getCompatibilityPaths(primaryPath) {
   ];
 
   for (const distDir of possibleDistDirs) {
-    if (!existsSync(distDir)) {
-      continue;
-    }
     const candidate = path.resolve(distDir, STATE_DIR, STATE_FILENAME);
     if (candidate !== resolvedPrimary) {
       candidates.add(candidate);
@@ -208,14 +332,43 @@ export function resolveStateFile() {
   }
 
   const initCwd = process.env.INIT_CWD || process.cwd();
-  let projectRoot = initCwd;
+  const resolvedInitCwd = path.resolve(initCwd);
+  const moduleRoot = path.resolve(__dirname, "..");
+  const cwdResolved = path.resolve(process.cwd());
 
-  while (projectRoot !== path.dirname(projectRoot)) {
-    const packageJsonPath = path.join(projectRoot, "package.json");
-    if (existsSync(packageJsonPath)) {
-      break;
-    }
-    projectRoot = path.dirname(projectRoot);
+  const candidateRoots = [];
+
+  const initProjectRoot = findProjectRoot(resolvedInitCwd);
+  if (initProjectRoot) {
+    candidateRoots.push(initProjectRoot);
+  }
+
+  const moduleProjectRoot = findProjectRoot(moduleRoot);
+  if (moduleProjectRoot) {
+    candidateRoots.push(moduleProjectRoot);
+  } else if (!isRootPath(moduleRoot)) {
+    candidateRoots.push(moduleRoot);
+  }
+
+  const cwdProjectRoot = findProjectRoot(cwdResolved);
+  if (cwdProjectRoot) {
+    candidateRoots.push(cwdProjectRoot);
+  } else if (!isRootPath(cwdResolved)) {
+    candidateRoots.push(cwdResolved);
+  }
+
+  if (!isRootPath(resolvedInitCwd)) {
+    candidateRoots.push(resolvedInitCwd);
+  }
+
+  if (!isRootPath(__dirname)) {
+    candidateRoots.push(__dirname);
+  }
+
+  let projectRoot = selectProjectRoot(candidateRoots);
+
+  if (!projectRoot) {
+    projectRoot = path.resolve(__dirname);
   }
 
   const stateDir = path.join(projectRoot, STATE_DIR);
@@ -257,6 +410,8 @@ export class WorkflowState {
         ...this.state,
         ...parsed,
       };
+      // Ensure compatibility mirrors exist whenever the primary file is present
+      await ensureCompatibilityLinks(this.stateFile);
       if (typeof this.state.testsCreated !== "boolean") {
         this.state.testsCreated = false;
       }
@@ -288,11 +443,29 @@ export class WorkflowState {
         this.state.lastPushBranch = "";
       }
     } catch (error) {
-      // File doesn't exist yet, use default state
+      if (error?.code !== "ENOENT") {
+        throw error;
+      }
+      // Missing file is fine; bootstrap fresh artifacts for downstream consumers.
+      await this.ensurePrimaryFile();
+    }
+  }
+
+  async ensurePrimaryFile() {
+    let created = false;
+    try {
+      await fs.access(this.stateFile);
+    } catch {
+      await fs.mkdir(path.dirname(this.stateFile), { recursive: true });
+      await fs.writeFile(this.stateFile, JSON.stringify(this.state, null, 2));
+      created = true;
     }
 
-    await ensureCompatibilityLinks(this.stateFile);
+    // Always ensure a fresh project summary so dependent tooling can read it immediately.
     await this.updateProjectSummary();
+    await ensureCompatibilityLinks(this.stateFile);
+
+    return created;
   }
 
   async save() {

@@ -3,7 +3,7 @@ import { readFile } from "fs/promises";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import getPort from "get-port";
-import { getHistoryForUser, getSummaryForUser } from "../db/index.js";
+import { getHistoryForUser, getSummaryForUser, getHistorySummary } from "../db/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,10 +25,20 @@ async function start() {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ summary }));
       } else if (req.method === "GET" && url.pathname === "/api/history") {
-        const limit = Number(url.searchParams.get("limit") || "20");
-        const history = getHistoryForUser(userId, Number.isFinite(limit) ? limit : 20);
+        const page = Number(url.searchParams.get("page") || "1");
+        const pageSize = Number(url.searchParams.get("pageSize") || "20");
+        const startDate = url.searchParams.get("startDate") || undefined;
+        const endDate = url.searchParams.get("endDate") || undefined;
+        const history = getHistoryForUser(userId, { page, pageSize, startDate, endDate });
         res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ history }));
+        res.end(JSON.stringify(history));
+      } else if (req.method === "GET" && url.pathname === "/api/history-summary") {
+        const startDate = url.searchParams.get("startDate") || undefined;
+        const endDate = url.searchParams.get("endDate") || undefined;
+        const frequency = url.searchParams.get("frequency") || "daily";
+        const summary = getHistorySummary(userId, { startDate, endDate, frequency });
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ summary }));
       } else {
         res.writeHead(404, { "Content-Type": "text/plain" });
         res.end("Not found");

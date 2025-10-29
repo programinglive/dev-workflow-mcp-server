@@ -21,13 +21,43 @@
       <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
           <i data-lucide="user"></i>
-          User
+          Filters
         </h2>
-        <div class="flex flex-wrap gap-2 items-center">
-          <input id="userId" type="text" placeholder="default" class="border rounded px-3 py-1 w-full max-w-xs" />
-          <button id="loadBtn" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Reload</button>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <label class="flex flex-col gap-1">
+            <span class="text-sm font-medium text-gray-600">User ID</span>
+            <input id="userId" type="text" placeholder="default" class="border rounded px-3 py-2" />
+          </label>
+          <label class="flex flex-col gap-1">
+            <span class="text-sm font-medium text-gray-600">Start date</span>
+            <input id="startDate" type="date" class="border rounded px-3 py-2" />
+          </label>
+          <label class="flex flex-col gap-1">
+            <span class="text-sm font-medium text-gray-600">End date</span>
+            <input id="endDate" type="date" class="border rounded px-3 py-2" />
+          </label>
+          <label class="flex flex-col gap-1">
+            <span class="text-sm font-medium text-gray-600">Activity frequency</span>
+            <select id="frequency" class="border rounded px-3 py-2">
+              <option value="daily">Daily</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-1">
+            <span class="text-sm font-medium text-gray-600">Page size</span>
+            <select id="pageSize" class="border rounded px-3 py-2">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="50">50</option>
+            </select>
+          </label>
         </div>
-        <p class="text-sm text-gray-500 mt-2">Leave empty to load the default user automatically.</p>
+        <div class="flex flex-wrap gap-3 items-center mt-4">
+          <button id="applyFiltersBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Apply filters</button>
+          <button id="resetFiltersBtn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">Reset</button>
+          <span class="text-sm text-gray-500">Leave fields empty to view all data for the default user.</span>
+        </div>
       </div>
     </section>
 
@@ -38,6 +68,13 @@
           Project Summary
         </h2>
         <div id="summaryContent" class="space-y-2"></div>
+        <div id="historySummaryCard" class="mt-6 bg-gray-50 border border-gray-200 rounded-md p-4 hidden">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-medium text-gray-700" id="historySummaryHeading">Activity by period</h3>
+            <span class="text-xs uppercase tracking-wide text-gray-500" id="historySummaryMeta"></span>
+          </div>
+          <div id="historySummaryContent" class="space-y-1 text-sm text-gray-700"></div>
+        </div>
       </div>
     </section>
 
@@ -48,12 +85,50 @@
           Recent History
         </h2>
         <div id="historyContent" class="space-y-3"></div>
+        <div id="paginationControls" class="flex items-center justify-between mt-6 hidden">
+          <button id="prevPageBtn" class="bg-gray-200 text-gray-800 px-3 py-1 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+          <span id="pageInfo" class="text-sm text-gray-600"></span>
+          <button id="nextPageBtn" class="bg-gray-200 text-gray-800 px-3 py-1 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
       </div>
     </section>
   </div>
 
   <script type="module">
     function el(id) { return document.getElementById(id); }
+
+    const frequencyLabels = {
+      daily: "Daily",
+      monthly: "Monthly",
+      yearly: "Yearly",
+    };
+
+    const state = {
+      userId: "",
+      startDate: "",
+      endDate: "",
+      frequency: "daily",
+      page: 1,
+      pageSize: 20,
+      totalPages: 1,
+    };
+
+    const controls = {
+      userId: el("userId"),
+      startDate: el("startDate"),
+      endDate: el("endDate"),
+      frequency: el("frequency"),
+      pageSize: el("pageSize"),
+      applyFilters: el("applyFiltersBtn"),
+      resetFilters: el("resetFiltersBtn"),
+      prevPage: el("prevPageBtn"),
+      nextPage: el("nextPageBtn"),
+      pageInfo: el("pageInfo"),
+      pagination: el("paginationControls"),
+      historySummaryCard: el("historySummaryCard"),
+      historySummaryContent: el("historySummaryContent"),
+      historySummaryMeta: el("historySummaryMeta"),
+    };
 
     function formatSummary(data) {
       if (!data) return '<p class="text-gray-500">No summary available.</p>';
@@ -85,6 +160,18 @@
       `).join('');
     }
 
+    function formatHistorySummary(series) {
+      if (!series || series.length === 0) {
+        return '<p class="text-gray-500">No activity for the selected range.</p>';
+      }
+      return series.map(item => `
+        <div class="flex justify-between">
+          <span>${item.period}</span>
+          <span class="font-medium">${item.count}</span>
+        </div>
+      `).join('');
+    }
+
     async function fetchJson(path, params = {}) {
       const url = new URL(path, window.location.origin);
       Object.entries(params).forEach(([key, value]) => {
@@ -99,32 +186,121 @@
       return res.json();
     }
 
+    function collectFilters() {
+      state.userId = controls.userId.value.trim();
+      state.startDate = controls.startDate.value;
+      state.endDate = controls.endDate.value;
+      state.frequency = controls.frequency.value;
+      state.pageSize = Number(controls.pageSize.value) || 20;
+    }
+
+    function resetFilters() {
+      controls.userId.value = "";
+      controls.startDate.value = "";
+      controls.endDate.value = "";
+      controls.frequency.value = "daily";
+      controls.pageSize.value = "20";
+      state.userId = "";
+      state.startDate = "";
+      state.endDate = "";
+      state.frequency = "daily";
+      state.page = 1;
+      state.pageSize = 20;
+      load();
+    }
+
+    function updatePagination(total, page, pageSize) {
+      const totalPages = Math.max(1, Math.ceil(total / pageSize));
+      state.totalPages = totalPages;
+      controls.pageInfo.textContent = `Page ${page} of ${totalPages} (${total} entries)`;
+      controls.prevPage.disabled = page <= 1;
+      controls.nextPage.disabled = page >= totalPages;
+      controls.pagination.classList.toggle("hidden", total === 0);
+    }
+
+    function updateHistorySummary(series) {
+      if (!series || series.length === 0) {
+        controls.historySummaryCard.classList.add("hidden");
+        controls.historySummaryContent.innerHTML = "";
+        return;
+      }
+      controls.historySummaryContent.innerHTML = formatHistorySummary(series);
+      const freqLabel = frequencyLabels[state.frequency] || "Daily";
+      const rangeParts = [];
+      if (state.startDate) rangeParts.push(`from ${state.startDate}`);
+      if (state.endDate) rangeParts.push(`to ${state.endDate}`);
+      controls.historySummaryMeta.textContent = `${freqLabel}${rangeParts.length ? ` • ${rangeParts.join(" ")}` : ""}`;
+      controls.historySummaryCard.classList.remove("hidden");
+    }
+
     async function load() {
-      const userId = el('userId').value || 'default';
+      const userId = state.userId || "default";
       try {
-        const [{ summary }, { history }] = await Promise.all([
+        const historyParams = {
+          user: userId,
+          page: state.page,
+          pageSize: state.pageSize,
+          startDate: state.startDate,
+          endDate: state.endDate,
+        };
+        const summaryParams = {
+          user: userId,
+          startDate: state.startDate,
+          endDate: state.endDate,
+          frequency: state.frequency,
+        };
+        const [{ summary }, historyData, { summary: historySummary }] = await Promise.all([
           fetchJson('/api/summary', { user: userId }),
-          fetchJson('/api/history', { user: userId, limit: 20 }),
+          fetchJson('/api/history', historyParams),
+          fetchJson('/api/history-summary', summaryParams),
         ]);
 
         el('summaryContent').innerHTML = formatSummary(summary);
-        el('historyContent').innerHTML = formatHistory(history);
+        el('historyContent').innerHTML = formatHistory(historyData.entries);
+        updatePagination(historyData.total, historyData.page, historyData.pageSize);
+        updateHistorySummary(historySummary);
 
         el('summarySection').classList.remove('hidden');
         el('historySection').classList.remove('hidden');
       } catch (error) {
         el('summaryContent').innerHTML = `<p class="text-red-500">Failed to load summary: ${error.message}</p>`;
         el('historyContent').innerHTML = '<p class="text-gray-500">History unavailable.</p>';
+        controls.pagination.classList.add("hidden");
+        controls.historySummaryCard.classList.add("hidden");
         el('summarySection').classList.remove('hidden');
         el('historySection').classList.remove('hidden');
       }
     }
 
-    el('loadBtn').addEventListener('click', load);
-    el('userId').addEventListener('keydown', e => { if (e.key === 'Enter') load(); });
+    controls.applyFilters.addEventListener('click', () => {
+      collectFilters();
+      state.page = 1;
+      load();
+    });
+    controls.resetFilters.addEventListener('click', resetFilters);
+    controls.userId.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        collectFilters();
+        state.page = 1;
+        load();
+      }
+    });
+    controls.prevPage.addEventListener('click', () => {
+      if (state.page > 1) {
+        state.page -= 1;
+        load();
+      }
+    });
+    controls.nextPage.addEventListener('click', () => {
+      if (state.page < state.totalPages) {
+        state.page += 1;
+        load();
+      }
+    });
 
-    // Initialize Lucide icons
+    // Initialize Lucide icons and initial load
     lucide.createIcons();
+    collectFilters();
     load();
   </script>
 </body>

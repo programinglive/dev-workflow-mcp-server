@@ -153,6 +153,10 @@ test("run_full_workflow iterates until commit/release complete with clean tree",
       response.content[0].text.includes("✅ Full workflow completed successfully"),
       "run_full_workflow should finish even when commit is already clean"
     );
+    assert.ok(
+      response.content[0].text.includes("🎉 Cheers!"),
+      "run_full_workflow should include celebration message"
+    );
     assert.equal(commands.includes("npm run release:patch"), true, "release command should run");
     assert.equal(workflowState.state.currentPhase, "idle");
     assert.equal(workflowState.state.history.length, 1);

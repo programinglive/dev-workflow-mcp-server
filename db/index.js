@@ -6,6 +6,11 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_FILENAME = "dev-workflow.db";
+const FREQUENCY_FORMATS = {
+  daily: "%Y-%m-%d",
+  monthly: "%Y-%m",
+  yearly: "%Y",
+};
 
 function getDbPath() {
   const initCwd = process.env.INIT_CWD || process.cwd();
@@ -136,12 +141,64 @@ export function getSummaryForUser(userId) {
   };
 }
 
-export function getHistoryForUser(userId, limit = 10) {
-  const stmt = getDb().prepare(`
-    SELECT * FROM workflow_history
-    WHERE user_id = ?
+function buildHistoryFilters({ startDate, endDate }) {
+  const clauses = [];
+  const params = [];
+  if (startDate) {
+    clauses.push("DATE(timestamp) >= DATE(?)");
+    params.push(startDate);
+  }
+  if (endDate) {
+    clauses.push("DATE(timestamp) <= DATE(?)");
+    params.push(endDate);
+  }
+  return { clauses, params };
+}
+
+export function getHistoryForUser(userId, options = {}) {
+  const { page = 1, pageSize = 20, startDate, endDate } = options;
+  const sanitizedPage = Math.max(1, Number.isFinite(Number(page)) ? Math.floor(Number(page)) : 1);
+  const sanitizedPageSize = Math.min(100, Math.max(1, Number.isFinite(Number(pageSize)) ? Math.floor(Number(pageSize)) : 20));
+  const offset = (sanitizedPage - 1) * sanitizedPageSize;
+
+  const { clauses, params } = buildHistoryFilters({ startDate, endDate });
+  const where = ["user_id = ?", ...clauses].join(" AND ");
+  const dbInstance = getDb();
+
+  const countStmt = dbInstance.prepare(`SELECT COUNT(*) as total FROM workflow_history WHERE ${where}`);
+  const total = countStmt.get(userId, ...params).total;
+
+  const rowsStmt = dbInstance.prepare(`
+    SELECT *
+    FROM workflow_history
+    WHERE ${where}
     ORDER BY timestamp DESC
     LIMIT ?
+    OFFSET ?
   `);
-  return stmt.all(userId, limit);
+  const entries = rowsStmt.all(userId, ...params, sanitizedPageSize, offset);
+
+  return {
+    entries,
+    total,
+    page: sanitizedPage,
+    pageSize: sanitizedPageSize,
+  };
+}
+
+export function getHistorySummary(userId, options = {}) {
+  const { startDate, endDate, frequency = "daily" } = options;
+  const format = FREQUENCY_FORMATS[frequency] || FREQUENCY_FORMATS.daily;
+  const { clauses, params } = buildHistoryFilters({ startDate, endDate });
+  const where = ["user_id = ?", ...clauses].join(" AND ");
+  const stmt = getDb().prepare(`
+    SELECT strftime('${format}', timestamp) AS period, COUNT(*) AS count
+    FROM workflow_history
+    WHERE ${where}
+    GROUP BY period
+    ORDER BY period DESC
+  `);
+  return stmt
+    .all(userId, ...params)
+    .map((row) => ({ period: row.period, count: row.count }));
 }

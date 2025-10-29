@@ -168,7 +168,7 @@ When you install this package in a project, a `.state/workflow-state.json` file 
 - **Persists across sessions** so your workflow state is preserved
 - **Stays centralized** even if you run the server from nested build outputs like `dist/`. The MCP server walks back to the project root (looking for `.git` or `package.json`) before reading or writing workflow state, so you never need duplicate copies under build directories.
 
-Each project maintains its own isolated workflow history, so you can work on multiple projects without mixing their histories.
+Each project maintains its own isolated workflow history, so you can work on multiple projects without mixing their histories. Within that `.state` directory, the MCP server automatically creates a unique per-user subdirectory (e.g., `.state/users/user-abc123/`). The generated identifier persists locally so multiple developers sharing the same repository never clobber each other’s workflow files. If you prefer a specific name, set `DEV_WORKFLOW_USER_ID` before launching the server and that value will be used instead of the auto-generated ID.
 
 ### Adding to .gitignore
 
