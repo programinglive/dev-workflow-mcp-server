@@ -749,7 +749,6 @@ async function handleRunFullWorkflow(args, { workflowState, exec, git, utils }) 
   }
 
   const steps = [];
-
   const testsPassed = typeof args.testsPassed === "boolean" ? args.testsPassed : true;
   const testDetails = typeof args.testDetails === "string" ? args.testDetails : "";
   const releaseArgs = {
@@ -765,67 +764,75 @@ async function handleRunFullWorkflow(args, { workflowState, exec, git, utils }) 
     releaseArgs.preset = args.preset;
   }
 
-  const markResponse = await handleMarkBugFixed({ summary: args.summary }, workflowState);
-  if (isErrorResponse(markResponse)) {
-    return markResponse;
-  }
-  steps.push(summarizeResponse("mark_bug_fixed", markResponse));
+  // Smart flow: detect current phase and run only remaining steps
+  const state = workflowState.state;
+  let currentPhase = state.currentPhase || "idle";
 
-  const testsResponse = await handleCreateTests(workflowState);
-  if (isErrorResponse(testsResponse)) {
-    return testsResponse;
+  // Helper to run a step and capture response
+  async function runStep(name, handlerFn, handlerArgs = []) {
+    if (isErrorResponse(handlerFn)) {
+      return handlerFn;
+    }
+    const response = await handlerFn(...handlerArgs);
+    if (isErrorResponse(response)) {
+      return response;
+    }
+    steps.push(summarizeResponse(name, response));
+    return response;
   }
-  steps.push(summarizeResponse("create_tests", testsResponse));
 
-  const runTestsResponse = await handleRunTests(
-    {
-      passed: testsPassed,
-      testCommand: args.testCommand,
-      details: testDetails,
-    },
-    workflowState
-  );
-  if (isErrorResponse(runTestsResponse)) {
-    return runTestsResponse;
+  // Step 1: mark_bug_fixed
+  if (!state.bugFixed) {
+    const resp = await runStep("mark_bug_fixed", handleMarkBugFixed, [{ summary: args.summary }, workflowState]);
+    if (isErrorResponse(resp)) return resp;
   }
-  steps.push(summarizeResponse("run_tests", runTestsResponse));
 
-  const docResponse = await handleCreateDocumentation(
-    {
-      documentationType: args.documentationType,
-      summary: args.documentationSummary,
-    },
-    workflowState
-  );
-  if (isErrorResponse(docResponse)) {
-    return docResponse;
+  // Step 2: create_tests
+  if (!state.testsCreated) {
+    const resp = await runStep("create_tests", handleCreateTests, [workflowState]);
+    if (isErrorResponse(resp)) return resp;
   }
-  steps.push(summarizeResponse("create_documentation", docResponse));
 
-  const readyResponse = await handleReadyCheck(workflowState);
-  if (isErrorResponse(readyResponse)) {
-    return readyResponse;
+  // Step 3: run_tests
+  if (!state.testsPassed && !state.testsSkipped) {
+    const resp = await runStep("run_tests", handleRunTests, [
+      { passed: testsPassed, testCommand: args.testCommand, details: testDetails },
+      workflowState,
+    ]);
+    if (isErrorResponse(resp)) return resp;
   }
-  steps.push(summarizeResponse("check_ready_to_commit", readyResponse));
 
-  const commitResponse = await handleCommitAndPush(
-    {
-      commitMessage: args.commitMessage,
-      branch: typeof args.branch === "string" ? args.branch : "",
-    },
-    { workflowState, exec, git, utils }
-  );
-  if (isErrorResponse(commitResponse)) {
-    return commitResponse;
+  // Step 4: create_documentation
+  if (!state.documentationCreated) {
+    const resp = await runStep("create_documentation", handleCreateDocumentation, [
+      { documentationType: args.documentationType, summary: args.documentationSummary },
+      workflowState,
+    ]);
+    if (isErrorResponse(resp)) return resp;
   }
-  steps.push(summarizeResponse("commit_and_push", commitResponse));
 
-  const releaseResponse = await handlePerformRelease(releaseArgs, { workflowState, exec, git, utils });
-  if (isErrorResponse(releaseResponse)) {
-    return releaseResponse;
+  // Step 5: check_ready_to_commit
+  if (!state.readyCheckCompleted) {
+    const resp = await runStep("check_ready_to_commit", handleReadyCheck, [workflowState]);
+    if (isErrorResponse(resp)) return resp;
   }
-  steps.push(summarizeResponse("perform_release", releaseResponse));
 
+  // Step 6: commit_and_push
+  if (!state.commitAndPushCompleted) {
+    const resp = await runStep("commit_and_push", handleCommitAndPush, [
+      { commitMessage: args.commitMessage, branch: typeof args.branch === "string" ? args.branch : "" },
+      { workflowState, exec, git, utils },
+    ]);
+    if (isErrorResponse(resp)) return resp;
+  }
+
+  // Step 7: perform_release
+  if (!state.released) {
+    const resp = await runStep("perform_release", handlePerformRelease, [releaseArgs, { workflowState, exec, git, utils }]);
+    if (isErrorResponse(resp)) return resp;
+  }
+
+  // Step 8: complete_task
   const completeResponse = await handleCompleteTask({ commitMessage: args.commitMessage }, workflowState);
   if (isErrorResponse(completeResponse)) {
     return completeResponse;

@@ -166,6 +166,7 @@ When you install this package in a project, a `.state/workflow-state.json` file 
 - **Tracks task progress** independently per project
 - **Should be gitignored** (already in `.gitignore` by default)
 - **Persists across sessions** so your workflow state is preserved
+- **Stays centralized** even if you run the server from nested build outputs like `dist/`. The MCP server walks back to the project root (looking for `.git` or `package.json`) before reading or writing workflow state, so you never need duplicate copies under build directories.
 
 Each project maintains its own isolated workflow history, so you can work on multiple projects without mixing their histories.
 

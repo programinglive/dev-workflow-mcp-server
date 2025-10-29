@@ -1,8 +1,19 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, rm } from "node:fs/promises";
+import {
+  mkdtemp,
+  rm,
+  mkdir,
+  realpath,
+  readFile,
+  writeFile,
+  access,
+  copyFile,
+} from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   WorkflowState,
   getNextStep,
@@ -24,6 +35,53 @@ async function withWorkflowState(callback) {
     await rm(tempDir, { recursive: true, force: true });
   }
 }
+
+test("WorkflowState mirrors state file to compatibility locations", async () => {
+  const tempRoot = await mkdtemp(path.join(tmpdir(), "workflow-compat-"));
+  const moduleDir = path.join(tempRoot, "module");
+  const projectRoot = path.join(tempRoot, "project");
+  const stateDir = path.join(projectRoot, ".state");
+  const sourceModulePath = fileURLToPath(new URL("../workflow-state.js", import.meta.url));
+  await mkdir(moduleDir, { recursive: true });
+  await mkdir(path.join(moduleDir, "dist"), { recursive: true });
+  await mkdir(path.join(tempRoot, "dist"), { recursive: true });
+  await mkdir(stateDir, { recursive: true });
+  await copyFile(sourceModulePath, path.join(moduleDir, "workflow-state.js"));
+  await writeFile(path.join(projectRoot, "package.json"), JSON.stringify({ name: "temp" }));
+
+  const stateFile = path.join(stateDir, "workflow-state.json");
+  await writeFile(stateFile, JSON.stringify({ currentPhase: "testing" }, null, 2));
+
+  const moduleUrl = pathToFileURL(path.join(moduleDir, "workflow-state.js"));
+  const { WorkflowState: TempWorkflowState } = await import(moduleUrl.href);
+
+  const state = new TempWorkflowState(stateFile);
+  await state.load();
+  state.state.currentPhase = "commit";
+  await state.save();
+
+  const compatPaths = [
+    path.join(moduleDir, ".state", "workflow-state.json"),
+    path.join(moduleDir, "dist", ".state", "workflow-state.json"),
+    path.join(tempRoot, "dist", ".state", "workflow-state.json"),
+  ];
+
+  for (const compatPath of compatPaths) {
+    try {
+      await access(compatPath, fsConstants.F_OK);
+      const compatContent = await readFile(compatPath, "utf-8");
+      const parsed = JSON.parse(compatContent);
+      assert.equal(parsed.currentPhase, "commit", "compatibility file should mirror state");
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  await rm(tempRoot, { recursive: true, force: true });
+});
 
 test("WorkflowState persists data across save/load", async () => {
   await withWorkflowState(async (state) => {
@@ -62,6 +120,49 @@ test("WorkflowState persists data across save/load", async () => {
       "Legacy app uses manual QA"
     );
   });
+});
+
+test("WorkflowState resolves state file relative to project root", async () => {
+  const projectRoot = await mkdtemp(path.join(tmpdir(), "workflow-project-"));
+  const originalCwd = process.cwd();
+  const initWasSet = Object.prototype.hasOwnProperty.call(process.env, "INIT_CWD");
+  const originalInitCwd = process.env.INIT_CWD;
+  const devStateWasSet = Object.prototype.hasOwnProperty.call(
+    process.env,
+    "DEV_WORKFLOW_STATE_FILE"
+  );
+  const originalDevState = process.env.DEV_WORKFLOW_STATE_FILE;
+
+  try {
+    await mkdir(path.join(projectRoot, ".git"));
+    const nestedDir = path.join(projectRoot, "dist", "server");
+    await mkdir(nestedDir, { recursive: true });
+
+    process.chdir(nestedDir);
+    delete process.env.INIT_CWD;
+    delete process.env.DEV_WORKFLOW_STATE_FILE;
+
+    const state = new WorkflowState();
+    const resolvedProjectRoot = await realpath(projectRoot);
+    assert.equal(
+      state.stateFile,
+      path.join(resolvedProjectRoot, ".state", "workflow-state.json"),
+      "state file should resolve to project root"
+    );
+  } finally {
+    process.chdir(originalCwd);
+    if (initWasSet) {
+      process.env.INIT_CWD = originalInitCwd;
+    } else {
+      delete process.env.INIT_CWD;
+    }
+    if (devStateWasSet) {
+      process.env.DEV_WORKFLOW_STATE_FILE = originalDevState;
+    } else {
+      delete process.env.DEV_WORKFLOW_STATE_FILE;
+    }
+    await rm(projectRoot, { recursive: true, force: true });
+  }
 });
 
 test("WorkflowState reset keeps history but clears progress", async () => {

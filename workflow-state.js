@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import { existsSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -49,26 +50,170 @@ function isRootPath(candidate) {
   return path.parse(resolved).root === resolved;
 }
 
+function findProjectRoot(startDir) {
+  if (!startDir) {
+    return null;
+  }
+
+  let current = path.resolve(startDir);
+  const { root } = path.parse(current);
+
+  while (true) {
+    const hasPackageJson = existsSync(path.join(current, "package.json"));
+    const hasGitDir = existsSync(path.join(current, ".git"));
+    if (hasPackageJson || hasGitDir) {
+      return current;
+    }
+
+    if (current === root) {
+      return null;
+    }
+
+    const parent = path.dirname(current);
+    if (parent === current) {
+      return null;
+    }
+
+    current = parent;
+  }
+}
+
+function getCompatibilityPaths(primaryPath) {
+  const resolvedPrimary = path.resolve(primaryPath);
+  const candidates = new Set();
+  const moduleDir = __dirname;
+
+  const directCandidate = path.resolve(moduleDir, STATE_DIR, STATE_FILENAME);
+  if (directCandidate !== resolvedPrimary) {
+    candidates.add(directCandidate);
+  }
+
+  const possibleDistDirs = [
+    path.join(moduleDir, "dist"),
+    path.join(path.dirname(moduleDir), "dist"),
+  ];
+
+  for (const distDir of possibleDistDirs) {
+    if (!existsSync(distDir)) {
+      continue;
+    }
+    const candidate = path.resolve(distDir, STATE_DIR, STATE_FILENAME);
+    if (candidate !== resolvedPrimary) {
+      candidates.add(candidate);
+    }
+  }
+
+  return Array.from(candidates);
+}
+
+async function pathExists(filePath) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function ensureCompatibilityLinks(primaryPath) {
+  const resolvedPrimary = path.resolve(primaryPath);
+
+  if (!(await pathExists(resolvedPrimary))) {
+    return;
+  }
+
+  const compatibilityPaths = getCompatibilityPaths(resolvedPrimary);
+
+  for (const compatPath of compatibilityPaths) {
+    try {
+      await fs.mkdir(path.dirname(compatPath), { recursive: true });
+    } catch {
+      // Ignore directory creation errors; we'll surface them on actual writes.
+    }
+
+    try {
+      const compatStat = await fs.lstat(compatPath);
+      if (compatStat.isSymbolicLink()) {
+        const target = await fs.readlink(compatPath);
+        if (path.resolve(path.dirname(compatPath), target) === resolvedPrimary) {
+          continue;
+        }
+        await fs.unlink(compatPath);
+      } else if (compatStat.isFile()) {
+        const [primaryStat, existingStat] = await Promise.all([
+          fs.stat(resolvedPrimary),
+          fs.stat(compatPath),
+        ]);
+        if (primaryStat.dev === existingStat.dev && primaryStat.ino === existingStat.ino) {
+          continue;
+        }
+        await fs.unlink(compatPath);
+      } else {
+        await fs.unlink(compatPath);
+      }
+    } catch (error) {
+      if (error.code !== "ENOENT") {
+        // Unexpected error accessing legacy path; skip mirroring to avoid breaking primary file.
+        continue;
+      }
+    }
+
+    try {
+      await fs.link(resolvedPrimary, compatPath);
+      continue;
+    } catch (error) {
+      if (!["EEXIST", "EXDEV", "EPERM"].includes(error.code)) {
+        continue;
+      }
+      if (error.code === "EEXIST") {
+        continue;
+      }
+    }
+
+    try {
+      await fs.symlink(resolvedPrimary, compatPath);
+      continue;
+    } catch (error) {
+      if (error.code === "EEXIST") {
+        continue;
+      }
+      if (!["EPERM", "ENOTSUP", "EEXIST"].includes(error.code)) {
+        // If symlink fails for another reason, skip to avoid interfering with primary file.
+        continue;
+      }
+    }
+
+    try {
+      await fs.copyFile(resolvedPrimary, compatPath);
+    } catch {
+      // Final fallback failed; ignore to avoid disrupting primary save.
+    }
+  }
+}
+
 function resolveDefaultStateFile() {
   if (process.env.DEV_WORKFLOW_STATE_FILE) {
     return path.resolve(process.env.DEV_WORKFLOW_STATE_FILE);
   }
 
-  const cwd = process.cwd();
-  if (!cwd.includes(`node_modules${path.sep}`) && !isRootPath(cwd)) {
-    return path.join(cwd, STATE_DIR, STATE_FILENAME);
+  const candidates = [process.cwd(), process.env.INIT_CWD, __dirname];
+
+  for (const candidate of candidates) {
+    if (!candidate || isRootPath(candidate)) {
+      continue;
+    }
+
+    const projectRoot = findProjectRoot(candidate);
+    if (projectRoot) {
+      return path.join(projectRoot, STATE_DIR, STATE_FILENAME);
+    }
+
+    if (!candidate.includes(`node_modules${path.sep}`)) {
+      return path.join(path.resolve(candidate), STATE_DIR, STATE_FILENAME);
+    }
   }
 
-  if (process.env.INIT_CWD && !isRootPath(process.env.INIT_CWD)) {
-    return path.join(process.env.INIT_CWD, STATE_DIR, STATE_FILENAME);
-  }
-
-  const [beforeNodeModules] = cwd.split(`node_modules${path.sep}`);
-  if (beforeNodeModules && !isRootPath(beforeNodeModules)) {
-    return path.join(beforeNodeModules, STATE_DIR, STATE_FILENAME);
-  }
-
-  return path.join(__dirname, STATE_DIR, STATE_FILENAME);
+  return path.join(process.cwd(), STATE_DIR, STATE_FILENAME);
 }
 
 export class WorkflowState {
@@ -137,10 +282,13 @@ export class WorkflowState {
     } catch (error) {
       // File doesn't exist yet, use default state
     }
+
+    await ensureCompatibilityLinks(this.stateFile);
   }
 
   async save() {
     await fs.writeFile(this.stateFile, JSON.stringify(this.state, null, 2));
+    await ensureCompatibilityLinks(this.stateFile);
   }
 
   reset() {

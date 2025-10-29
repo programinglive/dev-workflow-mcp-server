@@ -170,6 +170,73 @@ test("run_full_workflow executes all steps successfully", async () => {
   });
 });
 
+test("run_full_workflow resumes from current phase when steps are already completed", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.taskDescription = "Ship feature";
+    workflowState.state.taskType = "feature";
+    workflowState.state.currentPhase = "release";
+    workflowState.state.bugFixed = true;
+    workflowState.state.testsCreated = true;
+    workflowState.state.testsPassed = true;
+    workflowState.state.documentationCreated = true;
+    workflowState.state.readyCheckCompleted = true;
+    workflowState.state.commitAndPushCompleted = true;
+    await workflowState.save();
+
+    const commands = [];
+    const execStub = async (command) => {
+      commands.push(command);
+      if (command === "git status --porcelain") {
+        return { stdout: "" };
+      }
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => false,
+      hasStagedChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [],
+      getCurrentBranch: async () => "main",
+      getLastCommitMessage: async () => "",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    const response = await handleToolCall({
+      request: createRequest("run_full_workflow", {
+        summary: "Implement feature",
+        testCommand: "npm test",
+        documentationType: "README",
+        documentationSummary: "Document feature",
+        commitMessage: "feat: add feature",
+        releaseCommand: "npm run release:patch",
+        releaseNotes: "Automated release",
+      }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    assert.ok(
+      response.content[0].text.includes("✅ Full workflow completed successfully"),
+      "run_full_workflow should report success"
+    );
+    // Should only run release and complete since earlier steps are done
+    assert.ok(
+      commands.some((command) => command.startsWith("npm run release")),
+      "release command should be executed"
+    );
+    assert.equal(
+      commands.filter((c) => c.startsWith("git commit")).length,
+      0,
+      "git commit should not be executed when already completed"
+    );
+    assert.equal(workflowState.state.currentPhase, "idle");
+  });
+});
+
 test("run_full_workflow validates required arguments", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.taskDescription = "Ship feature";
