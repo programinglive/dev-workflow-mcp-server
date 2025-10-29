@@ -24,7 +24,7 @@ Each project gets its own isolated workflow state file.
 npm install @programinglive/dev-workflow-mcp-server
 ```
 
-This will automatically create a `.workflow-state.json` file in the **project where you ran `npm install`** (using npm's `INIT_CWD`), keeping workflow history separate per project. If you're installing the package itself (inside `node_modules`), the script skips creation so it never pollutes the shared package directory.
+This will automatically create a `.state/workflow-state.json` file in the **project where you ran `npm install`** (using npm's `INIT_CWD`), keeping workflow history separate per project. If you're installing the package itself (inside `node_modules`), the script skips creation so it never pollutes the shared package directory.
 
 ### Option 2: Install from Source
 
@@ -130,7 +130,7 @@ After adding the configuration, restart the application to load the MCP server.
 
 ## 📁 Project-Specific Workflow State
 
-When you install this package in a project, a `.workflow-state.json` file is automatically created in your project root. This file:
+When you install this package in a project, a `.state/workflow-state.json` file is automatically created in your project root. This file:
 
 - **Stores workflow history** specific to that project
 - **Tracks task progress** independently per project
@@ -144,12 +144,31 @@ Each project maintains its own isolated workflow history, so you can work on mul
 If you're using this package, add this to your project's `.gitignore`:
 
 ```
-.workflow-state.json
+.state/
 ```
 
 This keeps workflow state local to each developer's machine.
 
-> **Need to override the location?** Set `DEV_WORKFLOW_STATE_FILE=/absolute/path/to/your/project/.workflow-state.json` before launching the server (or inside your MCP client config). The server will honor that path, letting you keep the package installed centrally while maintaining per-project workflow history.
+> **Need to override the location?** Set `DEV_WORKFLOW_STATE_FILE=/absolute/path/to/your/project/.state/workflow-state.json` before launching the server (or inside your MCP client config). The server will honor that path, letting you keep the package installed centrally while maintaining per-project workflow history.
+
+## 🛠️ Available Tools
+
+- `start_task` - Begin a new coding task
+- `mark_bug_fixed` - Mark the feature/bug as fixed (requires tests next)
+- `create_tests` - Mark that tests have been created
+- `skip_tests` - Skip tests with justification
+- `run_tests` - Record test results (must pass to proceed)
+- `create_documentation` - Mark documentation as created
+- `check_ready_to_commit` - Verify all steps are complete
+- `commit_and_push` - Commit and push changes
+- `perform_release` - Record release details
+- `complete_task` - Mark task as complete and reset
+- `force_complete_task` - Force completion with reason
+- `drop_task` - Abandon current task
+- `get_workflow_status` - Show current status
+- `view_history` - View completed tasks
+- `continue_workflow` - Get next-step guidance
+- `rerun_workflow` - Reset and restart the current task from the beginning
 
 ## 🚫 Releasing Without the Workflow Steps
 
@@ -374,7 +393,7 @@ You can modify the workflow in `index.js`:
 
 ## 📝 State Management
 
-The server maintains state in `.workflow-state.json`:
+The server maintains state in `.state/workflow-state.json`:
 - Current phase
 - Task description
 - Completion status of each step

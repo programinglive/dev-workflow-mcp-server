@@ -22,7 +22,7 @@ async function main() {
     process.exit(1);
   }
 
-  const statePath = path.join(projectRoot, '.workflow-state.json');
+  const statePath = path.join(projectRoot, '.state', 'workflow-state.json');
   let state;
 
   try {

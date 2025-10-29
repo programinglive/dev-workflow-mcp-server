@@ -25,7 +25,11 @@ async function install() {
       return;
     }
 
-    const stateFile = path.join(projectRoot, '.workflow-state.json');
+    const stateDir = path.join(projectRoot, '.state');
+    const stateFile = path.join(stateDir, 'workflow-state.json');
+
+    // Create .state directory if it doesn't exist
+    await fs.mkdir(stateDir, { recursive: true });
 
     // Check if state file already exists
     try {

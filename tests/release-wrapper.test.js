@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, rm, writeFile, readFile } from "node:fs/promises";
+import { mkdtemp, rm, writeFile, readFile, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
@@ -10,7 +10,9 @@ const RELEASE_WRAPPER = path.join(PROJECT_ROOT, "release-wrapper.js");
 
 async function runWrapper({ state, args = ["patch"], env = {} }) {
   const dir = await mkdtemp(path.join(tmpdir(), "release-wrapper-test-"));
-  const statePath = path.join(dir, ".workflow-state.json");
+  const stateDir = path.join(dir, ".state");
+  const statePath = path.join(stateDir, "workflow-state.json");
+  await mkdir(stateDir, { recursive: true });
   await writeFile(statePath, JSON.stringify(state, null, 2));
 
   const childEnv = {

@@ -225,5 +225,14 @@ export function getToolList() {
         properties: {},
       },
     },
+    {
+      name: "rerun_workflow",
+      description:
+        "Reset and restart the current task from the beginning. Useful when you want to replay the entire workflow from start to finish.",
+      inputSchema: {
+        type: "object",
+        properties: {},
+      },
+    },
   ];
 }

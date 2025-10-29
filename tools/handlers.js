@@ -696,6 +696,25 @@ function handleViewHistory(args, workflowState) {
   return textResponse(message);
 }
 
+async function handleRerunWorkflow(workflowState) {
+  const currentDescription = workflowState.state.taskDescription;
+  const currentType = workflowState.state.taskType;
+
+  if (!currentDescription) {
+    return textResponse("⚠️ No active task to rerun. Use 'start_task' to begin a new workflow.");
+  }
+
+  workflowState.reset();
+  workflowState.state.currentPhase = "coding";
+  workflowState.state.taskDescription = currentDescription;
+  workflowState.state.taskType = currentType;
+  await workflowState.save();
+
+  return textResponse(
+    `🔄 Rerunning workflow from the start!\n\nTask: ${currentDescription}\nType: ${currentType}\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Run 'check_ready_to_commit'\n7. ⏳ Run 'commit_and_push' (commits and pushes)\n8. ⏳ Run 'perform_release' (handles versioning and tags)\n9. ⏳ Complete task\n\n🎯 Be conscious about what you're coding!`
+  );
+}
+
 export async function handleToolCall({
   request,
   normalizeRequestArgs,
@@ -743,6 +762,8 @@ export async function handleToolCall({
         return handleViewHistory(args, workflowState);
       case "continue_workflow":
         return handleContinueWorkflow(workflowState, { workflowState, exec, git, utils });
+      case "rerun_workflow":
+        return handleRerunWorkflow(workflowState);
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
