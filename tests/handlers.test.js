@@ -96,6 +96,56 @@ test("commit_and_push commits changes and pushes", async () => {
   });
 });
 
+test("project_summary_data reads persisted file and falls back", async () => {
+  await withWorkflowState(async (workflowState) => {
+    // Seed some history
+    workflowState.addToHistory({ taskDescription: "Add login feature", taskType: "feature", commitMessage: "feat: login" });
+    await workflowState.save(); // This should create project-summary.json
+
+    const response = await handleToolCall({
+      request: createRequest("project_summary_data", {}),
+      normalizeRequestArgs,
+      workflowState,
+      exec: async () => ({ stdout: "" }),
+      git: {},
+      utils,
+    });
+
+    const text = response.content[0].text;
+    assert.ok(text.includes("from persisted data"), "should indicate persisted source");
+    assert.ok(text.includes("Total tasks completed: 1"), "should count tasks");
+    assert.ok(text.includes("feature: 1"), "should show feature count");
+    assert.ok(text.includes("Updated:"), "should show updated timestamp");
+  });
+});
+
+test("project_summary aggregates task types and recent activity", async () => {
+  await withWorkflowState(async (workflowState) => {
+    // Seed some history
+    workflowState.addToHistory({ taskDescription: "Add login feature", taskType: "feature", commitMessage: "feat: login" });
+    workflowState.addToHistory({ taskDescription: "Fix auth bug", taskType: "bugfix", commitMessage: "fix: auth" });
+    workflowState.addToHistory({ taskDescription: "Refactor utils", taskType: "refactor", commitMessage: "refactor: utils" });
+    await workflowState.save();
+
+    const response = await handleToolCall({
+      request: createRequest("project_summary", {}),
+      normalizeRequestArgs,
+      workflowState,
+      exec: async () => ({ stdout: "" }),
+      git: {},
+      utils,
+    });
+
+    const text = response.content[0].text;
+    assert.ok(text.includes("Project Knowledge Summary"), "should include summary title");
+    assert.ok(text.includes("Total tasks completed: 3"), "should count tasks");
+    assert.ok(text.includes("feature: 1"), "should show feature count");
+    assert.ok(text.includes("bugfix: 1"), "should show bugfix count");
+    assert.ok(text.includes("refactor: 1"), "should show refactor count");
+    assert.ok(text.includes("Add login feature"), "should list recent tasks");
+  });
+});
+
 test("run_full_workflow executes all steps successfully", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.taskDescription = "Ship feature";

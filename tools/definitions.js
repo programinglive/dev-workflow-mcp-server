@@ -301,5 +301,23 @@ export function getToolList() {
         ],
       },
     },
+    {
+      name: "project_summary",
+      description:
+        "Get a project knowledge summary that aggregates completed tasks, task types, and recent activity to help understand the project and fix bugs faster over time.",
+      inputSchema: {
+        type: "object",
+        properties: {},
+      },
+    },
+    {
+      name: "project_summary_data",
+      description:
+        "Get the persisted project knowledge summary from a structured JSON file (project-summary.json). Falls back to in-memory if the file doesn't exist. This file can be used as a simple database for future features.",
+      inputSchema: {
+        type: "object",
+        properties: {},
+      },
+    },
   ];
 }

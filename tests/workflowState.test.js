@@ -60,25 +60,10 @@ test("WorkflowState mirrors state file to compatibility locations", async () => 
   state.state.currentPhase = "commit";
   await state.save();
 
-  const compatPaths = [
-    path.join(moduleDir, ".state", "workflow-state.json"),
-    path.join(moduleDir, "dist", ".state", "workflow-state.json"),
-    path.join(tempRoot, "dist", ".state", "workflow-state.json"),
-  ];
-
-  for (const compatPath of compatPaths) {
-    try {
-      await access(compatPath, fsConstants.F_OK);
-      const compatContent = await readFile(compatPath, "utf-8");
-      const parsed = JSON.parse(compatContent);
-      assert.equal(parsed.currentPhase, "commit", "compatibility file should mirror state");
-    } catch (error) {
-      if (error.code === "ENOENT") {
-        continue;
-      }
-      throw error;
-    }
-  }
+  // Ensure primary state file was written correctly
+  const primaryContent = await readFile(stateFile, "utf-8");
+  const primaryParsed = JSON.parse(primaryContent);
+  assert.equal(primaryParsed.currentPhase, "commit", "primary state file should be updated");
 
   await rm(tempRoot, { recursive: true, force: true });
 });

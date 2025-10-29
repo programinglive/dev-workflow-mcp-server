@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 const STATE_DIR = ".state";
 const STATE_FILENAME = "workflow-state.json";
 const LEGACY_STATE_FILENAME = ".workflow-state.json";
+const PROJECT_SUMMARY_FILENAME = "project-summary.json";
 
 async function migrateLegacyStateFile(targetPath) {
   const stateDir = path.dirname(targetPath);
@@ -289,6 +290,51 @@ export class WorkflowState {
   async save() {
     await fs.writeFile(this.stateFile, JSON.stringify(this.state, null, 2));
     await ensureCompatibilityLinks(this.stateFile);
+    await this.updateProjectSummary();
+  }
+
+  async updateProjectSummary() {
+    const summaryPath = path.join(path.dirname(this.stateFile), PROJECT_SUMMARY_FILENAME);
+    const summary = this.generateProjectSummaryData();
+    await fs.writeFile(summaryPath, JSON.stringify(summary, null, 2));
+    await ensureCompatibilityLinks(summaryPath);
+  }
+
+  generateProjectSummaryData() {
+    const history = this.state.history || [];
+    if (!history || history.length === 0) {
+      return {
+        totalTasks: 0,
+        taskTypes: {},
+        lastActive: null,
+        recentTasks: [],
+        updatedAt: new Date().toISOString(),
+      };
+    }
+
+    const taskTypes = {};
+    const recentTasks = history.slice(-20);
+
+    for (const entry of recentTasks) {
+      const type = entry.taskType || "other";
+      taskTypes[type] = (taskTypes[type] || 0) + 1;
+    }
+
+    const totalTasks = history.length;
+    const lastTask = history[history.length - 1];
+    const lastActive = lastTask ? lastTask.timestamp : null;
+
+    return {
+      totalTasks,
+      taskTypes,
+      lastActive,
+      recentTasks: history.slice(-5).reverse().map((e) => ({
+        description: e.taskDescription,
+        type: e.taskType,
+        timestamp: e.timestamp,
+      })),
+      updatedAt: new Date().toISOString(),
+    };
   }
 
   reset() {

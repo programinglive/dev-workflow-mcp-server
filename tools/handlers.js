@@ -1,3 +1,12 @@
+import fs from "fs/promises";
+import { existsSync } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PROJECT_SUMMARY_FILENAME = "project-summary.json";
+
 const textResponse = (text) => ({
   content: [
     {
@@ -46,6 +55,30 @@ function summarizeHistory(history, limit) {
     .join("\n");
 
   return `📜 Workflow History (last ${recent.length} tasks)\n\n${historyText}`;
+}
+
+function generateProjectSummary(history) {
+  if (!history || history.length === 0) {
+    return "No workflow history available.";
+  }
+
+  const taskTypes = {};
+  const recentTasks = history.slice(-20);
+
+  for (const entry of recentTasks) {
+    const type = entry.taskType || "other";
+    taskTypes[type] = (taskTypes[type] || 0) + 1;
+  }
+
+  const typeSummary = Object.entries(taskTypes)
+    .map(([type, count]) => `${type}: ${count}`)
+    .join(", ");
+
+  const totalTasks = history.length;
+  const lastTask = history[history.length - 1];
+  const lastActive = lastTask ? new Date(lastTask.timestamp).toLocaleDateString() : "Never";
+
+  return `🧠 Project Knowledge Summary\n\n📊 Stats\n- Total tasks completed: ${totalTasks}\n- Recent task mix: ${typeSummary}\n- Last active: ${lastActive}\n\n📝 Recent tasks (last 5)\n${history.slice(-5).reverse().map((e, i) => `${i + 1}. ${e.taskDescription} (${e.taskType})`).join("\n")}`;
 }
 
 function getContinueGuidance(status) {
@@ -696,6 +729,24 @@ function handleViewHistory(args, workflowState) {
   return textResponse(message);
 }
 
+function handleProjectSummary(workflowState) {
+  const summary = generateProjectSummary(workflowState.state.history);
+  return textResponse(summary);
+}
+
+async function handleProjectSummaryData(workflowState) {
+  const summaryPath = path.join(path.dirname(workflowState.stateFile), PROJECT_SUMMARY_FILENAME);
+  try {
+    const data = await fs.readFile(summaryPath, "utf-8");
+    const parsed = JSON.parse(data);
+    const formatted = `🧠 Project Knowledge Summary (from persisted data)\n\n📊 Stats\n- Total tasks completed: ${parsed.totalTasks}\n- Recent task mix: ${Object.entries(parsed.taskTypes).map(([t, c]) => `${t}: ${c}`).join(", ")}\n- Last active: ${parsed.lastActive ? new Date(parsed.lastActive).toLocaleDateString() : "Never"}\n- Updated: ${new Date(parsed.updatedAt).toLocaleString()}\n\n📝 Recent tasks (last 5)\n${parsed.recentTasks.map((e, i) => `${i + 1}. ${e.description} (${e.type})`).join("\n")}`;
+    return textResponse(formatted);
+  } catch (error) {
+    // Fallback to in-memory generation if file doesn't exist
+    return handleProjectSummary(workflowState);
+  }
+}
+
 async function handleRerunWorkflow(workflowState) {
   const currentDescription = workflowState.state.taskDescription;
   const currentType = workflowState.state.taskType;
@@ -888,6 +939,10 @@ export async function handleToolCall({
         return handleGetWorkflowStatus(workflowState);
       case "view_history":
         return handleViewHistory(args, workflowState);
+      case "project_summary":
+        return handleProjectSummary(workflowState);
+      case "project_summary_data":
+        return handleProjectSummaryData(workflowState);
       case "continue_workflow":
         return handleContinueWorkflow(workflowState, { workflowState, exec, git, utils });
       case "rerun_workflow":
