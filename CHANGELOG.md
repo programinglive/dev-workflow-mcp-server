@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.9](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.8...v1.1.9) (2025-10-29)
+
+
+### 🧹 Chores
+
+* interim commit ([b1aead0](https://github.com/programinglive/dev-workflow-mcp-server/commit/b1aead05920c766a183988fb93d3f0edc3e1eafc))
+
+
+### ✅ Tests
+
+* update README.md, exec.js, package-lock.json +7 more ([894fdf1](https://github.com/programinglive/dev-workflow-mcp-server/commit/894fdf1eace33ddf0081c565028d214e1c7697bf))
+
+
+### ✨ Features
+
+* make run_full_workflow smart and resumable from current phase ([930eb3c](https://github.com/programinglive/dev-workflow-mcp-server/commit/930eb3cb84c241b14f0e194cf490313e1e99a7ce))
+
 ### [1.1.8](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.7...v1.1.8) (2025-10-27)
 
 
