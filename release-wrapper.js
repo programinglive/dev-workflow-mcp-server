@@ -22,7 +22,32 @@ async function main() {
     process.exit(1);
   }
 
-  const statePath = path.join(projectRoot, '.state', 'workflow-state.json');
+  // Prefer state under INIT_CWD to support per-project runs and tests.
+  // If DEV_WORKFLOW_USER_ID is set and a user-scoped file exists, use it; otherwise fall back to legacy path.
+  const baseStateDir = path.join(projectRoot, '.state');
+  const legacyStatePath = path.join(baseStateDir, 'workflow-state.json');
+  let resolvedUserId = (process.env.DEV_WORKFLOW_USER_ID || '').trim();
+  if (!resolvedUserId) {
+    try {
+      const fileUserId = (await fs.readFile(path.join(baseStateDir, 'user-id'), 'utf8')).trim();
+      if (fileUserId) {
+        resolvedUserId = fileUserId;
+      }
+    } catch {
+      // no user-id file; legacy layout likely
+    }
+  }
+  const userStatePath = resolvedUserId ? path.join(baseStateDir, 'users', resolvedUserId, 'workflow-state.json') : null;
+
+  let statePath = legacyStatePath;
+  if (userStatePath) {
+    try {
+      await fs.access(userStatePath);
+      statePath = userStatePath;
+    } catch {
+      // fall back to legacy path
+    }
+  }
   let state;
 
   try {
