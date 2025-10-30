@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.11](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.10...v1.1.11) (2025-10-30)
+
+
+### 🧹 Chores
+
+* verify run_full_workflow with persisted project summary ([6fdb475](https://github.com/programinglive/dev-workflow-mcp-server/commit/6fdb475f65ee6ef2c061b0b1cf954a282406e2a1))
+
+
+### ✨ Features
+
+* add per-user state, SQLite project summary, and dashboard ([7b57b6e](https://github.com/programinglive/dev-workflow-mcp-server/commit/7b57b6e067ad59f2999a2badcb51b1293192c96b))
+* per-project workflow state with unique per-user IDs; smarter workflow ([b710a52](https://github.com/programinglive/dev-workflow-mcp-server/commit/b710a524997583f58cd6da2567ba9fd14abdd3c9))
+
 ### [1.1.10](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.9...v1.1.10) (2025-10-29)
 
 
