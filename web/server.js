@@ -1,5 +1,5 @@
 import { createServer } from "http";
-import { readFile } from "fs/promises";
+import { readFile, access } from "fs/promises";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import getPort from "get-port";
@@ -7,6 +7,12 @@ import { getHistoryForUser, getSummaryForUser, getHistorySummary } from "../db/i
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const projectRoot = join(__dirname, "..");
+
+const allowedDocs = {
+  "README.md": join(projectRoot, "README.md"),
+  "web-dashboard.md": join(projectRoot, "docs", "web-dashboard.md"),
+};
 
 async function start() {
   const PORT = process.env.DEV_WORKFLOW_WEB_PORT || await getPort({ port: 3111 });
@@ -39,6 +45,33 @@ async function start() {
         const summary = getHistorySummary(userId, { startDate, endDate, frequency });
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ summary }));
+      } else if (req.method === "GET" && url.pathname === "/api/docs") {
+        const rawDocKey = url.searchParams.get("doc");
+        if (!rawDocKey) {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ docs: Object.keys(allowedDocs) }));
+          return;
+        }
+
+        const docKey = rawDocKey.trim();
+        const resolvedKey = Object.keys(allowedDocs).find((key) => key.toLowerCase() === docKey.toLowerCase());
+        if (!resolvedKey) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Document not found", requested: docKey, available: Object.keys(allowedDocs) }));
+          return;
+        }
+
+        const docPath = allowedDocs[resolvedKey];
+
+        try {
+          await access(docPath);
+          const content = await readFile(docPath, "utf-8");
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ doc: resolvedKey, content }));
+        } catch (error) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: error.message }));
+        }
       } else {
         res.writeHead(404, { "Content-Type": "text/plain" });
         res.end("Not found");

@@ -34,6 +34,26 @@ cd dev-workflow-mcp-server
 npm install
 ```
 
+> **Windows prerequisites:** Installing dependencies from source compiles native modules such as `better-sqlite3`. Make sure Python 3 (added to PATH) and the Visual Studio Build Tools “Desktop development with C++” workload are installed before running `npm install`. Without them, npm will fail with a “need python” or build error.
+
+### Option 3: Install on Plesk Hosting
+
+Plesk supports Node.js applications through its Node.js extension. To deploy the MCP server on a Plesk subscription:
+
+1. **Enable Node.js support** – Ensure the Plesk administrator has installed the Node.js extension and enabled SSH access for your subscription.
+2. **Upload the project** – Either clone the repository or upload an archive into the directory you will run it from (e.g., `httpdocs/dev-workflow-mcp-server`). From SSH you can run:
+   ```bash
+   cd httpdocs
+   git clone https://github.com/programinglive/dev-workflow-mcp-server.git
+   cd dev-workflow-mcp-server
+   ```
+3. **Install dependencies** – In Plesk’s **Node.js** panel use “NPM install” (or run `npm install --production` over SSH). Linux hosts already ship the Python/build toolchain required for `better-sqlite3`; if your plan uses a Windows host, install Python 3 and the Visual Studio Build Tools beforehand or ask your provider to enable them.
+4. **Define environment variables** – In the Node.js panel add any environment variables you need (for example `DEV_WORKFLOW_USER_ID` or `DEV_WORKFLOW_STATE_FILE`). This keeps state files outside the web root if desired.
+5. **Configure the application** – Set **Application startup file** to `index.js` and **Application mode** to `production`. Plesk will run the server with `node index.js`.
+6. **Start/Restart the app** – Click “Restart App” so Plesk launches the MCP server with the new configuration. When you update the code, rerun “NPM install” and restart.
+
+> **Tip:** The MCP server communicates over stdio. If you only need it as a CLI tool, you can also run `npx @programinglive/dev-workflow-mcp-server` directly in an SSH session without keeping it running under the Node.js panel.
+
 #### Two Usage Modes
 
 - **Local (source)**: Point your MCP client to `index.js`. This runs directly from source and requires no build step. Recommended for MCP usage.
@@ -142,6 +162,25 @@ This project includes a Vite-based build system for creating optimized distribut
 - `npm run build` - Bundle the source into `dist/index.mjs` for distribution
 - `npm run dev` - Run in development mode with file watching
 - `npm run local` - Alias for running from source (same as `npm start`)
+- `npm run web` - Launch the lightweight workflow dashboard for browsing task history (see [Web Dashboard docs](./docs/web-dashboard.md))
+
+#### `npm run web`
+
+This command starts the dashboard defined in `web/server.js`, giving you a quick view of workflow history and summary statistics.
+
+```bash
+npm run web
+# 🌐 Dev Workflow Dashboard running at http://localhost:3111
+```
+
+- **Default port:** 3111 (or the next free port if occupied). Override with `DEV_WORKFLOW_WEB_PORT`.
+- **Query parameter:** `?user=<id>` lets you inspect another user’s history (defaults to `default`).
+- **API endpoints:**
+  - `GET /api/summary?user=<id>` → overall stats for the user.
+  - `GET /api/history?user=<id>&page=1&pageSize=20&startDate=YYYY-MM-DD&endDate=YYYY-MM-DD` → paginated task history.
+  - `GET /api/history-summary?user=<id>&frequency=daily|monthly|yearly` → aggregated counts over time.
+
+Open `http://localhost:3111` in a browser to view the dashboard UI (`web/index.html`).
 
 ### Build Output
 
