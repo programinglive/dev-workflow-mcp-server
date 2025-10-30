@@ -199,9 +199,74 @@ export async function main() {
   console.error("Dev Workflow MCP Server running on stdio");
 }
 
-if (process.argv[1] === __filename) {
-  main().catch((error) => {
-    console.error("Server error:", error);
+// --- Lightweight CLI: dev-workflow-mcp call <toolName> [--args '<json>'] ---
+async function cliMain(argv) {
+  const [, , subcommand, toolName, ...rest] = argv;
+  if (subcommand !== "call") return false;
+
+  if (!toolName || typeof toolName !== "string" || toolName.trim() === "") {
+    console.error("Usage: dev-workflow-mcp call <toolName> [--args '<json>']");
+    process.exit(2);
+  }
+
+  // Parse --args '<json>' if provided
+  let rawArgs = undefined;
+  for (let i = 0; i < rest.length; i++) {
+    if (rest[i] === "--args") {
+      rawArgs = rest[i + 1];
+      break;
+    }
+  }
+
+  try {
+    // Initialize workflow state similar to the server path
+    workflowState = new WorkflowState();
+    await workflowState.load();
+    await workflowState.ensurePrimaryFile();
+
+    const request = {
+      params: {
+        name: toolName,
+        arguments: rawArgs ?? {},
+      },
+    };
+
+    const response = await handleToolCall({
+      request,
+      normalizeRequestArgs,
+      workflowState,
+      exec,
+      git: {
+        hasWorkingChanges,
+        hasTestChanges,
+        hasStagedChanges,
+        getStagedChanges,
+        getCurrentBranch,
+        getLastCommitMessage,
+        workingTreeSummary,
+      },
+      utils: { shellEscape, determineReleaseTypeFromCommit, createCommitMessageParts },
+    });
+
+    const text = response?.content?.[0]?.text || "";
+    console.log(text);
+    const isError = /^\s*[⚠️❌]/u.test(text);
+    process.exit(isError ? 1 : 0);
+  } catch (error) {
+    console.error("CLI error:", error.message || String(error));
     process.exit(1);
-  });
+  }
+}
+
+const isDirectRun = process.argv[1] === __filename;
+if (isDirectRun) {
+  // If invoked with a CLI subcommand, run it; otherwise start MCP server
+  if (process.argv[2] === "call") {
+    cliMain(process.argv);
+  } else {
+    main().catch((error) => {
+      console.error("Server error:", error);
+      process.exit(1);
+    });
+  }
 }
