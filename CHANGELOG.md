@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.12](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.11...v1.1.12) (2025-10-30)
+
+
+### ✨ Features
+
+* **cli:** add 'call' subcommand to invoke MCP tools directly (e.g., node index.js call drop_task) ([c9b8fae](https://github.com/programinglive/dev-workflow-mcp-server/commit/c9b8fae7e24e0915d857135d03fa969b10dcac67))
+* **web:** docs modal, docs API, navbar redesign ([902242b](https://github.com/programinglive/dev-workflow-mcp-server/commit/902242b1318b01f8f62ef7c4c0f6347cb8517617))
+* **web:** embed docs modal and redesign dashboard ([d2cf2fb](https://github.com/programinglive/dev-workflow-mcp-server/commit/d2cf2fb4ae90e61b20c72ed26f25dc0e5119247a))
+
 ### [1.1.11](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.10...v1.1.11) (2025-10-30)
 
 
