@@ -297,6 +297,7 @@ This repository ships with `.github/workflows/npm-publish.yml`, which publishes 
 3. Ensure your release process pushes tags after running `npm run release:<type>` so the workflow triggers.
 4. Confirm `npm run build` succeeds locally; the workflow runs the build before publishing so broken bundles block the release.
 5. GitHub provenance is enabled via `npm publish --provenance`. Leave GitHub Actions' default OIDC permissions enabled so the job can request an ID token.
+6. Keep the `repository.url` field in `package.json` pointing at this GitHub repo. Provenance validation fails if it does not match the repository that built the package.
 
 The workflow verifies that the tag version matches `package.json` before publishing and fails fast if they diverge.
 
