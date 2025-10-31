@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.15](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.14...v1.1.15) (2025-10-31)
+
+
+### 📝 Documentation
+
+* add npm publish workflow automation ([c923734](https://github.com/programinglive/dev-workflow-mcp-server/commit/c923734ab4399afbcb0166abcd16cd01c3e50c0e))
+
+
+### 👷 Continuous Integration
+
+* **npm:** build + provenance in npm-publish workflow ([5ae04db](https://github.com/programinglive/dev-workflow-mcp-server/commit/5ae04db33e33fe64c33d8eac08db70e98754ea64))
+
 ### [1.1.14](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.13...v1.1.14) (2025-10-31)
 
 
