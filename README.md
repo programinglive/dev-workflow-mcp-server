@@ -288,6 +288,16 @@ If any requirements are missing, the guard exits with guidance to return to the 
 1. Use `perform_release {"command":"patch"}` (or `minor`/`major`) via the MCP client.
 2. The guard runs automatically, verifies the workflow state, and records the release before letting you finish with `complete_task`.
 
+### Automated npm Publishing
+
+This repository ships with `.github/workflows/npm-publish.yml`, which publishes the package to npm whenever a git tag matching `v*` is pushed (for example, `v1.1.14`). To enable the workflow:
+
+1. Create an npm automation token with publish rights (`npm token create --read-only false`).
+2. In the repository settings, add a secret named **`NPM_TOKEN`** containing that token.
+3. Ensure your release process pushes tags after running `npm run release:<type>` so the workflow triggers.
+
+The workflow verifies that the tag version matches `package.json` before publishing and fails fast if they diverge.
+
 ## 🛠️ Available Tools
 
 ### Tool Argument Requirements
