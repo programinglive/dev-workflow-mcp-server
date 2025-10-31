@@ -6,17 +6,20 @@ import { mkdtemp, rm } from 'fs/promises';
 import path from 'path';
 
 test('exec runs commands successfully', async () => {
-  const { stdout } = await exec('echo "hello world"');
-  assert.strictEqual(stdout.trim(), 'hello world');
+  const echoCommand = process.platform === 'win32' ? 'echo hello world' : 'echo "hello world"';
+  const { stdout } = await exec(echoCommand);
+  const normalized = stdout.trim().replace(/^"(.*)"$/, '$1');
+  assert.strictEqual(normalized, 'hello world');
 });
 
 test('exec respects explicit cwd option', async () => {
   const tempDir = await mkdtemp(path.join(tmpdir(), 'mcp-test-'));
   
   try {
-    const { stdout } = await exec('pwd', { cwd: tempDir });
+    const dirCommand = process.platform === 'win32' ? 'cd' : 'pwd';
+    const { stdout } = await exec(dirCommand, { cwd: tempDir });
     // Just verify it runs in the specified directory (path may vary by platform)
-    assert(stdout.trim().includes('mcp-test-'));
+    assert(stdout.trim().toLowerCase().includes('mcp-test-'));
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }

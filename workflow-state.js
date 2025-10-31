@@ -107,21 +107,88 @@ function hasProjectMarkers(candidate) {
   );
 }
 
-function selectProjectRoot(candidates) {
+function normalizeAndStoreCandidate(list, candidate) {
+  if (!candidate) {
+    return;
+  }
+
+  const resolved = path.resolve(candidate);
+  if (!list.includes(resolved)) {
+    list.push(resolved);
+  }
+}
+
+function addAncestorCandidates(list, start) {
+  if (!start) {
+    return;
+  }
+
+  let current = path.resolve(start);
+  while (!isRootPath(current)) {
+    const parent = path.dirname(current);
+    if (parent === current) {
+      break;
+    }
+    if (!isRootPath(parent)) {
+      normalizeAndStoreCandidate(list, parent);
+    }
+    current = parent;
+  }
+}
+
+function selectProjectRoot(candidates, moduleRoot) {
+  const cwdResolved = path.resolve(process.cwd());
+  const prioritized = [];
+
   for (const candidate of candidates) {
     if (!candidate) {
       continue;
     }
 
     const resolved = path.resolve(candidate);
-    if (isRootPath(resolved) && !hasProjectMarkers(resolved)) {
+    if (prioritized.some((entry) => entry.resolved === resolved)) {
       continue;
     }
 
-    return resolved;
+    prioritized.push({
+      resolved,
+      hasMarkers: hasProjectMarkers(resolved),
+      isRoot: isRootPath(resolved),
+      isCwdAncestor: cwdResolved === resolved || cwdResolved.startsWith(`${resolved}${path.sep}`),
+    });
   }
 
-  return null;
+  const ancestorWithMarkers = prioritized.find((entry) => entry.isCwdAncestor && entry.hasMarkers);
+  if (ancestorWithMarkers) {
+    return ancestorWithMarkers.resolved;
+  }
+
+  const ancestorWithoutMarkers = prioritized
+    .filter((entry) => entry.isCwdAncestor && !entry.hasMarkers && !entry.isRoot)
+    .sort((a, b) => b.resolved.length - a.resolved.length);
+  if (ancestorWithoutMarkers.length > 0) {
+    return ancestorWithoutMarkers[0].resolved;
+  }
+
+  if (moduleRoot) {
+    const moduleResolved = path.resolve(moduleRoot);
+    const moduleEntry = prioritized.find((entry) => entry.resolved === moduleResolved && !entry.isRoot);
+    if (moduleEntry) {
+      return moduleEntry.resolved;
+    }
+  }
+
+  const withMarkers = prioritized.find((entry) => entry.hasMarkers);
+  if (withMarkers) {
+    return withMarkers.resolved;
+  }
+
+  const nonRoot = prioritized.find((entry) => !entry.isRoot);
+  if (nonRoot) {
+    return nonRoot.resolved;
+  }
+
+  return prioritized.length > 0 ? prioritized[0].resolved : null;
 }
 
 function getUserScopedDir(baseDir) {
@@ -339,33 +406,29 @@ export function resolveStateFile() {
   const candidateRoots = [];
 
   const initProjectRoot = findProjectRoot(resolvedInitCwd);
-  if (initProjectRoot) {
-    candidateRoots.push(initProjectRoot);
-  }
-
-  const moduleProjectRoot = findProjectRoot(moduleRoot);
-  if (moduleProjectRoot) {
-    candidateRoots.push(moduleProjectRoot);
-  } else if (!isRootPath(moduleRoot)) {
-    candidateRoots.push(moduleRoot);
-  }
-
   const cwdProjectRoot = findProjectRoot(cwdResolved);
-  if (cwdProjectRoot) {
-    candidateRoots.push(cwdProjectRoot);
-  } else if (!isRootPath(cwdResolved)) {
-    candidateRoots.push(cwdResolved);
-  }
+  const moduleProjectRoot = findProjectRoot(moduleRoot);
 
+  normalizeAndStoreCandidate(candidateRoots, initProjectRoot);
+  normalizeAndStoreCandidate(candidateRoots, cwdProjectRoot);
   if (!isRootPath(resolvedInitCwd)) {
-    candidateRoots.push(resolvedInitCwd);
+    normalizeAndStoreCandidate(candidateRoots, resolvedInitCwd);
+    addAncestorCandidates(candidateRoots, resolvedInitCwd);
+  }
+  if (!isRootPath(cwdResolved)) {
+    normalizeAndStoreCandidate(candidateRoots, cwdResolved);
+    addAncestorCandidates(candidateRoots, cwdResolved);
   }
 
+  normalizeAndStoreCandidate(candidateRoots, moduleProjectRoot);
+  if (!isRootPath(moduleRoot)) {
+    normalizeAndStoreCandidate(candidateRoots, moduleRoot);
+  }
   if (!isRootPath(__dirname)) {
-    candidateRoots.push(__dirname);
+    normalizeAndStoreCandidate(candidateRoots, __dirname);
   }
 
-  let projectRoot = selectProjectRoot(candidateRoots);
+  let projectRoot = selectProjectRoot(candidateRoots, moduleRoot);
 
   if (!projectRoot) {
     projectRoot = path.resolve(__dirname);

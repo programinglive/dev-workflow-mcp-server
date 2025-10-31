@@ -3,10 +3,14 @@ import assert from "node:assert/strict";
 import { mkdtemp, rm, writeFile, readFile, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 
-const PROJECT_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
-const RELEASE_WRAPPER = path.join(PROJECT_ROOT, "release-wrapper.js");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const releaseWrapperUrl = new URL("../release-wrapper.js", import.meta.url);
+const RELEASE_WRAPPER = fileURLToPath(releaseWrapperUrl);
+const PROJECT_ROOT = path.dirname(RELEASE_WRAPPER);
 
 async function runWrapper({ state, args = ["patch"], env = {} }) {
   const dir = await mkdtemp(path.join(tmpdir(), "release-wrapper-test-"));
@@ -22,14 +26,18 @@ async function runWrapper({ state, args = ["patch"], env = {} }) {
     ...env,
   };
 
+  const nodeBinary = process.platform === "win32" ? "node" : process.execPath || "node";
+  const spawnShell = process.platform === "win32";
+
   return await new Promise((resolve) => {
     const child = spawn(
-      process.execPath,
+      nodeBinary,
       [RELEASE_WRAPPER, ...args],
       {
         cwd: PROJECT_ROOT,
         env: childEnv,
         stdio: ["ignore", "pipe", "pipe"],
+        shell: spawnShell,
       }
     );
 

@@ -36,6 +36,58 @@ async function withWorkflowState(callback) {
   }
 }
 
+test("resolveStateFile prefers current working directory when multiple project markers exist", async () => {
+  const tempRoot = await mkdtemp(path.join(tmpdir(), "workflow-prefers-cwd-"));
+  const moduleDir = path.join(tempRoot, "module");
+  const projectA = path.join(tempRoot, "project-a");
+  const projectB = path.join(tempRoot, "project-b");
+  const projectBNested = path.join(projectB, "sub", "app");
+
+  await mkdir(moduleDir, { recursive: true });
+  await mkdir(projectA, { recursive: true });
+  await mkdir(projectBNested, { recursive: true });
+
+  const sourceModulePath = fileURLToPath(new URL("../workflow-state.js", import.meta.url));
+  await copyFile(sourceModulePath, path.join(moduleDir, "workflow-state.js"));
+
+  await writeFile(path.join(moduleDir, "package.json"), JSON.stringify({ name: "module" }));
+  await writeFile(path.join(projectA, "package.json"), JSON.stringify({ name: "project-a" }));
+  await writeFile(path.join(projectB, "package.json"), JSON.stringify({ name: "project-b" }));
+
+  const moduleUrl = pathToFileURL(path.join(moduleDir, "workflow-state.js"));
+  const { WorkflowState: TempWorkflowState } = await import(`${moduleUrl.href}?preferCwd=${Date.now()}`);
+
+  const originalCwd = process.cwd();
+  const initWasSet = Object.prototype.hasOwnProperty.call(process.env, "INIT_CWD");
+  const originalInitCwd = process.env.INIT_CWD;
+
+  try {
+    process.chdir(projectBNested);
+    process.env.INIT_CWD = projectA;
+
+    const state = new TempWorkflowState();
+    const resolvedStateFile = state.stateFile;
+
+    assert.ok(
+      resolvedStateFile.startsWith(path.join(projectB, ".state", "users")),
+      "State file should resolve under the current working directory's project"
+    );
+
+    assert.ok(
+      !resolvedStateFile.startsWith(path.join(projectA, ".state")),
+      "State file should not use INIT_CWD project when cwd has its own markers"
+    );
+  } finally {
+    process.chdir(originalCwd);
+    if (initWasSet) {
+      process.env.INIT_CWD = originalInitCwd;
+    } else {
+      delete process.env.INIT_CWD;
+    }
+    await rm(tempRoot, { recursive: true, force: true });
+  }
+});
+
 test("WorkflowState mirrors state file to compatibility locations", async () => {
   const tempRoot = await mkdtemp(path.join(tmpdir(), "workflow-compat-"));
   const moduleDir = path.join(tempRoot, "module");
@@ -94,8 +146,8 @@ test("WorkflowState avoids filesystem root when no project markers found", async
     const resolvedTempRoot = await realpath(tempRoot);
 
     assert.ok(
-      state.stateFile.startsWith(path.join(resolvedTempRoot, ".state")),
-      "state file should resolve under temp root when no project markers exist"
+      state.stateFile.startsWith(resolvedTempRoot),
+      "state file should remain inside the temporary root when no project markers exist"
     );
     assert.ok(
       !state.stateFile.startsWith(path.join(path.sep, ".state")),
