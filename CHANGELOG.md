@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.16](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.15...v1.1.16) (2025-10-31)
+
+
+### 🧹 Chores
+
+* align npm provenance metadata ([459572e](https://github.com/programinglive/dev-workflow-mcp-server/commit/459572e07efa340ef87cc679535fb24413d8c997))
+
 ### [1.1.15](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.1.14...v1.1.15) (2025-10-31)
 
 
