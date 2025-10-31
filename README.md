@@ -295,6 +295,8 @@ This repository ships with `.github/workflows/npm-publish.yml`, which publishes 
 1. Create an npm automation token with publish rights (`npm token create --read-only false`).
 2. In the repository settings, add a secret named **`NPM_TOKEN`** containing that token.
 3. Ensure your release process pushes tags after running `npm run release:<type>` so the workflow triggers.
+4. Confirm `npm run build` succeeds locally; the workflow runs the build before publishing so broken bundles block the release.
+5. GitHub provenance is enabled via `npm publish --provenance`. Leave GitHub Actions' default OIDC permissions enabled so the job can request an ID token.
 
 The workflow verifies that the tag version matches `package.json` before publishing and fails fast if they diverge.
 
