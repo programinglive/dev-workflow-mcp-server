@@ -781,6 +781,7 @@ async function handleProjectSummaryDb(workflowState) {
 }
 
 async function handleRerunWorkflow(workflowState) {
+  // Capture task context BEFORE reset to avoid losing it
   const currentDescription = workflowState.state.taskDescription;
   const currentType = workflowState.state.taskType;
 
@@ -788,7 +789,10 @@ async function handleRerunWorkflow(workflowState) {
     return textResponse("⚠️ No active task to rerun. Use 'start_task' to begin a new workflow.");
   }
 
+  // Reset all progress flags but preserve history
   workflowState.reset();
+  
+  // Restore task context after reset
   workflowState.state.currentPhase = "coding";
   workflowState.state.taskDescription = currentDescription;
   workflowState.state.taskType = currentType;

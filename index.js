@@ -56,8 +56,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 }));
 
 // Handle tool calls
-server.setRequestHandler(CallToolRequestSchema, (request) =>
-  handleToolCall({
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  // Reload state from disk before each request to ensure consistency
+  if (workflowState) {
+    await workflowState.load();
+  }
+  return handleToolCall({
     request,
     normalizeRequestArgs,
     workflowState,
@@ -72,8 +76,8 @@ server.setRequestHandler(CallToolRequestSchema, (request) =>
       workingTreeSummary,
     },
     utils: { shellEscape, determineReleaseTypeFromCommit, createCommitMessageParts },
-  })
-);
+  });
+});
 
 // Helper function
 export function getNextStep(status) {
