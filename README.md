@@ -378,9 +378,11 @@ Check if all workflow steps are completed and you're ready to commit & push.
 ### `commit_and_push`
 Automatically run `git add`, `git commit`, and `git push` after the ready check passes.
 
+**Auto-detection of primary branch:** If no `branch` is specified, the tool automatically detects your project's primary branch by checking for `origin/main` first, then falling back to `origin/master`. This eliminates the need to specify the branch parameter for most projects.
+
 **Parameters:**
 - `commitMessage` (string, required): Conventional commit message to use
-- `branch` (string, optional): Target branch to push (defaults to current branch)
+- `branch` (string, optional): Target branch to push. If omitted, auto-detects primary branch (main or master)
 
 ### `perform_release`
 Record the release after you've committed and pushed. Required before you can complete the task.

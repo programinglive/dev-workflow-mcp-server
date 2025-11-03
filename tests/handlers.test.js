@@ -62,6 +62,7 @@ test("commit_and_push commits changes and pushes", async () => {
       hasTestChanges: async () => true,
       getStagedChanges: async () => [{ status: "M", path: "src/index.js" }],
       getCurrentBranch: async () => "main",
+      getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
@@ -129,6 +130,7 @@ test("run_full_workflow iterates until commit/release complete with clean tree",
       hasTestChanges: async () => true,
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
+      getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "chore: existing",
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
@@ -163,6 +165,172 @@ test("run_full_workflow iterates until commit/release complete with clean tree",
   });
 });
 
+test("commit_and_push uses primary branch when no branch specified", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.readyToCommit = true;
+    workflowState.state.readyCheckCompleted = true;
+    workflowState.state.testsSkipped = false;
+    workflowState.state.testsCreated = true;
+    workflowState.state.testsPassed = true;
+    workflowState.state.currentPhase = "commit";
+    await workflowState.save();
+
+    const commands = [];
+    const execStub = async (command) => {
+      commands.push(command);
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => true,
+      hasStagedChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [{ status: "M", path: "src/index.js" }],
+      getCurrentBranch: async () => "feature/test",
+      getPrimaryBranch: async () => "main",
+      getLastCommitMessage: async () => "",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    const response = await handleToolCall({
+      request: createRequest("commit_and_push", { commitMessage: "feat: test" }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    const pushCommand = commands.find((command) => command.startsWith("git push"));
+    assert.ok(pushCommand, "git push should be executed");
+    assert.ok(
+      pushCommand.includes("main"),
+      "push command should use detected primary branch (main)"
+    );
+    assert.ok(
+      response.content[0].text.includes("Commit and push completed!"),
+      "response should confirm commit and push"
+    );
+  });
+});
+
+test("commit_and_push falls back to master when main not found", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.readyToCommit = true;
+    workflowState.state.readyCheckCompleted = true;
+    workflowState.state.testsSkipped = false;
+    workflowState.state.testsCreated = true;
+    workflowState.state.testsPassed = true;
+    workflowState.state.currentPhase = "commit";
+    await workflowState.save();
+
+    const commands = [];
+    const execStub = async (command) => {
+      commands.push(command);
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => true,
+      hasStagedChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [{ status: "M", path: "src/index.js" }],
+      getCurrentBranch: async () => "feature/test",
+      getPrimaryBranch: async () => "master",
+      getLastCommitMessage: async () => "",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    const response = await handleToolCall({
+      request: createRequest("commit_and_push", { commitMessage: "feat: test" }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    const pushCommand = commands.find((command) => command.startsWith("git push"));
+    assert.ok(pushCommand, "git push should be executed");
+    assert.ok(
+      pushCommand.includes("master"),
+      "push command should use detected primary branch (master)"
+    );
+  });
+});
+
+test("run_full_workflow uses provided branch for release push when commit is clean", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.taskDescription = "Ship feature";
+    workflowState.state.taskType = "feature";
+    workflowState.state.currentPhase = "commit";
+    workflowState.state.bugFixed = true;
+    workflowState.state.testsCreated = true;
+    workflowState.state.testsPassed = true;
+    workflowState.state.documentationCreated = true;
+    workflowState.state.readyToCommit = true;
+    workflowState.state.readyCheckCompleted = true;
+    workflowState.state.commitAndPushCompleted = false;
+    workflowState.state.released = false;
+    workflowState.state.documentationType = "README";
+    workflowState.state.documentationSummary = "Docs";
+    workflowState.state.fixSummary = "Feature done";
+    await workflowState.save();
+
+    const commands = [];
+    const execStub = async (command) => {
+      commands.push(command);
+      if (command === "git status --porcelain") {
+        return { stdout: "" };
+      }
+      return { stdout: "" };
+    };
+
+    const git = {
+      hasWorkingChanges: async () => false,
+      hasStagedChanges: async () => false,
+      hasTestChanges: async () => true,
+      getStagedChanges: async () => [],
+      getCurrentBranch: async () => "feature/local",
+      getPrimaryBranch: async () => "main",
+      getLastCommitMessage: async () => "chore: existing",
+      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+    };
+
+    const branchName = "master";
+    const response = await handleToolCall({
+      request: createRequest("run_full_workflow", {
+        summary: "Feature done",
+        testCommand: "npm test",
+        documentationType: "README",
+        documentationSummary: "Docs",
+        commitMessage: "feat: ship feature",
+        branch: branchName,
+        releaseCommand: "npm run release:patch",
+      }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: execStub,
+      git,
+      utils,
+    });
+
+    assert.ok(
+      response.content[0].text.includes("✅ Full workflow completed successfully"),
+      "run_full_workflow should finish successfully"
+    );
+
+    const tagPushCommand = commands.find((command) => command.startsWith("git push --follow-tags"));
+    assert.ok(tagPushCommand, "release should push tags");
+    assert.ok(
+      /origin\s+'?master'?/.test(tagPushCommand),
+      `release push should target the provided branch (${branchName})`
+    );
+
+    assert.equal(workflowState.state.currentPhase, "idle");
+  });
+});
+
 test("project_summary_data reads persisted file and falls back", async () => {
   await withWorkflowState(async (workflowState) => {
     // Seed some history
@@ -174,7 +342,16 @@ test("project_summary_data reads persisted file and falls back", async () => {
       normalizeRequestArgs,
       workflowState,
       exec: async () => ({ stdout: "" }),
-      git: {},
+      git: {
+        hasWorkingChanges: async () => false,
+        hasStagedChanges: async () => false,
+        hasTestChanges: async () => true,
+        getStagedChanges: async () => [],
+        getCurrentBranch: async () => "main",
+        getPrimaryBranch: async () => "main",
+        getLastCommitMessage: async () => "",
+        workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+      },
       utils,
     });
 
@@ -199,7 +376,16 @@ test("project_summary aggregates task types and recent activity", async () => {
       normalizeRequestArgs,
       workflowState,
       exec: async () => ({ stdout: "" }),
-      git: {},
+      git: {
+        hasWorkingChanges: async () => false,
+        hasStagedChanges: async () => false,
+        hasTestChanges: async () => true,
+        getStagedChanges: async () => [],
+        getCurrentBranch: async () => "main",
+        getPrimaryBranch: async () => "main",
+        getLastCommitMessage: async () => "",
+        workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+      },
       utils,
     });
 
@@ -239,6 +425,7 @@ test("run_full_workflow executes all steps successfully", async () => {
       hasTestChanges: async () => true,
       getStagedChanges: async () => [{ status: "M", path: "src/app.js" }],
       getCurrentBranch: async () => "main",
+      getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
       workingTreeSummary: () =>
         workingChanges
@@ -315,6 +502,7 @@ test("run_full_workflow resumes from current phase when steps are already comple
       hasTestChanges: async () => true,
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
+      getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
@@ -373,7 +561,16 @@ test("run_full_workflow validates required arguments", async () => {
       normalizeRequestArgs,
       workflowState,
       exec: async () => ({ stdout: "" }),
-      git: {},
+      git: {
+        hasWorkingChanges: async () => false,
+        hasStagedChanges: async () => false,
+        hasTestChanges: async () => true,
+        getStagedChanges: async () => [],
+        getCurrentBranch: async () => "main",
+        getPrimaryBranch: async () => "main",
+        getLastCommitMessage: async () => "",
+        workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+      },
       utils,
     });
 
@@ -400,7 +597,16 @@ test("force_complete_task records entry and resets state", async () => {
       normalizeRequestArgs,
       workflowState,
       exec: async () => ({ stdout: "" }),
-      git: {},
+      git: {
+        hasWorkingChanges: async () => false,
+        hasStagedChanges: async () => false,
+        hasTestChanges: async () => true,
+        getStagedChanges: async () => [],
+        getCurrentBranch: async () => "main",
+        getPrimaryBranch: async () => "main",
+        getLastCommitMessage: async () => "",
+        workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+      },
       utils,
     });
 
@@ -436,7 +642,8 @@ test("perform_release blocks when new changes detected", async () => {
       hasTestChanges: async () => true,
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
-      getLastCommitMessage: async () => "fix: adjust layout",
+      getPrimaryBranch: async () => "main",
+      getLastCommitMessage: async () => "",
       workingTreeSummary: () => ({ hasChanges: true, lines: ["?? new-file.js"] }),
     };
 
@@ -466,6 +673,7 @@ test("continue_workflow warns when workflow is idle", async () => {
       hasTestChanges: async () => false,
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
+      getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
@@ -499,8 +707,9 @@ test("continue_workflow resets to commit when new changes detected", async () =>
       hasTestChanges: async () => true,
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
-      getLastCommitMessage: async () => "fix: adjust layout",
-      workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+      getPrimaryBranch: async () => "main",
+      getLastCommitMessage: async () => "",
+      workingTreeSummary: () => ({ hasChanges: true, lines: ["?? new-file.js"] }),
     };
 
     const response = await handleToolCall({
@@ -543,6 +752,7 @@ test("commit_and_push recognizes already committed work", async () => {
       hasTestChanges: async () => true,
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
+      getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "fix: previous work",
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };

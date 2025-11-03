@@ -426,8 +426,9 @@ async function handleCommitAndPush(args, context) {
     typeof args.commitMessage === "string" ? args.commitMessage.trim() : "";
 
   const requestedBranch = typeof args.branch === "string" ? args.branch.trim() : "";
+  const primaryBranch = await git.getPrimaryBranch();
   const currentBranch = await git.getCurrentBranch();
-  const branchForPush = requestedBranch || currentBranch || "";
+  const branchForPush = requestedBranch || primaryBranch || currentBranch || "";
 
   const hasWorkingChanges = await git.hasWorkingChanges();
 
@@ -817,6 +818,12 @@ async function handleRunFullWorkflow(args, { workflowState, exec, git, utils }) 
 
   await workflowState.ensurePrimaryFile();
 
+  const requestedBranch = typeof args.branch === "string" ? args.branch.trim() : "";
+  if (requestedBranch) {
+    workflowState.state.lastPushBranch = requestedBranch;
+    await workflowState.save();
+  }
+
   const requiredStrings = [
     { key: "summary", message: "Provide a non-empty 'summary' for mark_bug_fixed." },
     { key: "testCommand", message: "Provide a non-empty 'testCommand' for run_tests." },
@@ -906,7 +913,7 @@ async function handleRunFullWorkflow(args, { workflowState, exec, git, utils }) 
       const resp = await executeStep("commit_and_push", handleCommitAndPush, [
         {
           commitMessage: args.commitMessage,
-          branch: typeof args.branch === "string" ? args.branch : "",
+          branch: requestedBranch,
         },
         { workflowState, exec, git, utils },
       ]);

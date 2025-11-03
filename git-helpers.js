@@ -150,3 +150,28 @@ export async function getCurrentBranch() {
     return "";
   }
 }
+
+export async function getPrimaryBranch() {
+  try {
+    // Check if 'main' exists on origin
+    const { stdout: mainCheck } = await exec("git rev-parse --verify origin/main");
+    if (mainCheck.trim()) {
+      return "main";
+    }
+  } catch {
+    // main doesn't exist, fall through to master check
+  }
+
+  try {
+    // Check if 'master' exists on origin
+    const { stdout: masterCheck } = await exec("git rev-parse --verify origin/master");
+    if (masterCheck.trim()) {
+      return "master";
+    }
+  } catch {
+    // master doesn't exist either
+  }
+
+  // Fallback to current branch if neither main nor master exist
+  return await getCurrentBranch();
+}
