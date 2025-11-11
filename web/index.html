@@ -865,8 +865,11 @@
           throw new Error(`Failed to load document (${response.status})`);
         }
         const payload = await response.json();
-        const html = marked.parse(payload.content || '');
+        const rawContent = payload.content || '';
+        const format = (payload.format || 'markdown').toLowerCase();
+        const html = format === 'html' ? rawContent : marked.parse(rawContent);
         docModalContent.innerHTML = html;
+
         lucide.createIcons();
 
         if (headingText) {

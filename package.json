@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "vite build",
+    "postbuild": "node scripts/build-docs.js",
     "dev": "node --watch index.js",
     "start": "node index.js",
     "local": "node index.js",
@@ -50,7 +51,8 @@
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@programinglive/commiter": "^1.1.0"
+    "@programinglive/commiter": "^1.1.0",
+    "marked": "^12.0.2"
   },
   "standard-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}} 🚀",

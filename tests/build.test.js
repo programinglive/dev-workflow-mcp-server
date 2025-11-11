@@ -25,6 +25,15 @@ test('build generates dist/index.mjs file', async () => {
   const content = await readFile(distPath, 'utf-8');
   assert(content.includes('main'), 'Bundle should contain main function');
   assert(content.length > 1000, 'Bundle should be substantial');
+
+  const docDir = path.join(process.cwd(), 'dist', 'docs');
+  const docFiles = ['README.html', 'web-dashboard.html'];
+  for (const file of docFiles) {
+    const fullPath = path.join(docDir, file);
+    await access(fullPath);
+    const docContent = await readFile(fullPath, 'utf-8');
+    assert(docContent.includes('<h1'), `${file} should contain HTML output`);
+  }
 });
 
 test('build script exists in package.json', async () => {

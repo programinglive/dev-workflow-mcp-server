@@ -9,10 +9,38 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = join(__dirname, "..");
 
-const allowedDocs = {
-  "README.md": join(projectRoot, "README.md"),
-  "web-dashboard.md": join(projectRoot, "docs", "web-dashboard.md"),
+const docSources = {
+  "README.md": {
+    markdown: join(projectRoot, "README.md"),
+    html: join(projectRoot, "dist", "docs", "README.html"),
+  },
+  "web-dashboard.md": {
+    markdown: join(projectRoot, "docs", "web-dashboard.md"),
+    html: join(projectRoot, "dist", "docs", "web-dashboard.html"),
+  },
 };
+
+async function resolveDocContent(docKey) {
+  const entry = docSources[docKey];
+  if (!entry) {
+    return { exists: false };
+  }
+
+  // Try HTML first, fall back to Markdown in development or if HTML missing.
+  const candidates = [entry.html, entry.markdown];
+  for (const candidate of candidates) {
+    try {
+      await access(candidate);
+      const content = await readFile(candidate, "utf-8");
+      const format = candidate.endsWith(".html") ? "html" : "markdown";
+      return { exists: true, content, format };
+    } catch {
+      // try next candidate
+    }
+  }
+
+  return { exists: false };
+}
 
 function getPreferredPort() {
   const fromEnv = process.env.PORT || process.env.DEV_WORKFLOW_WEB_PORT;
@@ -59,31 +87,31 @@ async function start() {
         res.end(JSON.stringify({ summary }));
       } else if (req.method === "GET" && url.pathname === "/api/docs") {
         const rawDocKey = url.searchParams.get("doc");
+        const availableDocs = Object.keys(docSources);
+
         if (!rawDocKey) {
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ docs: Object.keys(allowedDocs) }));
+          res.end(JSON.stringify({ docs: availableDocs }));
           return;
         }
 
         const docKey = rawDocKey.trim();
-        const resolvedKey = Object.keys(allowedDocs).find((key) => key.toLowerCase() === docKey.toLowerCase());
+        const resolvedKey = availableDocs.find((key) => key.toLowerCase() === docKey.toLowerCase());
         if (!resolvedKey) {
           res.writeHead(404, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ error: "Document not found", requested: docKey, available: Object.keys(allowedDocs) }));
+          res.end(JSON.stringify({ error: "Document not found", requested: docKey, available: availableDocs }));
           return;
         }
 
-        const docPath = allowedDocs[resolvedKey];
-
-        try {
-          await access(docPath);
-          const content = await readFile(docPath, "utf-8");
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ doc: resolvedKey, content }));
-        } catch (error) {
+        const result = await resolveDocContent(resolvedKey);
+        if (!result.exists) {
           res.writeHead(500, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ error: error.message }));
+          res.end(JSON.stringify({ error: "Document asset is missing" }));
+          return;
         }
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ doc: resolvedKey, content: result.content, format: result.format }));
       } else {
         res.writeHead(404, { "Content-Type": "text/plain" });
         res.end("Not found");

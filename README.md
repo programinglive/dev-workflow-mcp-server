@@ -1,5 +1,11 @@
 # Development Workflow MCP Server
 
+<p align="left">
+  <a href="https://www.npmjs.com/package/@programinglive/dev-workflow-mcp-server"><img src="https://img.shields.io/npm/v/@programinglive/dev-workflow-mcp-server.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@programinglive/dev-workflow-mcp-server"><img src="https://img.shields.io/npm/dm/@programinglive/dev-workflow-mcp-server.svg" alt="npm downloads"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license: MIT"></a>
+</p>
+
 An MCP (Model Context Protocol) server that helps enforce development discipline and workflow best practices. This server acts as your coding conscience, reminding you to follow proper development workflows.
 
 ## 🎯 Purpose
@@ -190,6 +196,7 @@ Open `http://localhost:3111` in a browser to view the dashboard UI (`web/index.h
 Running `npm run build` generates:
 - `dist/index.mjs` - Optimized ES module bundle
 - Source maps and other build artifacts
+- `dist/docs/` - Pre-rendered HTML documentation generated from Markdown via `scripts/build-docs.js`
 
 The build bundles all source files while externalizing Node.js built-in modules and dependencies, resulting in a single file distribution.
 
