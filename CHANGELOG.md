@@ -2,6 +2,81 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.6](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.1...v1.2.6) (2025-11-11)
+
+
+### 🧹 Chores
+
+* **release:** 1.2.2 🚀 ([64eb9de](https://github.com/programinglive/dev-workflow-mcp-server/commit/64eb9dea66625ce0b21b5006f455b0d452299997))
+* **release:** 1.2.3 🚀 ([cd113e9](https://github.com/programinglive/dev-workflow-mcp-server/commit/cd113e9a2ca7a8a374f2ec07aa4a25f1c0570051))
+* **release:** 1.2.4 🚀 ([7d39809](https://github.com/programinglive/dev-workflow-mcp-server/commit/7d398091359ee74c69f12e8fa77443615c32d51a))
+* **release:** 1.2.5 🚀 ([e893f26](https://github.com/programinglive/dev-workflow-mcp-server/commit/e893f26a173306f96a40f68bf2c71706cc5fdb77))
+
+
+### 📝 Documentation
+
+* clarify user ID management ([a76381c](https://github.com/programinglive/dev-workflow-mcp-server/commit/a76381c842c1dea5e98116667addc4cbd0d022ed))
+
+### [1.2.5](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.1...v1.2.5) (2025-11-11)
+
+
+### 🧹 Chores
+
+* **release:** 1.2.2 🚀 ([64eb9de](https://github.com/programinglive/dev-workflow-mcp-server/commit/64eb9dea66625ce0b21b5006f455b0d452299997))
+* **release:** 1.2.3 🚀 ([cd113e9](https://github.com/programinglive/dev-workflow-mcp-server/commit/cd113e9a2ca7a8a374f2ec07aa4a25f1c0570051))
+* **release:** 1.2.4 🚀 ([7d39809](https://github.com/programinglive/dev-workflow-mcp-server/commit/7d398091359ee74c69f12e8fa77443615c32d51a))
+* **release:** 1.2.5 🚀 ([e893f26](https://github.com/programinglive/dev-workflow-mcp-server/commit/e893f26a173306f96a40f68bf2c71706cc5fdb77))
+
+
+### 📝 Documentation
+
+* clarify user ID management ([a76381c](https://github.com/programinglive/dev-workflow-mcp-server/commit/a76381c842c1dea5e98116667addc4cbd0d022ed))
+
+### [1.2.4](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.1...v1.2.4) (2025-11-11)
+
+
+### 🧹 Chores
+
+* **release:** 1.2.2 🚀 ([64eb9de](https://github.com/programinglive/dev-workflow-mcp-server/commit/64eb9dea66625ce0b21b5006f455b0d452299997))
+* **release:** 1.2.3 🚀 ([cd113e9](https://github.com/programinglive/dev-workflow-mcp-server/commit/cd113e9a2ca7a8a374f2ec07aa4a25f1c0570051))
+* **release:** 1.2.4 🚀 ([7d39809](https://github.com/programinglive/dev-workflow-mcp-server/commit/7d398091359ee74c69f12e8fa77443615c32d51a))
+* **release:** 1.2.5 🚀 ([e893f26](https://github.com/programinglive/dev-workflow-mcp-server/commit/e893f26a173306f96a40f68bf2c71706cc5fdb77))
+
+
+### 📝 Documentation
+
+* clarify user ID management ([a76381c](https://github.com/programinglive/dev-workflow-mcp-server/commit/a76381c842c1dea5e98116667addc4cbd0d022ed))
+
+### [1.2.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.1...v1.2.3) (2025-11-11)
+
+
+### 🧹 Chores
+
+* **release:** 1.2.2 🚀 ([64eb9de](https://github.com/programinglive/dev-workflow-mcp-server/commit/64eb9dea66625ce0b21b5006f455b0d452299997))
+* **release:** 1.2.3 🚀 ([cd113e9](https://github.com/programinglive/dev-workflow-mcp-server/commit/cd113e9a2ca7a8a374f2ec07aa4a25f1c0570051))
+* **release:** 1.2.4 🚀 ([7d39809](https://github.com/programinglive/dev-workflow-mcp-server/commit/7d398091359ee74c69f12e8fa77443615c32d51a))
+* **release:** 1.2.5 🚀 ([e893f26](https://github.com/programinglive/dev-workflow-mcp-server/commit/e893f26a173306f96a40f68bf2c71706cc5fdb77))
+
+
+### 📝 Documentation
+
+* clarify user ID management ([a76381c](https://github.com/programinglive/dev-workflow-mcp-server/commit/a76381c842c1dea5e98116667addc4cbd0d022ed))
+
+### [1.2.2](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.1...v1.2.2) (2025-11-11)
+
+
+### 🧹 Chores
+
+* **release:** 1.2.2 🚀 ([64eb9de](https://github.com/programinglive/dev-workflow-mcp-server/commit/64eb9dea66625ce0b21b5006f455b0d452299997))
+* **release:** 1.2.3 🚀 ([cd113e9](https://github.com/programinglive/dev-workflow-mcp-server/commit/cd113e9a2ca7a8a374f2ec07aa4a25f1c0570051))
+* **release:** 1.2.4 🚀 ([7d39809](https://github.com/programinglive/dev-workflow-mcp-server/commit/7d398091359ee74c69f12e8fa77443615c32d51a))
+* **release:** 1.2.5 🚀 ([e893f26](https://github.com/programinglive/dev-workflow-mcp-server/commit/e893f26a173306f96a40f68bf2c71706cc5fdb77))
+
+
+### 📝 Documentation
+
+* clarify user ID management ([a76381c](https://github.com/programinglive/dev-workflow-mcp-server/commit/a76381c842c1dea5e98116667addc4cbd0d022ed))
+
 ### [1.2.5](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.4...v1.2.5) (2025-11-03)
 
 ### [1.2.4](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.3...v1.2.4) (2025-11-03)
