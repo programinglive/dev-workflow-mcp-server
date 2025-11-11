@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.6](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.5...v1.2.6) (2025-11-11)
+
+
+### 🏗️ Build System
+
+* **release:** delegate to commiter ([e174d8d](https://github.com/programinglive/dev-workflow-mcp-server/commit/e174d8dca300e4822f67681a39dc5f4d9f56232a))
+
+
+### 🐛 Bug Fixes
+
+* **cli:** expose primary branch helper ([a3fb9c8](https://github.com/programinglive/dev-workflow-mcp-server/commit/a3fb9c881df67298eba4a8446ba9a14473f54e0a))
+
+
+### 📝 Documentation
+
+* **changelog:** note commiter delegation ([6352aa2](https://github.com/programinglive/dev-workflow-mcp-server/commit/6352aa2f561e9d7f7d8a4f26d9c930e108bbe81b))
+
 ### [1.2.4](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.3...v1.2.4) (2025-11-11)
 
 
