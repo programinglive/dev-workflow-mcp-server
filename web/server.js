@@ -14,8 +14,20 @@ const allowedDocs = {
   "web-dashboard.md": join(projectRoot, "docs", "web-dashboard.md"),
 };
 
+function getPreferredPort() {
+  const fromEnv = process.env.PORT || process.env.DEV_WORKFLOW_WEB_PORT;
+
+  if (!fromEnv) {
+    return null;
+  }
+
+  const parsed = Number(fromEnv);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
 async function start() {
-  const PORT = process.env.DEV_WORKFLOW_WEB_PORT || await getPort({ port: 3111 });
+  const preferred = getPreferredPort();
+  const PORT = preferred ?? await getPort({ port: 3111 });
 
   const server = createServer(async (req, res) => {
     try {

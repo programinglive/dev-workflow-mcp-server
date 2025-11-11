@@ -54,6 +54,8 @@ Plesk supports Node.js applications through its Node.js extension. To deploy the
 
 > **Tip:** The MCP server communicates over stdio. If you only need it as a CLI tool, you can also run `npx @programinglive/dev-workflow-mcp-server` directly in an SSH session without keeping it running under the Node.js panel.
 
+> **Important:** MCP clients (Windsurf, Claude Desktop, etc.) must launch the server process locally via stdio. Hosting the dashboard on a public domain does **not** expose the MCP interface. Without SSH or another way to execute `node index.js` on the server, users cannot connect their MCP clients to the hosted instance.
+
 #### Two Usage Modes
 
 - **Local (source)**: Point your MCP client to `index.js`. This runs directly from source and requires no build step. Recommended for MCP usage.
@@ -173,7 +175,8 @@ npm run web
 # 🌐 Dev Workflow Dashboard running at http://localhost:3111
 ```
 
-- **Default port:** 3111 (or the next free port if occupied). Override with `DEV_WORKFLOW_WEB_PORT`.
+- **Default port:** 3111 (or the next free port if occupied).
+- **Environment overrides:** Honors `PORT` (common on hosts like Plesk/Render) or `DEV_WORKFLOW_WEB_PORT` before falling back to auto-selection.
 - **Query parameter:** `?user=<id>` lets you inspect another user’s history (defaults to `default`).
 - **API endpoints:**
   - `GET /api/summary?user=<id>` → overall stats for the user.
@@ -208,6 +211,28 @@ When you install this package in a project, a `.state/workflow-state.json` file 
 - **Stays centralized** even if you run the server from nested build outputs like `dist/`. The MCP server walks back to the project root (looking for `.git` or `package.json`) before reading or writing workflow state, so you never need duplicate copies under build directories.
 
 Each project maintains its own isolated workflow history, so you can work on multiple projects without mixing their histories. Within that `.state` directory, the MCP server automatically creates a unique per-user subdirectory (e.g., `.state/users/user-abc123/`). The generated identifier persists locally so multiple developers sharing the same repository never clobber each other’s workflow files. If you prefer a specific name, set `DEV_WORKFLOW_USER_ID` before launching the server and that value will be used instead of the auto-generated ID.
+
+#### Choosing a User ID
+
+Use cases:
+
+1. **Let the server choose** – Do nothing and the first time you run any MCP tool the server creates `.state/users/<random-id>/`. The dashboard `User ID` filter accepts that value (visible in the folder name or in workflow responses).
+2. **Set an explicit ID** – Before starting the server, export `DEV_WORKFLOW_USER_ID`:
+
+   ```bash
+   # macOS/Linux
+   export DEV_WORKFLOW_USER_ID=alice
+   node index.js
+
+   # Windows PowerShell
+   $env:DEV_WORKFLOW_USER_ID = "alice"
+   node index.js
+   ```
+
+   Now all history for that session lands in `.state/users/alice/` and the dashboard can be filtered with `alice`.
+3. **Multiple users on one host** – Run separate processes (or MCP clients) with different `DEV_WORKFLOW_USER_ID` values. Each user’s workflow state remains isolated.
+
+> **Tip:** The web dashboard simply reads existing records. Typing a new value into the `User ID` filter will only return results after a workflow session has written history into `.state/users/<that-id>/`.
 
 ### Adding to .gitignore
 

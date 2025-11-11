@@ -95,6 +95,14 @@
                 Overview
               </h2>
               <p class="mt-2 text-slate-600">Learn how the Dev Workflow dashboard surfaces workflow history and offers inline documentation for every MCP command.</p>
+              <div class="mt-4 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg p-4 flex gap-3">
+                <i data-lucide="alert-circle" class="mt-1 shrink-0"></i>
+                <p>
+                  The dashboard is read-only. MCP clients (Windsurf, Claude Desktop, etc.) must launch the server via <code>node index.js</code>
+                  over stdio on the machine they control. Hosting this site publicly does <strong>not</strong> expose the MCP protocol; without SSH or another
+                  execution path to the server, remote users cannot connect their MCP agents.
+                </p>
+              </div>
             </div>
             <div class="hidden md:flex items-center gap-2 text-sm text-slate-500">
               <i data-lucide="info"></i>
@@ -278,16 +286,45 @@
 
             <details class="border border-slate-200 rounded-lg">
               <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
-                <span><i data-lucide="beaker"></i> create_tests &amp; run_tests</span>
+                <span><i data-lucide="beaker"></i> create_tests</span>
                 <i data-lucide="chevron-down" class="ml-2"></i>
               </summary>
               <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
-                <p>Track your testing workflow from coverage to execution.</p>
+                <p>Confirm that coverage exists for the work you just completed.</p>
                 <ul class="list-disc list-inside space-y-1">
-                  <li><strong>create_tests:</strong> No parameters — confirms tests exist.</li>
-                  <li><strong>run_tests:</strong> <code>passed</code> (boolean), <code>testCommand</code> (string), optional <code>details</code> (string)</li>
-                  <li><strong>Guidance:</strong> Tests must pass before documentation or commits.</li>
-                  <li><strong>Alternate:</strong> Use <code>skip_tests</code> with a detailed justification when automation is impossible.</li>
+                  <li><strong>Parameters:</strong> None.</li>
+                  <li><strong>When to use:</strong> After <code>mark_bug_fixed</code> once tests are written.</li>
+                  <li><strong>Next step:</strong> Execute <code>run_tests</code> and record the results.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="ban"></i> skip_tests</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Document why automated tests are impossible for this task.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameter:</strong> <code>reason</code> (string, required)</li>
+                  <li><strong>Effect:</strong> Flags the workflow for manual QA review.</li>
+                  <li><strong>Next step:</strong> Continue with <code>create_documentation</code>.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="test-tube"></i> run_tests</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Capture the outcome of your automated test run.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameters:</strong> <code>passed</code> (boolean, required), <code>testCommand</code> (string, required), optional <code>details</code> (string)</li>
+                  <li><strong>Guidance:</strong> Never proceed if tests fail—return to coding and re-run.</li>
+                  <li><strong>Next step:</strong> Move to <code>create_documentation</code> when green.</li>
                 </ul>
               </div>
             </details>
@@ -351,16 +388,158 @@
 
             <details class="border border-slate-200 rounded-lg">
               <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
-                <span><i data-lucide="check-square"></i> complete_task &amp; friends</span>
+                <span><i data-lucide="check-square"></i> complete_task</span>
                 <i data-lucide="chevron-down" class="ml-2"></i>
               </summary>
               <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
-                <p>Finalize or reroute the workflow depending on outcomes.</p>
+                <p>Close the workflow after a successful push and release.</p>
                 <ul class="list-disc list-inside space-y-1">
-                  <li><strong>complete_task:</strong> Requires the final <code>commitMessage</code>.</li>
-                  <li><strong>force_complete_task:</strong> Close with justification, recording in history.</li>
-                  <li><strong>drop_task:</strong> Abandon work while capturing a reason.</li>
-                  <li><strong>view_history / continue_workflow:</strong> Read-only helpers for status.</li>
+                  <li><strong>Parameter:</strong> <code>commitMessage</code> (string, required)</li>
+                  <li><strong>Effect:</strong> Archives the task in history and resets the state.</li>
+                  <li><strong>Next step:</strong> Celebrate or begin the next task with <code>start_task</code>.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="alert-triangle"></i> force_complete_task</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Record an incomplete task as finished with a justification.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameters:</strong> optional <code>commitMessage</code>, optional <code>reason</code> (string)</li>
+                  <li><strong>Use sparingly:</strong> Ideal for emergencies where remaining steps cannot be done.</li>
+                  <li><strong>Next step:</strong> Follow up manually on outstanding work.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="x-circle"></i> drop_task</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Abandon the current effort while keeping the history clean.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameter:</strong> optional <code>reason</code> (string)</li>
+                  <li><strong>When to use:</strong> Pivoting to a new approach or discarding exploratory work.</li>
+                  <li><strong>Next step:</strong> Start a fresh task once direction is clear.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="info"></i> get_workflow_status</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Check the current phase, pending steps, and metadata.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameters:</strong> None.</li>
+                  <li><strong>Use when:</strong> You need a quick reminder of what remains.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="history"></i> view_history</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>List recently completed tasks and their outcomes.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameter:</strong> optional <code>limit</code> (number)</li>
+                  <li><strong>Great for:</strong> Standups, retrospectives, or auditing recent work.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="compass"></i> continue_workflow</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Receive coaching on what to do next.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameters:</strong> None.</li>
+                  <li><strong>Behavior:</strong> Runs readiness checks automatically and surfaces blockers.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="refresh-cw"></i> rerun_workflow</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Reset the active task back to the start.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameters:</strong> None.</li>
+                  <li><strong>Use when:</strong> You want to replay the entire process with fresh inputs.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="workflow"></i> run_full_workflow</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Execute every command in sequence when you already know the answers.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameters (required):</strong> <code>summary</code>, <code>testCommand</code>, <code>documentationType</code>, <code>documentationSummary</code>, <code>commitMessage</code>, <code>releaseCommand</code></li>
+                  <li><strong>Optional:</strong> <code>testsPassed</code>, <code>testDetails</code>, <code>branch</code>, <code>releaseNotes</code>, <code>releaseType</code>, <code>preset</code></li>
+                  <li><strong>Ideal for:</strong> Scripted flows or demos where you want the guardrails without manual calls.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="pie-chart"></i> project_summary</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Generate a high-level recap of the project’s workflow health.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameters:</strong> None.</li>
+                  <li><strong>Output:</strong> Aggregated stats compiled from workflow history.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="database"></i> project_summary_data</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Read the persisted JSON knowledge base (project-summary.json).</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameters:</strong> None.</li>
+                  <li><strong>Use when:</strong> You need the structured summary file for automation or reporting.</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="border border-slate-200 rounded-lg">
+              <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between font-medium">
+                <span><i data-lucide="database-backup"></i> project_summary_db</span>
+                <i data-lucide="chevron-down" class="ml-2"></i>
+              </summary>
+              <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
+                <p>Query the SQLite-backed knowledge base for the active user.</p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Parameters:</strong> None.</li>
+                  <li><strong>Tip:</strong> Set <code>DEV_WORKFLOW_USER_ID</code> to target another user’s dataset.</li>
                 </ul>
               </div>
             </details>
