@@ -98,5 +98,8 @@ test("release-wrapper marks release after validation passes", async () => {
   assert.ok(result.stdout.includes("Release recorded"));
   assert.equal(result.updatedState.released, true);
   assert.equal(result.updatedState.currentPhase, "ready_to_complete");
-  assert.equal(result.updatedState.releaseCommand, "npm run release:patch");
+  assert.equal(
+    result.updatedState.releaseCommand,
+    "node node_modules/@programinglive/commiter/scripts/release.js patch"
+  );
 });

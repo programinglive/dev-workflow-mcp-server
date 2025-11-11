@@ -9,6 +9,7 @@ const RELEASE_TYPES = new Set(['major', 'minor', 'patch']);
 async function main() {
   const releaseTypeArg = (process.argv[2] || '').toLowerCase();
   const forceFlag = process.argv.includes('--force') || process.env.DEV_WORKFLOW_FORCE_RELEASE === '1';
+  const additionalArgs = process.argv.slice(3).filter((arg) => arg !== '--force');
 
   if (!RELEASE_TYPES.has(releaseTypeArg)) {
     console.error(
@@ -17,11 +18,13 @@ async function main() {
     process.exit(1);
   }
 
-  const projectRoot = process.env.INIT_CWD || process.cwd();
-  if (projectRoot.includes(`node_modules${path.sep}`)) {
+  const repoRoot = process.cwd();
+  const projectRootCandidate = process.env.INIT_CWD || repoRoot;
+  if (projectRootCandidate.includes(`node_modules${path.sep}`)) {
     console.error('❌ Release guard: refusing to run inside node_modules.');
     process.exit(1);
   }
+  const projectRoot = projectRootCandidate;
 
   // Prefer state under INIT_CWD to support per-project runs and tests.
   // If DEV_WORKFLOW_USER_ID is set and a user-scoped file exists, use it; otherwise fall back to legacy path.
@@ -95,6 +98,17 @@ async function main() {
     }
   }
 
+  const commiterReleaseScript = path.join(repoRoot, 'node_modules', '@programinglive', 'commiter', 'scripts', 'release.js');
+
+  try {
+    await fs.access(commiterReleaseScript);
+  } catch {
+    console.error('❌ Release guard: @programinglive/commiter release script not found.');
+    console.error('   Ensure @programinglive/commiter is installed as a dev dependency.');
+    console.error('   Try: npm install --save-dev @programinglive/commiter');
+    process.exit(1);
+  }
+
   const runRelease = async () => {
     if (process.env.DEV_WORKFLOW_SKIP_RELEASE === '1') {
       console.log('ℹ️ DEV_WORKFLOW_SKIP_RELEASE=1 detected. Skipping actual release command.');
@@ -103,9 +117,9 @@ async function main() {
 
     return await new Promise((resolve, reject) => {
       const child = spawn(
-        'npm',
-        ['run', 'release', '--', '--release-as', releaseTypeArg],
-        { stdio: 'inherit', shell: process.platform === 'win32', cwd: projectRoot }
+        process.execPath,
+        [commiterReleaseScript, releaseTypeArg, ...additionalArgs],
+        { stdio: 'inherit', cwd: repoRoot }
       );
 
       child.on('error', (error) => reject(error));
@@ -124,8 +138,10 @@ async function main() {
     process.exit(1);
   }
 
+  const recordedReleaseCommand = `node node_modules/@programinglive/commiter/scripts/release.js ${releaseTypeArg}`;
+
   state.released = true;
-  state.releaseCommand = `npm run release:${releaseTypeArg}`;
+  state.releaseCommand = recordedReleaseCommand;
   state.currentPhase = 'ready_to_complete';
 
   try {
