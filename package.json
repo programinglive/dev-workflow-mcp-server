@@ -1,6 +1,6 @@
 {
   "name": "@programinglive/dev-workflow-mcp-server",
-  "version": "1.2.6",
+  "version": "1.2.2",
   "description": "MCP server to enforce development workflow discipline",
   "homepage": "https://devworkflow.programinglive.com/",
   "type": "module",

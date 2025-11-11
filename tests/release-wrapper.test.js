@@ -23,6 +23,7 @@ async function runWrapper({ state, args = ["patch"], env = {} }) {
     ...process.env,
     INIT_CWD: dir,
     DEV_WORKFLOW_SKIP_RELEASE: "1",
+    DEV_WORKFLOW_FORCE_RELEASE: undefined,
     ...env,
   };
 
