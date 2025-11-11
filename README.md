@@ -207,6 +207,16 @@ For MCP server usage, point your client at `index.js` (source) to avoid stdio tr
 - Performance optimization
 - Embedding in other projects
 
+#### PowerShell CLI tip
+
+When invoking the lightweight CLI from PowerShell, use `--%` to prevent PowerShell from rewriting JSON arguments, for example:
+
+```powershell
+node --% index.js call start_task --args "{\"description\":\"Convert docs to HTML during build\",\"type\":\"feature\"}"
+```
+
+The `--%` prefix and escaped double quotes ensure the JSON reaches the MCP server unchanged.
+
 ## 📁 Project-Specific Workflow State
 
 When you install this package in a project, a `.state/workflow-state.json` file is automatically created in your project root. This file:
