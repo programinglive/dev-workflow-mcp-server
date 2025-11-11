@@ -2,6 +2,9 @@
 
 Authoritative history of user-visible changes for the Development Workflow MCP Server. Each entry highlights the improvements that shipped with the tagged version.
 
+## Unreleased
+- Release guard now delegates to `@programinglive/commiter` and verifies the package is installed before running.
+
 > **Notice:** Versions 1.2.2 through 1.2.5 were published briefly for packaging experiments and have been withdrawn. The current latest version is **1.2.1**.
 
 ## 1.2.1 — 2025-11-03
