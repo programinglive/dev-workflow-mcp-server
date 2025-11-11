@@ -14,6 +14,7 @@ import { normalizeRequestArgs, shellEscape } from "./utils.js";
 import {
   getCurrentBranch,
   getLastCommitMessage,
+  getPrimaryBranch,
   getStagedChanges,
   hasStagedChanges,
   hasTestChanges,
@@ -72,6 +73,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       hasStagedChanges,
       getStagedChanges,
       getCurrentBranch,
+      getPrimaryBranch,
       getLastCommitMessage,
       workingTreeSummary,
     },
@@ -246,6 +248,7 @@ async function cliMain(argv) {
         hasStagedChanges,
         getStagedChanges,
         getCurrentBranch,
+        getPrimaryBranch,
         getLastCommitMessage,
         workingTreeSummary,
       },
