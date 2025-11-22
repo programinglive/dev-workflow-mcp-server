@@ -18,6 +18,26 @@ const docSources = {
     markdown: join(projectRoot, "docs", "web-dashboard.md"),
     html: join(projectRoot, "dist", "docs", "web-dashboard.html"),
   },
+  "GETTING-STARTED.md": {
+    markdown: join(projectRoot, "docs", "antigravity", "GETTING-STARTED.md"),
+    html: join(projectRoot, "dist", "docs", "GETTING-STARTED.html"),
+  },
+  "EXAMPLES.md": {
+    markdown: join(projectRoot, "docs", "antigravity", "EXAMPLES.md"),
+    html: join(projectRoot, "dist", "docs", "EXAMPLES.html"),
+  },
+  "WORKFLOW-TEMPLATES.md": {
+    markdown: join(projectRoot, "docs", "antigravity", "WORKFLOW-TEMPLATES.md"),
+    html: join(projectRoot, "dist", "docs", "WORKFLOW-TEMPLATES.html"),
+  },
+  "TROUBLESHOOTING.md": {
+    markdown: join(projectRoot, "docs", "antigravity", "TROUBLESHOOTING.md"),
+    html: join(projectRoot, "dist", "docs", "TROUBLESHOOTING.html"),
+  },
+  "RELEASE_NOTES.md": {
+    markdown: join(projectRoot, "docs", "release-notes", "RELEASE_NOTES.md"),
+    html: join(projectRoot, "dist", "docs", "RELEASE_NOTES.html"),
+  },
 };
 
 async function resolveDocContent(docKey) {

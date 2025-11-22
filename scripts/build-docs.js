@@ -18,6 +18,31 @@ const docs = [
     source: path.join(projectRoot, 'docs', 'web-dashboard.md'),
     output: 'web-dashboard.html',
   },
+  {
+    key: 'GETTING-STARTED.md',
+    source: path.join(projectRoot, 'docs', 'antigravity', 'GETTING-STARTED.md'),
+    output: 'GETTING-STARTED.html',
+  },
+  {
+    key: 'EXAMPLES.md',
+    source: path.join(projectRoot, 'docs', 'antigravity', 'EXAMPLES.md'),
+    output: 'EXAMPLES.html',
+  },
+  {
+    key: 'WORKFLOW-TEMPLATES.md',
+    source: path.join(projectRoot, 'docs', 'antigravity', 'WORKFLOW-TEMPLATES.md'),
+    output: 'WORKFLOW-TEMPLATES.html',
+  },
+  {
+    key: 'TROUBLESHOOTING.md',
+    source: path.join(projectRoot, 'docs', 'antigravity', 'TROUBLESHOOTING.md'),
+    output: 'TROUBLESHOOTING.html',
+  },
+  {
+    key: 'RELEASE_NOTES.md',
+    source: path.join(projectRoot, 'docs', 'release-notes', 'RELEASE_NOTES.md'),
+    output: 'RELEASE_NOTES.html',
+  },
 ];
 
 const distDocDir = path.join(projectRoot, 'dist', 'docs');
