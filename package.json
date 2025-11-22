@@ -18,10 +18,10 @@
     "check": "node --check index.js",
     "prepare": "husky",
     "postinstall": "node install.js",
-    "release": "standard-version",
-    "release:major": "node release-wrapper.js major",
-    "release:minor": "node release-wrapper.js minor",
-    "release:patch": "node release-wrapper.js patch",
+    "release": "node scripts/release.js",
+    "release:major": "node scripts/release.js major",
+    "release:minor": "node scripts/release.js minor",
+    "release:patch": "node scripts/release.js patch",
     "web": "node web/server.js"
   },
   "keywords": [
@@ -41,8 +41,6 @@
     "better-sqlite3": "^11.8.0",
     "esbuild": "^0.25.0",
     "get-port": "^7.1.0",
-    "husky": "^9.1.7",
-    "standard-version": "^9.5.0",
     "vite": "^7.1.12"
   },
   "publishConfig": {
@@ -51,8 +49,10 @@
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@programinglive/commiter": "^1.1.0",
-    "marked": "^12.0.2"
+    "@programinglive/commiter": "^1.1.8",
+    "husky": "^9.1.7",
+    "marked": "^12.0.2",
+    "standard-version": "^9.5.0"
   },
   "standard-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}} 🚀",
