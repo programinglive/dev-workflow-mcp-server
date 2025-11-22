@@ -4,6 +4,20 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.3.11 — 2025-11-23
+- Re-applied Plesk security fix (moved static files to `web/public/`).
+- Updated build configuration and server paths.
+
+## 1.3.10 — 2025-11-23
+- Fixed workflow state synchronization issue that caused forced releases.
+- Added `docs/WORKFLOW-BEST-PRACTICES.md`.
+
+## 1.3.9 — 2025-11-23
+- Improved documentation modal layout and readability.
+
+## 1.3.8 — 2025-11-23
+- Fixed documentation loading in production by tracking `dist/docs` in git.
+
 ## 1.3.0 — 2025-11-22
 - Added comprehensive Antigravity integration documentation and examples.
 - Fixed Windows shell escaping for commit messages.
