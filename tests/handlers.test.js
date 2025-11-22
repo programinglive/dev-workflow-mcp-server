@@ -323,7 +323,7 @@ test("run_full_workflow uses provided branch for release push when commit is cle
     const tagPushCommand = commands.find((command) => command.startsWith("git push --follow-tags"));
     assert.ok(tagPushCommand, "release should push tags");
     assert.ok(
-      /origin\s+'?master'?/.test(tagPushCommand),
+      /origin\s+['"]?master['"]?/.test(tagPushCommand),
       `release push should target the provided branch (${branchName})`
     );
 
@@ -837,7 +837,7 @@ test("perform_release runs release command before pushing with tags", async () =
     assert.equal(workflowState.state.currentPhase, "ready_to_complete");
     assert.ok(
       response.content[0].text.includes("No workflow history yet") ||
-        response.content[0].text.includes("Workflow History"),
+      response.content[0].text.includes("Workflow History"),
       "response should describe workflow history or absence thereof"
     );
   });

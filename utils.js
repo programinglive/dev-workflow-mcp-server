@@ -3,8 +3,9 @@ const isWindows = process.platform === "win32";
 export function shellEscape(value) {
   const stringValue = String(value);
   if (isWindows) {
-    // Use PowerShell-friendly single quotes, escape embedded single quotes by doubling
-    return `'${stringValue.replace(/'/g, "''")}'`;
+    // Windows cmd.exe requires double quotes for arguments with spaces.
+    // Escape existing double quotes with backslash.
+    return `"${stringValue.replace(/"/g, '\\"')}"`;
   }
 
   return `'${stringValue.replace(/'/g, "'\\''")}'`;

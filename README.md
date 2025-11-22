@@ -161,6 +161,26 @@ Point your MCP client to the server entry point. Replace `<PROJECT_ROOT>` with t
 
 After adding the configuration, restart the application to load the MCP server.
 
+
+### 5. Configure in Antigravity
+
+Antigravity users should configure the MCP server in their `mcp_config.json`.
+
+**Windows:** `%APPDATA%\Antigravity\mcp_config.json` or `C:\Users\<USERNAME>\.gemini\antigravity\mcp_config.json`
+
+```json
+{
+  "mcpServers": {
+    "dev-workflow": {
+      "command": "node",
+      "args": ["<PROJECT_ROOT>\\index.js"]
+    }
+  }
+}
+```
+
+See [Antigravity Getting Started](./docs/antigravity/GETTING-STARTED.md) for detailed instructions and troubleshooting.
+
 ## 🏗️ Build System
 
 This project includes a Vite-based build system for creating optimized distributions.
