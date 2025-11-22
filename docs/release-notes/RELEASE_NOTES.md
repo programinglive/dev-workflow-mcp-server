@@ -3,9 +3,21 @@
 Authoritative history of user-visible changes for the Development Workflow MCP Server. Each entry highlights the improvements that shipped with the tagged version.
 
 ## Unreleased
+
+## 1.3.0 — 2025-11-22
+- Added comprehensive Antigravity integration documentation and examples.
+- Fixed Windows shell escaping for commit messages.
+- Fixed release scripts to support ESM projects.
 - Release guard now delegates to `@programinglive/commiter` and verifies the package is installed before running.
 
-> **Notice:** Versions 1.2.2 through 1.2.5 were published briefly for packaging experiments and have been withdrawn. The current latest version is **1.2.1**.
+## 1.2.7 — 2025-11-13
+- Delegated release process to `@programinglive/commiter`.
+
+## 1.2.6 — 2025-11-11
+- Exposed primary branch helper in CLI.
+- Updated documentation regarding commiter delegation.
+
+> **Notice:** Versions 1.2.2 through 1.2.5 were published briefly for packaging experiments and have been withdrawn.
 
 ## 1.2.1 — 2025-11-03
 - Packaging touch-up; functionality remains identical to 1.2.0.
