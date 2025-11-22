@@ -82,7 +82,11 @@ async function start() {
       const url = new URL(req.url, `http://${req.headers.host}`);
       const userId = url.searchParams.get("user") || "default";
 
-      if (req.method === "GET" && url.pathname === "/") {
+      if (req.method === "GET" && url.pathname === "/output.css") {
+        const css = await readFile(join(__dirname, "output.css"), "utf-8");
+        res.writeHead(200, { "Content-Type": "text/css" });
+        res.end(css);
+      } else if (req.method === "GET" && url.pathname === "/") {
         const html = await readFile(join(__dirname, "index.html"), "utf-8");
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(html);

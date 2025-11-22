@@ -10,7 +10,9 @@
   },
   "scripts": {
     "build": "vite build",
-    "postbuild": "node scripts/build-docs.js",
+    "build:web": "node node_modules/@tailwindcss/cli/dist/index.mjs -i ./web/input.css -o ./web/output.css --minify",
+    "watch:web": "node node_modules/@tailwindcss/cli/dist/index.mjs -i ./web/input.css -o ./web/output.css --watch",
+    "postbuild": "npm run build:web && node scripts/build-docs.js",
     "dev": "node --watch index.js",
     "start": "node index.js",
     "local": "node index.js",
@@ -51,8 +53,12 @@
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@programinglive/commiter": "^1.1.8",
+    "@tailwindcss/cli": "^4.1.17",
+    "autoprefixer": "^10.4.22",
     "husky": "^9.1.7",
-    "standard-version": "^9.5.0"
+    "postcss": "^8.5.6",
+    "standard-version": "^9.5.0",
+    "tailwindcss": "^4.1.17"
   },
   "standard-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}} 🚀",
