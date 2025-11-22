@@ -12,9 +12,10 @@ test('build generates dist/index.mjs file', async () => {
   // Allow the known vite warning about node:process
   const knownWarning = '[plugin vite:resolve] Module "node:process" has been externalized for browser compatibility';
   const tailwindOutput = '≈ tailwindcss';
+  const browserslistWarning = 'Browserslist: caniuse-lite is outdated';
   const actualStderr = stderr.replace(/\x1B\[[0-9;]*m/g, ''); // Remove ANSI codes
   assert(
-    actualStderr === '' || actualStderr.includes(knownWarning) || actualStderr.includes(tailwindOutput),
+    actualStderr === '' || actualStderr.includes(knownWarning) || actualStderr.includes(tailwindOutput) || actualStderr.includes(browserslistWarning),
     `Build should not have unexpected errors: ${actualStderr}`
   );
 
