@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.6](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.3.5...v1.3.6) (2025-11-22)
+
+
+### ✨ Features
+
+* **web:** replace Tailwind CDN with build process ([1e6e91f](https://github.com/programinglive/dev-workflow-mcp-server/commit/1e6e91f880d0445e39211d0d42aff1ca2e3e9253))
+
 ### [1.3.5](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.3.4...v1.3.5) (2025-11-22)
 
 
