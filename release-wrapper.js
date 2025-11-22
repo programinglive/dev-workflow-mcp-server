@@ -98,7 +98,7 @@ async function main() {
     }
   }
 
-  const commiterReleaseScript = path.join(repoRoot, 'node_modules', '@programinglive', 'commiter', 'scripts', 'release.js');
+  const commiterReleaseScript = path.join(repoRoot, 'scripts', 'release.cjs');
 
   try {
     await fs.access(commiterReleaseScript);
