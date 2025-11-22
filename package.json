@@ -18,10 +18,10 @@
     "check": "node --check index.js",
     "prepare": "husky",
     "postinstall": "node install.js",
-    "release": "node scripts/release.js",
-    "release:major": "node scripts/release.js major",
-    "release:minor": "node scripts/release.js minor",
-    "release:patch": "node scripts/release.js patch",
+    "release": "node scripts/release.cjs",
+    "release:major": "node release-wrapper.js major",
+    "release:minor": "node release-wrapper.js minor",
+    "release:patch": "node release-wrapper.js patch",
     "web": "node web/server.js"
   },
   "keywords": [
