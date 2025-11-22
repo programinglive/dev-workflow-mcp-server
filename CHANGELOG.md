@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.7](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.3.6...v1.3.7) (2025-11-22)
+
+
+### 🐛 Bug Fixes
+
+* **web:** downgrade to Tailwind v3 for CSS generation ([74c2abd](https://github.com/programinglive/dev-workflow-mcp-server/commit/74c2abdc7d87d956eb5a6f4f109cd8504a3e258a))
+
 ### [1.3.6](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.3.5...v1.3.6) (2025-11-22)
 
 
