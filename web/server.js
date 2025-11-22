@@ -132,6 +132,11 @@ async function start() {
 
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ doc: resolvedKey, content: result.content, format: result.format }));
+      } else if (req.method === "GET" && url.pathname === "/api/version") {
+        const packageJson = await readFile(join(projectRoot, "package.json"), "utf-8");
+        const { version } = JSON.parse(packageJson);
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ version }));
       } else {
         res.writeHead(404, { "Content-Type": "text/plain" });
         res.end("Not found");

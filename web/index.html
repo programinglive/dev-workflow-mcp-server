@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
+
 <body class="bg-slate-50 text-slate-900">
   <div class="min-h-screen flex flex-col">
     <header class="border-b bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-500 text-white shadow-lg">
@@ -15,47 +17,69 @@
         <div class="flex items-start gap-4">
           <div class="relative">
             <div class="absolute inset-0 rounded-2xl bg-white/20 blur-md"></div>
-            <span class="relative inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-white text-indigo-600 text-xl font-semibold shadow-lg">
+            <span
+              class="relative inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-white text-indigo-600 text-xl font-semibold shadow-lg">
               DW
             </span>
           </div>
           <div>
             <h1 class="text-3xl font-semibold flex items-center gap-3">
-              <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white shadow-sm">
+              <span
+                class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white shadow-sm">
                 <i data-lucide="book-open"></i>
               </span>
               Dev Workflow Knowledge Hub
+              <span id="appVersion"
+                class="text-sm bg-white/20 px-2 py-0.5 rounded-full font-normal opacity-90 hidden"></span>
             </h1>
             <p class="text-sm md:text-base text-indigo-100/90 mt-2 max-w-xl">
-              History, commands, and documentation unified into one dashboard so every task follows the disciplined workflow.
+              History, commands, and documentation unified into one dashboard so every task follows the disciplined
+              workflow.
             </p>
             <div class="mt-4 flex flex-wrap gap-3 text-sm">
-              <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1"><i data-lucide="sparkles" class="h-4 w-4"></i> Live insights</span>
-              <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1"><i data-lucide="workflow" class="h-4 w-4"></i> Workflow guardrails</span>
-              <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1"><i data-lucide="book-open-check" class="h-4 w-4"></i> Embedded documentation</span>
+              <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1"><i data-lucide="sparkles"
+                  class="h-4 w-4"></i> Live insights</span>
+              <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1"><i data-lucide="workflow"
+                  class="h-4 w-4"></i> Workflow guardrails</span>
+              <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1"><i
+                  data-lucide="book-open-check" class="h-4 w-4"></i> Embedded documentation</span>
             </div>
           </div>
         </div>
         <div class="flex flex-col gap-4 md:items-end">
           <div class="flex items-center gap-3 w-full md:w-auto">
             <div class="relative flex-1 md:flex-initial">
-              <i data-lucide="search" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-indigo-300 h-4 w-4"></i>
-              <input type="search" placeholder="Search sections" aria-label="Search sections" class="w-full pl-9 pr-4 py-2 rounded-full bg-white/20 text-white placeholder:text-indigo-200/80 focus:outline-none focus:ring-2 focus:ring-white/60 focus:bg-white/30" oninput="handleSectionSearch(event)" />
+              <i data-lucide="search"
+                class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-indigo-300 h-4 w-4"></i>
+              <input type="search" placeholder="Search sections" aria-label="Search sections"
+                class="w-full pl-9 pr-4 py-2 rounded-full bg-white/20 text-white placeholder:text-indigo-200/80 focus:outline-none focus:ring-2 focus:ring-white/60 focus:bg-white/30"
+                oninput="handleSectionSearch(event)" />
             </div>
-            <button class="inline-flex items-center gap-2 rounded-full bg-white text-indigo-600 px-4 py-2 text-sm font-semibold shadow-md hover:bg-indigo-50" id="refreshDashboardBtn">
+            <button
+              class="inline-flex items-center gap-2 rounded-full bg-white text-indigo-600 px-4 py-2 text-sm font-semibold shadow-md hover:bg-indigo-50"
+              id="refreshDashboardBtn">
               <i data-lucide="refresh-ccw"></i>
               Refresh data
             </button>
           </div>
           <div class="flex flex-wrap gap-2 text-xs text-indigo-100/80 md:justify-end">
-            <span class="inline-flex items-center gap-2"><i data-lucide="keyboard"></i> Press ⬇️ to navigate sections</span>
+            <span class="inline-flex items-center gap-2"><i data-lucide="keyboard"></i> Press ⬇️ to navigate
+              sections</span>
             <span class="inline-flex items-center gap-2"><i data-lucide="external-link"></i> Docs open inline</span>
           </div>
           <div class="flex flex-wrap gap-3 md:justify-end">
-            <button class="scroll-link inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-medium hover:bg-white/25 transition" data-scroll-target="#overview"><i data-lucide="compass" class="h-4 w-4"></i> Overview</button>
-            <button class="scroll-link inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-medium hover:bg-white/25 transition" data-scroll-target="#history"><i data-lucide="clock" class="h-4 w-4"></i> History</button>
-            <button class="scroll-link inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-medium hover:bg-white/25 transition" data-scroll-target="#commands"><i data-lucide="workflow" class="h-4 w-4"></i> Commands</button>
-            <button class="scroll-link inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-medium hover:bg-white/25 transition" data-scroll-target="#api"><i data-lucide="code" class="h-4 w-4"></i> API</button>
+            <button
+              class="scroll-link inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-medium hover:bg-white/25 transition"
+              data-scroll-target="#overview"><i data-lucide="compass" class="h-4 w-4"></i> Overview</button>
+            <button
+              class="scroll-link inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-medium hover:bg-white/25 transition"
+              data-scroll-target="#history"><i data-lucide="clock" class="h-4 w-4"></i> History</button>
+            <button
+              class="scroll-link inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-medium hover:bg-white/25 transition"
+              data-scroll-target="#commands"><i data-lucide="workflow" class="h-4 w-4"></i> Commands</button>
+            <button
+              class="scroll-link inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-medium hover:bg-white/25 transition"
+              data-scroll-target="#api"><i data-lucide="code" class="h-4 w-4"></i> API</button>
           </div>
         </div>
       </div>
@@ -67,25 +91,46 @@
           <div>
             <h2 class="text-xs uppercase tracking-wide text-slate-500 mb-2">Documentation</h2>
             <ul class="space-y-1 text-sm" id="sidebarNav">
-              <li><a href="#overview" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">Overview</a></li>
-              <li><a href="#history" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">Workflow History</a></li>
-              <li><a href="#usage" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">Using Filters</a></li>
-              <li><a href="#commands" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">Commands Reference</a></li>
-              <li><a href="#api" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">API Endpoints</a></li>
-              <li><a href="#troubleshooting" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">Troubleshooting</a></li>
+              <li><a href="#overview" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">Overview</a>
+              </li>
+              <li><a href="#history" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">Workflow
+                  History</a></li>
+              <li><a href="#usage" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">Using Filters</a>
+              </li>
+              <li><a href="#commands" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">Commands
+                  Reference</a></li>
+              <li><a href="#api" class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">API Endpoints</a>
+              </li>
+              <li><a href="#troubleshooting"
+                  class="block px-3 py-2 rounded hover:bg-indigo-50 text-slate-700">Troubleshooting</a></li>
             </ul>
           </div>
           <div class="border-t pt-4">
             <h2 class="text-xs uppercase tracking-wide text-slate-500 mb-2">Resources</h2>
             <ul class="space-y-1 text-sm">
-              <li><a href="https://github.com/programinglive/dev-workflow-mcp-server" target="_blank" rel="noopener" class="block px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">GitHub Repository</a></li>
-              <li><button data-doc="README.md" class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Project README</button></li>
-              <li><button data-doc="web-dashboard.md" class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Web Dashboard Guide</button></li>
-              <li><button data-doc="GETTING-STARTED.md" class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Getting Started</button></li>
-              <li><button data-doc="EXAMPLES.md" class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Examples</button></li>
-              <li><button data-doc="WORKFLOW-TEMPLATES.md" class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Workflow Templates</button></li>
-              <li><button data-doc="TROUBLESHOOTING.md" class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Troubleshooting</button></li>
-              <li><button data-doc="RELEASE_NOTES.md" class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Release Notes</button></li>
+              <li><a href="https://github.com/programinglive/dev-workflow-mcp-server" target="_blank" rel="noopener"
+                  class="block px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">GitHub Repository</a></li>
+              <li><button data-doc="README.md"
+                  class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Project
+                  README</button></li>
+              <li><button data-doc="web-dashboard.md"
+                  class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Web
+                  Dashboard Guide</button></li>
+              <li><button data-doc="GETTING-STARTED.md"
+                  class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Getting
+                  Started</button></li>
+              <li><button data-doc="EXAMPLES.md"
+                  class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Examples</button>
+              </li>
+              <li><button data-doc="WORKFLOW-TEMPLATES.md"
+                  class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Workflow
+                  Templates</button></li>
+              <li><button data-doc="TROUBLESHOOTING.md"
+                  class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Troubleshooting</button>
+              </li>
+              <li><button data-doc="RELEASE_NOTES.md"
+                  class="doc-link block w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-indigo-600">Release
+                  Notes</button></li>
             </ul>
           </div>
         </nav>
@@ -99,29 +144,37 @@
                 <i data-lucide="compass"></i>
                 Overview
               </h2>
-              <p class="mt-2 text-slate-600">Learn how the Dev Workflow dashboard surfaces workflow history and offers inline documentation for every MCP command.</p>
+              <p class="mt-2 text-slate-600">Learn how the Dev Workflow dashboard surfaces workflow history and offers
+                inline documentation for every MCP command.</p>
               <div class="mt-4 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg p-4 flex gap-3">
                 <i data-lucide="alert-circle" class="mt-1 shrink-0"></i>
                 <p>
-                  The dashboard is read-only. MCP clients (Windsurf, Claude Desktop, etc.) must launch the server via <code>node index.js</code>
-                  over stdio on the machine they control. Hosting this site publicly does <strong>not</strong> expose the MCP protocol; without SSH or another
+                  The dashboard is read-only. MCP clients (Windsurf, Claude Desktop, etc.) must launch the server via
+                  <code>node index.js</code>
+                  over stdio on the machine they control. Hosting this site publicly does <strong>not</strong> expose
+                  the MCP protocol; without SSH or another
                   execution path to the server, remote users cannot connect their MCP agents.
                 </p>
               </div>
             </div>
             <div class="hidden md:flex items-center gap-2 text-sm text-slate-500">
               <i data-lucide="info"></i>
-              <span>Need help? Jump to <a href="#commands" class="text-indigo-600 underline">Commands Reference</a>.</span>
+              <span>Need help? Jump to <a href="#commands" class="text-indigo-600 underline">Commands
+                  Reference</a>.</span>
             </div>
           </div>
           <div class="mt-6 grid gap-6 md:grid-cols-2">
             <div class="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
-              <h3 class="font-medium text-indigo-900 flex items-center gap-2"><i data-lucide="activity"></i> Live Insights</h3>
-              <p class="text-sm text-indigo-900/80 mt-2">Connects directly to your `.state` history to show progress, release cadence, and team activity trends.</p>
+              <h3 class="font-medium text-indigo-900 flex items-center gap-2"><i data-lucide="activity"></i> Live
+                Insights</h3>
+              <p class="text-sm text-indigo-900/80 mt-2">Connects directly to your `.state` history to show progress,
+                release cadence, and team activity trends.</p>
             </div>
             <div class="p-4 bg-emerald-50 rounded-lg border border-emerald-100">
-              <h3 class="font-medium text-emerald-900 flex items-center gap-2"><i data-lucide="book"></i> Built-in Playbook</h3>
-              <p class="text-sm text-emerald-900/80 mt-2">Every MCP tool is documented with prerequisites, recommended usage, and follow-up actions.</p>
+              <h3 class="font-medium text-emerald-900 flex items-center gap-2"><i data-lucide="book"></i> Built-in
+                Playbook</h3>
+              <p class="text-sm text-emerald-900/80 mt-2">Every MCP tool is documented with prerequisites, recommended
+                usage, and follow-up actions.</p>
             </div>
           </div>
         </section>
@@ -133,7 +186,8 @@
                 <i data-lucide="clock-4"></i>
                 Workflow History Explorer
               </h2>
-              <p class="text-slate-600 mt-2">Slice and explore your task history. Use the filters below to focus on a user, time range, or frequency.</p>
+              <p class="text-slate-600 mt-2">Slice and explore your task history. Use the filters below to focus on a
+                user, time range, or frequency.</p>
             </div>
             <a href="#api" class="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700">
               <i data-lucide="terminal"></i>
@@ -150,19 +204,23 @@
               <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <label class="flex flex-col gap-1">
                   <span class="text-sm font-medium text-slate-600">User ID</span>
-                  <input id="userId" type="text" placeholder="default" class="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  <input id="userId" type="text" placeholder="default"
+                    class="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </label>
                 <label class="flex flex-col gap-1">
                   <span class="text-sm font-medium text-slate-600">Start date</span>
-                  <input id="startDate" type="date" class="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  <input id="startDate" type="date"
+                    class="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </label>
                 <label class="flex flex-col gap-1">
                   <span class="text-sm font-medium text-slate-600">End date</span>
-                  <input id="endDate" type="date" class="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  <input id="endDate" type="date"
+                    class="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </label>
                 <label class="flex flex-col gap-1">
                   <span class="text-sm font-medium text-slate-600">Activity frequency</span>
-                  <select id="frequency" class="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <select id="frequency"
+                    class="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="daily">Daily</option>
                     <option value="monthly">Monthly</option>
                     <option value="yearly">Yearly</option>
@@ -170,7 +228,8 @@
                 </label>
                 <label class="flex flex-col gap-1">
                   <span class="text-sm font-medium text-slate-600">Page size</span>
-                  <select id="pageSize" class="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <select id="pageSize"
+                    class="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="10">10</option>
                     <option value="20" selected>20</option>
                     <option value="50">50</option>
@@ -178,8 +237,10 @@
                 </label>
               </div>
               <div class="flex flex-wrap gap-3 items-center mt-5">
-                <button id="applyFiltersBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Apply filters</button>
-                <button id="resetFiltersBtn" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-100">Reset</button>
+                <button id="applyFiltersBtn"
+                  class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Apply filters</button>
+                <button id="resetFiltersBtn"
+                  class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-100">Reset</button>
                 <span class="text-sm text-slate-500">Leave fields empty to view all data for the default user.</span>
               </div>
             </div>
@@ -210,9 +271,11 @@
               </h3>
               <div id="historyContent" class="space-y-3 text-sm"></div>
               <div id="paginationControls" class="flex items-center justify-between mt-6 hidden">
-                <button id="prevPageBtn" class="bg-white border border-slate-300 text-slate-700 px-3 py-1 rounded-md hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+                <button id="prevPageBtn"
+                  class="bg-white border border-slate-300 text-slate-700 px-3 py-1 rounded-md hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
                 <span id="pageInfo" class="text-sm text-slate-600"></span>
-                <button id="nextPageBtn" class="bg-white border border-slate-300 text-slate-700 px-3 py-1 rounded-md hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+                <button id="nextPageBtn"
+                  class="bg-white border border-slate-300 text-slate-700 px-3 py-1 rounded-md hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
               </div>
             </div>
           </section>
@@ -226,19 +289,23 @@
           <div class="mt-4 grid gap-6 md:grid-cols-2">
             <div>
               <h3 class="font-semibold text-slate-800">1. Filter your scope</h3>
-              <p class="text-sm text-slate-600 mt-2">Pick a user ID to analyze individual contributions. Add date ranges to focus on a release window, sprint, or quarter.</p>
+              <p class="text-sm text-slate-600 mt-2">Pick a user ID to analyze individual contributions. Add date ranges
+                to focus on a release window, sprint, or quarter.</p>
             </div>
             <div>
               <h3 class="font-semibold text-slate-800">2. Inspect the summary</h3>
-              <p class="text-sm text-slate-600 mt-2">Review overall throughput, mix of task types, and recent activity. The summary auto-updates whenever you change filters.</p>
+              <p class="text-sm text-slate-600 mt-2">Review overall throughput, mix of task types, and recent activity.
+                The summary auto-updates whenever you change filters.</p>
             </div>
             <div>
               <h3 class="font-semibold text-slate-800">3. Dive into entries</h3>
-              <p class="text-sm text-slate-600 mt-2">Scroll the event log to see commit messages, forced completions, and dropped tasks. Use pagination to traverse older work.</p>
+              <p class="text-sm text-slate-600 mt-2">Scroll the event log to see commit messages, forced completions,
+                and dropped tasks. Use pagination to traverse older work.</p>
             </div>
             <div>
               <h3 class="font-semibold text-slate-800">4. Export via API</h3>
-              <p class="text-sm text-slate-600 mt-2">Need automation or reporting? Jump to the <a href="#api" class="text-indigo-600 underline">API section</a> and query JSON endpoints directly.</p>
+              <p class="text-sm text-slate-600 mt-2">Need automation or reporting? Jump to the <a href="#api"
+                  class="text-indigo-600 underline">API section</a> and query JSON endpoints directly.</p>
             </div>
           </div>
         </section>
@@ -250,13 +317,16 @@
                 <i data-lucide="workflow"></i>
                 Commands Reference
               </h2>
-              <div class="mt-2 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 uppercase tracking-wide">
+              <div
+                class="mt-2 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 uppercase tracking-wide">
                 <i data-lucide="check-square"></i>
                 <span>All Tools · 20 commands</span>
               </div>
-              <p class="text-slate-600 mt-3">Explore all <strong>20</strong> MCP tools that keep the workflow honest. Review prerequisites, usage tips, and next steps for each command below.</p>
+              <p class="text-slate-600 mt-3">Explore all <strong>20</strong> MCP tools that keep the workflow honest.
+                Review prerequisites, usage tips, and next steps for each command below.</p>
             </div>
-            <button data-doc="README.md" data-doc-heading="🛠️ Available Tools" class="doc-link inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700">
+            <button data-doc="README.md" data-doc-heading="🛠️ Available Tools"
+              class="doc-link inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700">
               <i data-lucide="external-link"></i>
               Full README Reference
             </button>
@@ -271,7 +341,8 @@
               <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
                 <p>Begin every effort with a clear description and task type.</p>
                 <ul class="list-disc list-inside space-y-1">
-                  <li><strong>Parameters:</strong> <code>description</code> (string, required), <code>type</code> ("feature" | "bugfix" | "refactor" | "other", required)</li>
+                  <li><strong>Parameters:</strong> <code>description</code> (string, required), <code>type</code>
+                    ("feature" | "bugfix" | "refactor" | "other", required)</li>
                   <li><strong>When to use:</strong> Before writing code or touching files.</li>
                   <li><strong>Next step:</strong> Implement your changes then run <code>mark_bug_fixed</code>.</li>
                 </ul>
@@ -331,7 +402,8 @@
               <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
                 <p>Capture the outcome of your automated test run.</p>
                 <ul class="list-disc list-inside space-y-1">
-                  <li><strong>Parameters:</strong> <code>passed</code> (boolean, required), <code>testCommand</code> (string, required), optional <code>details</code> (string)</li>
+                  <li><strong>Parameters:</strong> <code>passed</code> (boolean, required), <code>testCommand</code>
+                    (string, required), optional <code>details</code> (string)</li>
                   <li><strong>Guidance:</strong> Never proceed if tests fail—return to coding and re-run.</li>
                   <li><strong>Next step:</strong> Move to <code>create_documentation</code> when green.</li>
                 </ul>
@@ -346,8 +418,10 @@
               <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
                 <p>Record documentation updates before proceeding to verification.</p>
                 <ul class="list-disc list-inside space-y-1">
-                  <li><strong>Parameters:</strong> <code>documentationType</code> (enum), <code>summary</code> (string)</li>
-                  <li><strong>Tip:</strong> Keep summaries short but action-oriented. Include links to README sections or docs PRs.</li>
+                  <li><strong>Parameters:</strong> <code>documentationType</code> (enum), <code>summary</code> (string)
+                  </li>
+                  <li><strong>Tip:</strong> Keep summaries short but action-oriented. Include links to README sections
+                    or docs PRs.</li>
                 </ul>
               </div>
             </details>
@@ -374,7 +448,8 @@
               <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
                 <p>Automatically stage, commit, and push once verification passes.</p>
                 <ul class="list-disc list-inside space-y-1">
-                  <li><strong>Parameters:</strong> <code>commitMessage</code> (string), optional <code>branch</code> (string)</li>
+                  <li><strong>Parameters:</strong> <code>commitMessage</code> (string), optional <code>branch</code>
+                    (string)</li>
                   <li><strong>Behavior:</strong> Detects clean working trees and reuses the latest commit metadata.</li>
                   <li><strong>Reminder:</strong> Any new edits will bounce you back to this step.</li>
                 </ul>
@@ -389,8 +464,11 @@
               <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
                 <p>Record release details once the commit is live. Guards ensure the workflow order.</p>
                 <ul class="list-disc list-inside space-y-1">
-                  <li><strong>Parameters:</strong> <code>command</code> (string), optional <code>notes</code>, <code>releaseType</code>, <code>preset</code></li>
-                  <li><strong>Integration:</strong> Wraps <code>release-wrapper.js</code> to prevent accidental version bumps.</li>
+                  <li><strong>Parameters:</strong> <code>command</code> (string), optional <code>notes</code>,
+                    <code>releaseType</code>, <code>preset</code>
+                  </li>
+                  <li><strong>Integration:</strong> Wraps <code>release-wrapper.js</code> to prevent accidental version
+                    bumps.</li>
                 </ul>
               </div>
             </details>
@@ -418,7 +496,8 @@
               <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
                 <p>Record an incomplete task as finished with a justification.</p>
                 <ul class="list-disc list-inside space-y-1">
-                  <li><strong>Parameters:</strong> optional <code>commitMessage</code>, optional <code>reason</code> (string)</li>
+                  <li><strong>Parameters:</strong> optional <code>commitMessage</code>, optional <code>reason</code>
+                    (string)</li>
                   <li><strong>Use sparingly:</strong> Ideal for emergencies where remaining steps cannot be done.</li>
                   <li><strong>Next step:</strong> Follow up manually on outstanding work.</li>
                 </ul>
@@ -504,9 +583,15 @@
               <div class="px-5 pb-5 space-y-3 text-sm text-slate-600">
                 <p>Execute every command in sequence when you already know the answers.</p>
                 <ul class="list-disc list-inside space-y-1">
-                  <li><strong>Parameters (required):</strong> <code>summary</code>, <code>testCommand</code>, <code>documentationType</code>, <code>documentationSummary</code>, <code>commitMessage</code>, <code>releaseCommand</code></li>
-                  <li><strong>Optional:</strong> <code>testsPassed</code>, <code>testDetails</code>, <code>branch</code>, <code>releaseNotes</code>, <code>releaseType</code>, <code>preset</code></li>
-                  <li><strong>Ideal for:</strong> Scripted flows or demos where you want the guardrails without manual calls.</li>
+                  <li><strong>Parameters (required):</strong> <code>summary</code>, <code>testCommand</code>,
+                    <code>documentationType</code>, <code>documentationSummary</code>, <code>commitMessage</code>,
+                    <code>releaseCommand</code>
+                  </li>
+                  <li><strong>Optional:</strong> <code>testsPassed</code>, <code>testDetails</code>,
+                    <code>branch</code>, <code>releaseNotes</code>, <code>releaseType</code>, <code>preset</code>
+                  </li>
+                  <li><strong>Ideal for:</strong> Scripted flows or demos where you want the guardrails without manual
+                    calls.</li>
                 </ul>
               </div>
             </details>
@@ -560,7 +645,8 @@
             <i data-lucide="code"></i>
             API Endpoints
           </div>
-          <p class="text-slate-600">Use these JSON endpoints to integrate task history into automation, dashboards, or reports.</p>
+          <p class="text-slate-600">Use these JSON endpoints to integrate task history into automation, dashboards, or
+            reports.</p>
           <div class="space-y-4 text-sm text-slate-700">
             <div class="border border-slate-200 rounded-lg p-4">
               <h3 class="font-medium text-slate-800">GET /api/summary</h3>
@@ -570,12 +656,16 @@
             <div class="border border-slate-200 rounded-lg p-4">
               <h3 class="font-medium text-slate-800">GET /api/history</h3>
               <p class="mt-1">Paginated timeline of workflow entries with commit metadata.</p>
-              <p class="mt-2 text-xs text-slate-500">Query params: <code>user</code>, <code>page</code>, <code>pageSize</code>, <code>startDate</code>, <code>endDate</code></p>
+              <p class="mt-2 text-xs text-slate-500">Query params: <code>user</code>, <code>page</code>,
+                <code>pageSize</code>, <code>startDate</code>, <code>endDate</code>
+              </p>
             </div>
             <div class="border border-slate-200 rounded-lg p-4">
               <h3 class="font-medium text-slate-800">GET /api/history-summary</h3>
               <p class="mt-1">Counts per day, month, or year for trend analysis.</p>
-              <p class="mt-2 text-xs text-slate-500">Query params: <code>user</code>, <code>frequency</code>, <code>startDate</code>, <code>endDate</code></p>
+              <p class="mt-2 text-xs text-slate-500">Query params: <code>user</code>, <code>frequency</code>,
+                <code>startDate</code>, <code>endDate</code>
+              </p>
             </div>
           </div>
         </section>
@@ -596,15 +686,19 @@
               <tbody class="divide-y divide-slate-100">
                 <tr>
                   <td class="px-4 py-3">Dashboard shows empty data</td>
-                  <td class="px-4 py-3">Verify the MCP server has created `.state/users/<user>/workflow-state.json` and that the selected user matches.</td>
+                  <td class="px-4 py-3">Verify the MCP server has created `.state/users/<user>/workflow-state.json` and
+                      that the selected user matches.</td>
                 </tr>
                 <tr>
                   <td class="px-4 py-3">`better-sqlite3` build error on startup</td>
-                  <td class="px-4 py-3">Install Python 3 and native build tools (Windows) or ensure SQLite headers are installed (macOS/Linux).</td>
+                  <td class="px-4 py-3">Install Python 3 and native build tools (Windows) or ensure SQLite headers are
+                    installed (macOS/Linux).</td>
                 </tr>
                 <tr>
                   <td class="px-4 py-3">Port already in use</td>
-                  <td class="px-4 py-3">Set <code>DEV_WORKFLOW_WEB_PORT</code> to a free port before running <code>npm run web</code>.</td>
+                  <td class="px-4 py-3">Set <code>DEV_WORKFLOW_WEB_PORT</code> to a free port before running
+                    <code>npm run web</code>.
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -623,7 +717,8 @@
             <h3 id="docModalTitle" class="text-lg font-semibold text-slate-800">Documentation</h3>
             <p id="docModalSubtitle" class="text-xs text-slate-500 mt-1"></p>
           </div>
-          <button id="docModalClose" class="p-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100" aria-label="Close documentation">
+          <button id="docModalClose" class="p-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            aria-label="Close documentation">
             <i data-lucide="x"></i>
           </button>
         </header>
@@ -784,6 +879,16 @@
 
     async function load() {
       const userId = state.userId || "default";
+
+      // Fetch version
+      fetchJson('/api/version').then(({ version }) => {
+        const verEl = el('appVersion');
+        if (verEl && version) {
+          verEl.textContent = `v${version}`;
+          verEl.classList.remove('hidden');
+        }
+      }).catch(() => { }); // Ignore version fetch errors
+
       try {
         const historyParams = {
           user: userId,
@@ -935,4 +1040,5 @@
     load();
   </script>
 </body>
+
 </html>
