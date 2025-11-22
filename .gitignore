@@ -10,7 +10,9 @@ pids
 *.pid.lock
 node_modules/
 build/
-dist/
+dist/*.mjs
+dist/*.js
+dist/assets/
 lib/
 coverage/
 .nyc_output/
