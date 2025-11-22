@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.7...v1.3.0) (2025-11-22)
+
+
+### 🧹 Chores
+
+* integrate @programinglive/commiter package for automated release management ([ab114df](https://github.com/programinglive/dev-workflow-mcp-server/commit/ab114df70fa3d401227ab78c7bf794d38a92fee4))
+
+
+### 🐛 Bug Fixes
+
+* convert release scripts to CJS to support ESM project ([3162905](https://github.com/programinglive/dev-workflow-mcp-server/commit/3162905820c2d413cfc396c5f476d84d814aa4ec))
+* use double quotes for Windows shell escaping in cmd.exe ([3f0b21b](https://github.com/programinglive/dev-workflow-mcp-server/commit/3f0b21be2e36a5ec2914649515f019aaec594ad8))
+
 ### [1.2.7](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.6...v1.2.7) (2025-11-13)
 
 ### [1.2.6](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.2.5...v1.2.6) (2025-11-11)
