@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.9](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.3.8...v1.3.9) (2025-11-22)
+
+
+### ✨ Features
+
+* **web:** improve documentation modal layout and readability ([ca033bd](https://github.com/programinglive/dev-workflow-mcp-server/commit/ca033bd1208283c46a6262b6f447f57246c19dc7))
+
+
+### 🧹 Chores
+
+* rebuild Tailwind CSS ([b8a552e](https://github.com/programinglive/dev-workflow-mcp-server/commit/b8a552ebec854b4a50265fc9979c350a46a594ca))
+
 ### [1.3.8](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.3.7...v1.3.8) (2025-11-22)
 
 
