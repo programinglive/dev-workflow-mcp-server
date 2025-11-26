@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Workflow Web Dashboard - Dev Workflow</title>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://commiter.programinglive.com/docs/web-dashboard.md">
+    <meta property="og:title" content="Dev Workflow Web Dashboard - Dev Workflow">
+    <meta property="og:description" content="Detailed documentation for Dev Workflow MCP Server commands and usage.">
+    <meta property="og:image" content="/assets/og-preview.png">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://commiter.programinglive.com/docs/web-dashboard.md">
+    <meta property="twitter:title" content="Dev Workflow Web Dashboard - Dev Workflow">
+    <meta property="twitter:description" content="Detailed documentation for Dev Workflow MCP Server commands and usage.">
+    <meta property="twitter:image" content="/assets/og-preview.png">
+    <link rel="stylesheet" href="/output.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0a0a0f] text-white font-sans antialiased selection:bg-primary/30 selection:text-white min-h-screen flex flex-col">
+    <header class="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#0a0a0f]/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <div class="w-10 h-10 rounded-lg overflow-hidden border border-white/10 shadow-lg shadow-primary/20">
+                        <img src="/assets/logo.png" alt="Dev Workflow Logo" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg tracking-tight text-white">Dev Workflow</h1>
+                        <div class="flex items-center gap-2 text-xs text-gray-400">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                            <span>Documentation</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/" class="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm font-medium transition-all group">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-24 pb-12 flex gap-8">
+        <aside class="hidden lg:block w-64 flex-shrink-0 fixed h-[calc(100vh-6rem)] overflow-y-auto pr-4 custom-scrollbar">
+            <nav class="space-y-1">
+                <a href="/" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    Back to Dashboard
+                </a>
+            </nav>
+            <div class="mt-8 pt-8 border-t border-white/10">
+                <h3 class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Documentation</h3>
+                <div class="space-y-1">
+                    <a href="/docs/README.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">README</a>
+<a href="/docs/web-dashboard.html" class="doc-link block px-4 py-2 text-sm font-medium  hover:text-white hover:bg-white/5 rounded-lg transition-colors bg-white/5 text-white ring-1 ring-white/5">web dashboard</a>
+<a href="/docs/GETTING-STARTED.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">GETTING STARTED</a>
+<a href="/docs/EXAMPLES.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">EXAMPLES</a>
+<a href="/docs/WORKFLOW-TEMPLATES.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">WORKFLOW TEMPLATES</a>
+<a href="/docs/TROUBLESHOOTING.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">TROUBLESHOOTING</a>
+<a href="/docs/RELEASE_NOTES.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">RELEASE_NOTES</a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 lg:pl-72 min-w-0">
+            <div class="bg-surface border border-white/10 rounded-xl p-8 backdrop-blur-sm">
+                <header class="mb-8 border-b border-white/10 pb-6">
+                    <h1 class="text-3xl font-bold text-white mb-2">Dev Workflow Web Dashboard</h1>
+                    <p class="text-gray-400 font-mono text-sm">web-dashboard.md</p>
+                </header>
+                <article class="prose prose-invert prose-lg max-w-none">
+                    <p>Learn how to start and use the Dev Workflow dashboard included with the MCP server. The dashboard exposes project history, summaries, and aggregates through a small Node.js service.</p>
+<h2>Prerequisites</h2>
+<p>Before launching the dashboard, confirm the following:</p>
+<ul>
+<li>Node.js 18+ installed (same requirement as the MCP server)</li>
+<li>Project dependencies installed with <code>npm install</code></li>
+<li>Workflow history stored under <code>.state/</code> (created automatically when using the MCP server)</li>
+</ul>
+<blockquote>
+<p><strong>Plesk users:</strong> follow the <a href="../README.md#option-3-install-on-plesk-hosting">Plesk installation guide</a> first and ensure SSH access is enabled.</p>
+</blockquote>
+<h2>Features</h2>
+<ul>
+<li><strong>Task history browser</strong> – Paginated list of completed workflow entries.</li>
+<li><strong>Summary stats</strong> – Counts of tasks by type and recent activity timeline.</li>
+<li><strong>Aggregated trends</strong> – Daily, monthly, or yearly breakdowns of workflow activity.</li>
+<li><strong>Multi-user support</strong> – Switch between user identifiers recorded in the <code>.state</code> directory.</li>
+</ul>
+<h2>Getting Started</h2>
+<p>Launch the dashboard from your project directory:</p>
+<pre><code class="language-bash">npm run web
+</code></pre>
+<p>When the server is ready you will see:</p>
+<pre><code>🌐 Dev Workflow Dashboard running at http://localhost:3111
+</code></pre>
+<p>Open the URL in your browser. If port 3111 is in use, the script automatically selects a nearby free port.</p>
+<h3>Choosing a Port</h3>
+<p>Set <code>DEV_WORKFLOW_WEB_PORT</code> to force a specific port:</p>
+<pre><code class="language-bash">DEV_WORKFLOW_WEB_PORT=5000 npm run web
+</code></pre>
+<h3>Selecting a User</h3>
+<p>The dashboard defaults to the <code>default</code> user. Append <code>?user=&lt;USER_ID&gt;</code> to view another user’s data. User IDs map to the subdirectories under <code>.state/users/</code>.</p>
+<pre><code>http://localhost:3111/?user=my-teammate
+</code></pre>
+<h2>Navigation</h2>
+<p>The HTML frontend lives in <code>web/index.html</code>. The default UI includes:</p>
+<ul>
+<li><strong>Summary cards</strong> – Total tasks completed and last active date.</li>
+<li><strong>Recent tasks table</strong> – Paginated entries with task descriptions and timestamps.</li>
+<li><strong>Charts</strong> (if script extensions are enabled) – Visual trends per frequency selection.</li>
+</ul>
+<h2>API Reference</h2>
+<p>Interact with the dashboard programmatically using the JSON endpoints served by <code>web/server.js</code>.</p>
+<h3><code>GET /api/summary</code></h3>
+<p>Returns aggregate statistics for a user.</p>
+<p><strong>Query parameters</strong></p>
+<ul>
+<li><code>user</code> <em>(optional, string)</em> – User identifier (default <code>default</code>).</li>
+</ul>
+<p><strong>Response</strong></p>
+<pre><code class="language-json">{
+  &quot;summary&quot;: {
+    &quot;totalTasks&quot;: 12,
+    &quot;taskTypes&quot;: { &quot;feature&quot;: 8, &quot;bugfix&quot;: 3, &quot;refactor&quot;: 1 },
+    &quot;lastActive&quot;: &quot;2025-10-01T09:25:41.123Z&quot;,
+    &quot;recentTasks&quot;: [
+      { &quot;description&quot;: &quot;feat: add billing webhooks&quot;, &quot;type&quot;: &quot;feature&quot;, &quot;timestamp&quot;: &quot;2025-10-01T09:25:41.123Z&quot; }
+    ],
+    &quot;updatedAt&quot;: &quot;2025-10-01T09:30:00.000Z&quot;
+  }
+}
+</code></pre>
+<h3><code>GET /api/history</code></h3>
+<p>Returns paginated task history.</p>
+<p><strong>Query parameters</strong></p>
+<ul>
+<li><code>user</code> <em>(optional, string)</em> – User identifier (default <code>default</code>).</li>
+<li><code>page</code> <em>(optional, number)</em> – Page number (default <code>1</code>).</li>
+<li><code>pageSize</code> <em>(optional, number)</em> – Items per page (default <code>20</code>, max <code>100</code>).</li>
+<li><code>startDate</code> <em>(optional, string)</em> – Filter by ISO date (inclusive).</li>
+<li><code>endDate</code> <em>(optional, string)</em> – Filter by ISO date (inclusive).</li>
+</ul>
+<p><strong>Response</strong></p>
+<pre><code class="language-json">{
+  &quot;entries&quot;: [
+    {
+      &quot;id&quot;: 42,
+      &quot;user_id&quot;: &quot;default&quot;,
+      &quot;task_description&quot;: &quot;feat: add reporting endpoint&quot;,
+      &quot;task_type&quot;: &quot;feature&quot;,
+      &quot;commit_message&quot;: &quot;feat: add reporting endpoint&quot;,
+      &quot;timestamp&quot;: &quot;2025-09-30T09:18:00.000Z&quot;
+    }
+  ],
+  &quot;total&quot;: 42,
+  &quot;page&quot;: 1,
+  &quot;pageSize&quot;: 20
+}
+</code></pre>
+<h3><code>GET /api/history-summary</code></h3>
+<p>Returns an array of task counts grouped by period.</p>
+<p><strong>Query parameters</strong></p>
+<ul>
+<li><code>user</code> <em>(optional, string)</em> – User identifier (default <code>default</code>).</li>
+<li><code>frequency</code> <em>(optional, string)</em> – <code>daily</code>, <code>monthly</code>, or <code>yearly</code> (default <code>daily</code>).</li>
+<li><code>startDate</code>, <code>endDate</code> <em>(optional, string)</em> – Limit range by ISO dates.</li>
+</ul>
+<p><strong>Response</strong></p>
+<pre><code class="language-json">{
+  &quot;summary&quot;: [
+    { &quot;period&quot;: &quot;2025-09-30&quot;, &quot;count&quot;: 3 },
+    { &quot;period&quot;: &quot;2025-09-29&quot;, &quot;count&quot;: 1 }
+  ]
+}
+</code></pre>
+<h2>Configuration</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DEV_WORKFLOW_WEB_PORT</code></td>
+<td>Port for the dashboard</td>
+<td><code>3111</code> or next available</td>
+</tr>
+<tr>
+<td><code>DEV_WORKFLOW_USER_ID</code></td>
+<td>User identifier when launching via MCP</td>
+<td>auto-generated</td>
+</tr>
+<tr>
+<td><code>DEV_WORKFLOW_STATE_FILE</code></td>
+<td>Overrides path to workflow state JSON</td>
+<td>auto-detected</td>
+</tr>
+</tbody></table>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Server fails with <code>better-sqlite3</code> build error</td>
+<td>Install Python 3 and build tools (Windows) or ensure SQLite build dependencies exist (Linux/macOS).</td>
+</tr>
+<tr>
+<td>Dashboard shows empty data</td>
+<td>Confirm the MCP server has generated <code>.state/users/&lt;user&gt;/workflow-state.json</code> and that the chosen <code>user</code> matches.</td>
+</tr>
+<tr>
+<td>Port already in use</td>
+<td>Set <code>DEV_WORKFLOW_WEB_PORT</code> to a free port before running <code>npm run web</code>.</td>
+</tr>
+</tbody></table>
+<h2>Related Topics</h2>
+<ul>
+<li><a href="../README.md">Main README</a></li>
+<li><a href="./state.md">Workflow State Internals</a> <em>(coming soon)</em></li>
+<li><a href="../README.md#%F0%9F%9B%A0%EF%B8%8F-available-tools">CLI Tools</a></li>
+</ul>
+
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

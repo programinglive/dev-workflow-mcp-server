@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Templates for Dev-Workflow MCP Server - Dev Workflow</title>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://commiter.programinglive.com/docs/WORKFLOW-TEMPLATES.md">
+    <meta property="og:title" content="Workflow Templates for Dev-Workflow MCP Server - Dev Workflow">
+    <meta property="og:description" content="Detailed documentation for Dev Workflow MCP Server commands and usage.">
+    <meta property="og:image" content="/assets/og-preview.png">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://commiter.programinglive.com/docs/WORKFLOW-TEMPLATES.md">
+    <meta property="twitter:title" content="Workflow Templates for Dev-Workflow MCP Server - Dev Workflow">
+    <meta property="twitter:description" content="Detailed documentation for Dev Workflow MCP Server commands and usage.">
+    <meta property="twitter:image" content="/assets/og-preview.png">
+    <link rel="stylesheet" href="/output.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0a0a0f] text-white font-sans antialiased selection:bg-primary/30 selection:text-white min-h-screen flex flex-col">
+    <header class="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#0a0a0f]/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <div class="w-10 h-10 rounded-lg overflow-hidden border border-white/10 shadow-lg shadow-primary/20">
+                        <img src="/assets/logo.png" alt="Dev Workflow Logo" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg tracking-tight text-white">Dev Workflow</h1>
+                        <div class="flex items-center gap-2 text-xs text-gray-400">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                            <span>Documentation</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/" class="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm font-medium transition-all group">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-24 pb-12 flex gap-8">
+        <aside class="hidden lg:block w-64 flex-shrink-0 fixed h-[calc(100vh-6rem)] overflow-y-auto pr-4 custom-scrollbar">
+            <nav class="space-y-1">
+                <a href="/" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    Back to Dashboard
+                </a>
+            </nav>
+            <div class="mt-8 pt-8 border-t border-white/10">
+                <h3 class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Documentation</h3>
+                <div class="space-y-1">
+                    <a href="/docs/README.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">README</a>
+<a href="/docs/web-dashboard.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">web dashboard</a>
+<a href="/docs/GETTING-STARTED.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">GETTING STARTED</a>
+<a href="/docs/EXAMPLES.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">EXAMPLES</a>
+<a href="/docs/WORKFLOW-TEMPLATES.html" class="doc-link block px-4 py-2 text-sm font-medium  hover:text-white hover:bg-white/5 rounded-lg transition-colors bg-white/5 text-white ring-1 ring-white/5">WORKFLOW TEMPLATES</a>
+<a href="/docs/TROUBLESHOOTING.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">TROUBLESHOOTING</a>
+<a href="/docs/RELEASE_NOTES.html" class="doc-link block px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors ">RELEASE_NOTES</a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 lg:pl-72 min-w-0">
+            <div class="bg-surface border border-white/10 rounded-xl p-8 backdrop-blur-sm">
+                <header class="mb-8 border-b border-white/10 pb-6">
+                    <h1 class="text-3xl font-bold text-white mb-2">Workflow Templates for Dev-Workflow MCP Server</h1>
+                    <p class="text-gray-400 font-mono text-sm">WORKFLOW-TEMPLATES.md</p>
+                </header>
+                <article class="prose prose-invert prose-lg max-w-none">
+                    <p>Ready-to-use workflow templates for common development scenarios in Antigravity.</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#feature-development-template">Feature Development Template</a></li>
+<li><a href="#bug-fix-template">Bug Fix Template</a></li>
+<li><a href="#refactoring-template">Refactoring Template</a></li>
+<li><a href="#hotfix-template">Hotfix Template</a></li>
+<li><a href="#documentation-update-template">Documentation Update Template</a></li>
+<li><a href="#release-preparation-template">Release Preparation Template</a></li>
+</ul>
+<hr>
+<h2>Feature Development Template</h2>
+<p>Use this template when adding new functionality to your application.</p>
+<h3>Checklist</h3>
+<pre><code class="language-markdown">## Feature: [Feature Name]
+
+### Planning
+- [ ] Define feature requirements
+- [ ] Design API/component interface
+- [ ] Identify affected files
+- [ ] Plan test cases
+
+### Implementation
+- [ ] Start workflow task
+- [ ] Implement feature code
+- [ ] Mark as fixed
+
+### Testing
+- [ ] Write unit tests
+- [ ] Write integration tests
+- [ ] Create tests in workflow
+- [ ] Run test suite
+- [ ] Record passing tests
+
+### Documentation
+- [ ] Update README
+- [ ] Add inline comments
+- [ ] Update API documentation
+- [ ] Create documentation in workflow
+
+### Release
+- [ ] Commit and push changes
+- [ ] Perform release (minor version)
+- [ ] Complete task
+</code></pre>
+<h3>Workflow Commands</h3>
+<pre><code># 1. Start
+start_task:
+  description: &quot;Add [feature name] to [component/module]&quot;
+  type: &quot;feature&quot;
+
+# 2. Code the feature
+# ... your implementation ...
+
+# 3. Mark as fixed
+mark_bug_fixed:
+  summary: &quot;[Brief description of what was implemented]&quot;
+
+# 4. Create tests
+# ... write your test files ...
+create_tests
+
+# 5. Run tests
+run_tests:
+  passed: true
+  testCommand: &quot;npm test&quot;
+  details: &quot;[X tests passed, coverage Y%]&quot;
+
+# 6. Document
+# ... update documentation ...
+create_documentation:
+  documentationType: &quot;README&quot;
+  summary: &quot;[What you documented]&quot;
+
+# 7. Commit
+commit_and_push:
+  commitMessage: &quot;feat([scope]): [description]&quot;
+
+# 8. Release
+perform_release:
+  command: &quot;npm run release:minor&quot;
+  notes: &quot;v[X.Y.Z] - [Feature name]&quot;
+
+# 9. Complete
+complete_task:
+  commitMessage: &quot;feat([scope]): [description]&quot;
+</code></pre>
+<h3>Example</h3>
+<p><strong>Feature:</strong> Add shopping cart functionality</p>
+<pre><code>start_task:
+  description: &quot;Add shopping cart with add/remove items and checkout&quot;
+  type: &quot;feature&quot;
+
+mark_bug_fixed:
+  summary: &quot;Shopping cart with localStorage persistence and quantity controls&quot;
+
+create_tests
+
+run_tests:
+  passed: true
+  testCommand: &quot;npm test -- cart&quot;
+  details: &quot;12 cart tests passed: add, remove, update quantity, persist&quot;
+
+create_documentation:
+  documentationType: &quot;README&quot;
+  summary: &quot;Added shopping cart API reference and integration guide&quot;
+
+commit_and_push:
+  commitMessage: &quot;feat(cart): add shopping cart with persistence&quot;
+
+perform_release:
+  command: &quot;npm run release:minor&quot;
+  notes: &quot;v1.5.0 - Shopping cart feature&quot;
+
+complete_task:
+  commitMessage: &quot;feat(cart): add shopping cart with persistence&quot;
+</code></pre>
+<hr>
+<h2>Bug Fix Template</h2>
+<p>Use this template when fixing defects or unexpected behavior.</p>
+<h3>Checklist</h3>
+<pre><code class="language-markdown">## Bug Fix: [Bug Description]
+
+### Investigation
+- [ ] Reproduce the bug
+- [ ] Identify root cause
+- [ ] Document expected vs actual behavior
+
+### Implementation
+- [ ] Start workflow task
+- [ ] Fix the bug
+- [ ] Verify fix locally
+- [ ] Mark as fixed
+
+### Testing
+- [ ] Write regression test
+- [ ] Update existing tests if needed
+- [ ] Create tests in workflow
+- [ ] Run full test suite
+- [ ] Record passing tests
+
+### Documentation
+- [ ] Update CHANGELOG
+- [ ] Add code comments explaining the fix
+- [ ] Create documentation in workflow
+
+### Release
+- [ ] Commit and push changes
+- [ ] Perform release (patch version)
+- [ ] Complete task
+</code></pre>
+<h3>Workflow Commands</h3>
+<pre><code># 1. Start
+start_task:
+  description: &quot;Fix [bug description]&quot;
+  type: &quot;bugfix&quot;
+
+# 2. Fix the bug
+# ... your fix ...
+
+# 3. Mark as fixed
+mark_bug_fixed:
+  summary: &quot;[Brief description of the fix]&quot;
+
+# 4. Create regression tests
+# ... write test to prevent recurrence ...
+create_tests
+
+# 5. Run tests
+run_tests:
+  passed: true
+  testCommand: &quot;npm test&quot;
+  details: &quot;[Include regression test results]&quot;
+
+# 6. Document
+# ... update CHANGELOG ...
+create_documentation:
+  documentationType: &quot;changelog&quot;
+  summary: &quot;[What you documented]&quot;
+
+# 7. Commit
+commit_and_push:
+  commitMessage: &quot;fix([scope]): [description]&quot;
+
+# 8. Release
+perform_release:
+  command: &quot;npm run release:patch&quot;
+  notes: &quot;v[X.Y.Z] - Bugfix for [issue]&quot;
+
+# 9. Complete
+complete_task:
+  commitMessage: &quot;fix([scope]): [description]&quot;
+</code></pre>
+<h3>Example</h3>
+<p><strong>Bug:</strong> Date picker shows wrong month on mobile</p>
+<pre><code>start_task:
+  description: &quot;Fix date picker showing incorrect month on iOS Safari&quot;
+  type: &quot;bugfix&quot;
+
+mark_bug_fixed:
+  summary: &quot;Fixed timezone offset calculation in date picker for iOS Safari&quot;
+
+create_tests
+
+run_tests:
+  passed: true
+  testCommand: &quot;npm test -- datepicker&quot;
+  details: &quot;Added timezone regression test, all 8 tests pass&quot;
+
+create_documentation:
+  documentationType: &quot;changelog&quot;
+  summary: &quot;Added bug fix entry for date picker iOS issue&quot;
+
+commit_and_push:
+  commitMessage: &quot;fix(ui): correct date picker timezone handling on iOS&quot;
+
+perform_release:
+  command: &quot;npm run release:patch&quot;
+  notes: &quot;v1.4.1 - iOS date picker fix&quot;
+
+complete_task:
+  commitMessage: &quot;fix(ui): correct date picker timezone handling on iOS&quot;
+</code></pre>
+<hr>
+<h2>Refactoring Template</h2>
+<p>Use this template when improving code structure without changing behavior.</p>
+<h3>Checklist</h3>
+<pre><code class="language-markdown">## Refactoring: [What You&#39;re Refactoring]
+
+### Planning
+- [ ] Identify code smell or improvement opportunity
+- [ ] Define refactoring goal
+- [ ] Ensure test coverage exists
+- [ ] Plan incremental changes
+
+### Implementation
+- [ ] Start workflow task
+- [ ] Refactor code
+- [ ] Verify behavior unchanged
+- [ ] Mark as fixed
+
+### Testing
+- [ ] Update tests for new structure
+- [ ] Ensure all existing tests still pass
+- [ ] Create tests in workflow
+- [ ] Run full test suite
+- [ ] Record passing tests
+
+### Documentation
+- [ ] Update inline documentation
+- [ ] Update architecture docs if needed
+- [ ] Create documentation in workflow
+
+### Release
+- [ ] Commit and push changes
+- [ ] Perform release (minor/patch)
+- [ ] Complete task
+</code></pre>
+<h3>Workflow Commands</h3>
+<pre><code># 1. Start
+start_task:
+  description: &quot;Refactor [component/module] to [improvement goal]&quot;
+  type: &quot;refactor&quot;
+
+# 2. Refactor
+# ... your refactoring ...
+
+# 3. Mark as fixed
+mark_bug_fixed:
+  summary: &quot;[Brief description of refactoring]&quot;
+
+# 4. Update tests
+# ... update test structure ...
+create_tests
+
+# 5. Run tests
+run_tests:
+  passed: true
+  testCommand: &quot;npm test -- --coverage&quot;
+  details: &quot;[All tests pass, coverage maintained/improved]&quot;
+
+# 6. Document
+create_documentation:
+  documentationType: &quot;inline-comments&quot;
+  summary: &quot;[Updated documentation]&quot;
+
+# 7. Commit
+commit_and_push:
+  commitMessage: &quot;refactor([scope]): [description]&quot;
+
+# 8. Release
+perform_release:
+  command: &quot;npm run release:minor&quot;
+  notes: &quot;v[X.Y.Z] - Internal improvements&quot;
+
+# 9. Complete
+complete_task:
+  commitMessage: &quot;refactor([scope]): [description]&quot;
+</code></pre>
+<h3>Example</h3>
+<p><strong>Refactoring:</strong> Extract authentication logic to custom hooks</p>
+<pre><code>start_task:
+  description: &quot;Refactor authentication logic into reusable custom hooks&quot;
+  type: &quot;refactor&quot;
+
+mark_bug_fixed:
+  summary: &quot;Extracted useAuth and usePermissions hooks from component logic&quot;
+
+create_tests
+
+run_tests:
+  passed: true
+  testCommand: &quot;npm test -- --coverage&quot;
+  details: &quot;All 145 tests pass, coverage improved from 89% to 92%&quot;
+
+create_documentation:
+  documentationType: &quot;inline-comments&quot;
+  summary: &quot;Added JSDoc for custom hooks and usage examples&quot;
+
+commit_and_push:
+  commitMessage: &quot;refactor(auth): extract authentication logic to custom hooks&quot;
+
+perform_release:
+  command: &quot;npm run release:minor&quot;
+  notes: &quot;v1.6.0 - Authentication refactoring (improved maintainability)&quot;
+
+complete_task:
+  commitMessage: &quot;refactor(auth): extract authentication logic to custom hooks&quot;
+</code></pre>
+<hr>
+<h2>Hotfix Template</h2>
+<p>Use this for urgent production fixes that need immediate deployment.</p>
+<h3>Checklist</h3>
+<pre><code class="language-markdown">## Hotfix: [Critical Issue]
+
+### Urgent Actions
+- [ ] Identify production issue
+- [ ] Create hotfix branch if using git-flow
+- [ ] Start workflow task
+
+### Fix
+- [ ] Implement minimal fix
+- [ ] Test fix locally
+- [ ] Mark as fixed
+
+### Testing
+- [ ] Create focused regression test
+- [ ] Run relevant test suite
+- [ ] Manual verification in staging
+- [ ] Record passing tests
+
+### Documentation
+- [ ] Update CHANGELOG with hotfix note
+- [ ] Document in workflow
+
+### Release
+- [ ] Commit and push
+- [ ] Perform PATCH release
+- [ ] Deploy to production immediately
+- [ ] Complete task
+- [ ] Notify team
+</code></pre>
+<h3>Workflow Commands</h3>
+<pre><code># 1. Start immediately
+start_task:
+  description: &quot;HOTFIX: [critical issue description]&quot;
+  type: &quot;bugfix&quot;
+
+# 2. Minimal fix
+# ... implement fix ...
+
+# 3. Mark as fixed
+mark_bug_fixed:
+  summary: &quot;[Brief description of hotfix]&quot;
+
+# 4. Focused test
+create_tests
+
+# 5. Run tests
+run_tests:
+  passed: true
+  testCommand: &quot;npm test -- [relevant-tests]&quot;
+  details: &quot;[Critical path tests pass]&quot;
+
+# 6. Document urgency
+create_documentation:
+  documentationType: &quot;changelog&quot;
+  summary: &quot;HOTFIX: [issue] - [fix description]&quot;
+
+# 7. Commit
+commit_and_push:
+  commitMessage: &quot;fix([scope])!: HOTFIX - [description]&quot;
+
+# 8. Emergency release
+perform_release:
+  command: &quot;npm run release:patch&quot;
+  notes: &quot;v[X.Y.Z] - HOTFIX: [issue]&quot;
+
+# 9. Complete
+complete_task:
+  commitMessage: &quot;fix([scope])!: HOTFIX - [description]&quot;
+</code></pre>
+<h3>Example</h3>
+<p><strong>Hotfix:</strong> Payment processing fails on production</p>
+<pre><code>start_task:
+  description: &quot;HOTFIX: Payment gateway timeout causing checkout failures&quot;
+  type: &quot;bugfix&quot;
+
+mark_bug_fixed:
+  summary: &quot;Increased payment API timeout from 5s to 30s and added retry logic&quot;
+
+create_tests
+
+run_tests:
+  passed: true
+  testCommand: &quot;npm test -- payment&quot;
+  details: &quot;Payment flow tests pass with timeout scenarios&quot;
+
+create_documentation:
+  documentationType: &quot;changelog&quot;
+  summary: &quot;HOTFIX: Resolved payment timeout failures with increased timeout and retry&quot;
+
+commit_and_push:
+  commitMessage: &quot;fix(payment)!: HOTFIX - increase timeout and add retry logic&quot;
+
+perform_release:
+  command: &quot;npm run release:patch&quot;
+  notes: &quot;v1.4.2 - HOTFIX: Payment processing timeout&quot;
+
+complete_task:
+  commitMessage: &quot;fix(payment)!: HOTFIX - increase timeout and add retry logic&quot;
+</code></pre>
+<hr>
+<h2>Documentation Update Template</h2>
+<p>Use this when updating documentation without code changes.</p>
+<h3>Workflow Commands</h3>
+<pre><code># 1. Start
+start_task:
+  description: &quot;Update documentation for [topic]&quot;
+  type: &quot;other&quot;
+
+# 2. Update docs
+# ... write documentation ...
+
+# 3. Mark as complete
+mark_bug_fixed:
+  summary: &quot;Updated [documentation type] with [additions]&quot;
+
+# 4. Skip tests (documentation only)
+skip_tests:
+  reason: &quot;Documentation-only change, no code modified&quot;
+
+# 5. Document
+create_documentation:
+  documentationType: &quot;README&quot;
+  summary: &quot;[What documentation was added/updated]&quot;
+
+# 6. Commit
+commit_and_push:
+  commitMessage: &quot;docs([scope]): [description]&quot;
+
+# 7. Release
+perform_release:
+  command: &quot;npm run release:patch&quot;
+  notes: &quot;v[X.Y.Z] - Documentation updates&quot;
+
+# 8. Complete
+complete_task:
+  commitMessage: &quot;docs([scope]): [description]&quot;
+</code></pre>
+<h3>Example</h3>
+<pre><code>start_task:
+  description: &quot;Add migration guide for v2.0 breaking changes&quot;
+  type: &quot;other&quot;
+
+mark_bug_fixed:
+  summary: &quot;Created comprehensive v2.0 migration guide with examples&quot;
+
+skip_tests:
+  reason: &quot;Documentation-only update, no code changes&quot;
+
+create_documentation:
+  documentationType: &quot;API-docs&quot;
+  summary: &quot;Added MIGRATION_V2.md with breaking changes and upgrade steps&quot;
+
+commit_and_push:
+  commitMessage: &quot;docs(migration): add v2.0 migration guide&quot;
+
+perform_release:
+  command: &quot;npm run release:patch&quot;
+  notes: &quot;v1.4.3 - v2.0 migration guide&quot;
+
+complete_task:
+  commitMessage: &quot;docs(migration): add v2.0 migration guide&quot;
+</code></pre>
+<hr>
+<h2>Release Preparation Template</h2>
+<p>Use this when preparing a major/minor release with multiple features.</p>
+<h3>Checklist</h3>
+<pre><code class="language-markdown">## Release Preparation: v[X.Y.Z]
+
+### Pre-Release
+- [ ] Review all merged features
+- [ ] Update version numbers
+- [ ] Update CHANGELOG
+- [ ] Run full test suite
+- [ ] Check documentation completeness
+
+### Workflow
+- [ ] Start workflow task
+- [ ] Mark preparation as complete
+- [ ] Verify tests
+- [ ] Create documentation
+- [ ] Commit and push
+- [ ] Perform release
+- [ ] Complete task
+
+### Post-Release
+- [ ] Tag release in git
+- [ ] Create GitHub release notes
+- [ ] Publish to npm/registry
+- [ ] Notify users
+</code></pre>
+<h3>Workflow Commands</h3>
+<pre><code>start_task:
+  description: &quot;Prepare release v[X.Y.Z] with [feature list]&quot;
+  type: &quot;other&quot;
+
+mark_bug_fixed:
+  summary: &quot;Release preparation complete: CHANGELOG updated, version bumped to [X.Y.Z]&quot;
+
+create_tests
+
+run_tests:
+  passed: true
+  testCommand: &quot;npm test -- --coverage&quot;
+  details: &quot;Full test suite: [X tests pass], coverage [Y%]&quot;
+
+create_documentation:
+  documentationType: &quot;changelog&quot;
+  summary: &quot;Updated CHANGELOG with all v[X.Y.Z] features and fixes&quot;
+
+commit_and_push:
+  commitMessage: &quot;chore(release): prepare v[X.Y.Z]&quot;
+
+perform_release:
+  command: &quot;npm run release:minor&quot;
+  notes: &quot;v[X.Y.Z] - [Release highlights]&quot;
+
+complete_task:
+  commitMessage: &quot;chore(release): prepare v[X.Y.Z]&quot;
+</code></pre>
+<hr>
+<h2>Using Templates in Antigravity</h2>
+<h3>Quick Template Application</h3>
+<ol>
+<li><strong>Choose your template</strong> based on task type</li>
+<li><strong>Copy the workflow commands</strong> section</li>
+<li><strong>Customize</strong> brackets [...] with your specific details</li>
+<li><strong>Execute</strong> commands in Antigravity</li>
+</ol>
+<h3>Template Variables</h3>
+<p>Replace these placeholders in templates:</p>
+<ul>
+<li><code>[Feature Name]</code> - Your feature description</li>
+<li><code>[Bug Description]</code> - Bug summary</li>
+<li><code>[scope]</code> - Conventional commit scope (e.g., auth, ui, api)</li>
+<li><code>[description]</code> - Commit description</li>
+<li><code>[X.Y.Z]</code> - Version number</li>
+<li><code>[X tests]</code> - Number of tests</li>
+<li><code>[Y%]</code> - Coverage percentage</li>
+</ul>
+<h3>Automation with Workflows</h3>
+<p>Save these as Antigravity workflow files in <code>.agent/workflows/</code>:</p>
+<ul>
+<li><code>dev-workflow-feature.md</code></li>
+<li><code>dev-workflow-bugfix.md</code></li>
+<li><code>dev-workflow-refactor.md</code></li>
+<li><code>dev-workflow-hotfix.md</code></li>
+</ul>
+<p>Then use slash commands like <code>/dev-workflow-feature</code> to load templates!</p>
+<hr>
+<h2>Next Steps</h2>
+<ul>
+<li>See <a href="./EXAMPLES.md">EXAMPLES.md</a> for real-world usage scenarios</li>
+<li>Check <a href="./TROUBLESHOOTING.md">TROUBLESHOOTING.md</a> for common issues</li>
+<li>Return to <a href="./GETTING-STARTED.md">GETTING-STARTED.md</a> for setup</li>
+</ul>
+<hr>
+<p><strong>Consistent workflows lead to consistent quality!</strong> ⚡</p>
+
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

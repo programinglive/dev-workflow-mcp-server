@@ -1,7 +1,7 @@
 import { createServer } from "http";
 import { readFile, access } from "fs/promises";
 import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { dirname, join, extname } from "path";
 import getPort from "get-port";
 import { getHistoryForUser, getSummaryForUser, getHistorySummary } from "../db/index.js";
 
@@ -82,10 +82,58 @@ async function start() {
       const url = new URL(req.url, `http://${req.headers.host}`);
       const userId = url.searchParams.get("user") || "default";
 
-      if (req.method === "GET" && url.pathname === "/output.css") {
-        const css = await readFile(join(__dirname, "public", "output.css"), "utf-8");
-        res.writeHead(200, { "Content-Type": "text/css" });
-        res.end(css);
+      const noCacheHeaders = {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      };
+
+      // Serve index.html for root path
+      if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/index.html")) {
+        try {
+          const html = await readFile(join(__dirname, "public", "index.html"), "utf-8");
+          res.writeHead(200, { "Content-Type": "text/html", ...noCacheHeaders });
+          res.end(html);
+        } catch (err) {
+          res.writeHead(500, { "Content-Type": "text/plain" });
+          res.end("Error loading page");
+        }
+      } else if (req.method === "GET" && url.pathname === "/input.css") {
+        try {
+          // Serve the built CSS file
+          const css = await readFile(join(__dirname, "public", "output.css"), "utf-8");
+          res.writeHead(200, { "Content-Type": "text/css", ...noCacheHeaders });
+          res.end(css);
+        } catch (err) {
+          res.writeHead(404, { "Content-Type": "text/plain" });
+          res.end("CSS not found");
+        }
+      } else if (req.method === "GET" && url.pathname === "/main.js") {
+        try {
+          const js = await readFile(join(__dirname, "public", "main.js"), "utf-8");
+          res.writeHead(200, { "Content-Type": "application/javascript", ...noCacheHeaders });
+          res.end(js);
+        } catch (err) {
+          res.writeHead(404, { "Content-Type": "text/plain" });
+          res.end("JS not found");
+        }
+      } else if (req.method === "GET" && url.pathname.startsWith("/assets/")) {
+        try {
+          const assetPath = join(__dirname, "public", url.pathname);
+          const content = await readFile(assetPath);
+          const ext = extname(assetPath);
+          const mimeTypes = {
+            ".png": "image/png",
+            ".jpg": "image/jpeg",
+            ".svg": "image/svg+xml",
+            ".ico": "image/x-icon",
+          };
+          res.writeHead(200, { "Content-Type": mimeTypes[ext] || "application/octet-stream" });
+          res.end(content);
+        } catch (err) {
+          res.writeHead(404, { "Content-Type": "text/plain" });
+          res.end("Asset not found");
+        }
       } else if (req.method === "GET" && url.pathname === "/") {
         const html = await readFile(join(__dirname, "public", "index.html"), "utf-8");
         res.writeHead(200, { "Content-Type": "text/html" });

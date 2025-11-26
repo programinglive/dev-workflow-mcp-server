@@ -10,8 +10,8 @@
   },
   "scripts": {
     "build": "vite build",
-    "build:web": "npx tailwindcss -i ./web/public/input.css -o ./web/public/output.css --minify",
-    "watch:web": "npx tailwindcss -i ./web/public/input.css -o ./web/public/output.css --watch",
+    "build:web": "vite build -c vite.web.config.js",
+    "watch:web": "vite -c vite.web.config.js",
     "postbuild": "npm run build:web && node scripts/build-docs.js",
     "dev": "node --watch index.js",
     "start": "node index.js",
