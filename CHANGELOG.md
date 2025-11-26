@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.3.12...v1.4.0) (2025-11-26)
+
+
+### ✨ Features
+
+* migrate dashboard to Next.js with TypeScript and Tailwind CSS ([bce1fec](https://github.com/programinglive/dev-workflow-mcp-server/commit/bce1fec98a7b5e5542644271a77ccaf1019dd83c))
+
+
+### 🧹 Chores
+
+* fix package.json scripts ([fb25e98](https://github.com/programinglive/dev-workflow-mcp-server/commit/fb25e98c763d4b5cac5c321f56a2e533577fc38b))
+* fix tsconfig and remove dist artifact ([282759f](https://github.com/programinglive/dev-workflow-mcp-server/commit/282759f14de6231ad6374dc891b551ca0d70ac28))
+
 ### [1.3.12](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.3.11...v1.3.12) (2025-11-22)
 
 
