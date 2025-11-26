@@ -1,0 +1,189 @@
+<h1>Release Notes</h1>
+<p>Authoritative history of user-visible changes for the Development Workflow MCP Server. Each entry highlights the improvements that shipped with the tagged version.</p>
+<h2>Unreleased</h2>
+<h2>1.4.0 — 2025-11-26</h2>
+<ul>
+<li>See CHANGELOG for details.</li>
+</ul>
+<h2>1.3.11 — 2025-11-23</h2>
+<ul>
+<li>Re-applied Plesk security fix (moved static files to <code>web/public/</code>).</li>
+<li>Updated build configuration and server paths.</li>
+</ul>
+<h2>1.3.10 — 2025-11-23</h2>
+<ul>
+<li>Fixed workflow state synchronization issue that caused forced releases.</li>
+<li>Added <code>docs/WORKFLOW-BEST-PRACTICES.md</code>.</li>
+</ul>
+<h2>1.3.9 — 2025-11-23</h2>
+<ul>
+<li>Improved documentation modal layout and readability.</li>
+</ul>
+<h2>1.3.8 — 2025-11-23</h2>
+<ul>
+<li>Fixed documentation loading in production by tracking <code>dist/docs</code> in git.</li>
+</ul>
+<h2>1.3.0 — 2025-11-22</h2>
+<ul>
+<li>Added comprehensive Antigravity integration documentation and examples.</li>
+<li>Fixed Windows shell escaping for commit messages.</li>
+<li>Fixed release scripts to support ESM projects.</li>
+<li>Release guard now delegates to <code>@programinglive/commiter</code> and verifies the package is installed before running.</li>
+</ul>
+<h2>1.2.7 — 2025-11-13</h2>
+<ul>
+<li>Delegated release process to <code>@programinglive/commiter</code>.</li>
+</ul>
+<h2>1.2.6 — 2025-11-11</h2>
+<ul>
+<li>Exposed primary branch helper in CLI.</li>
+<li>Updated documentation regarding commiter delegation.</li>
+</ul>
+<blockquote>
+<p><strong>Notice:</strong> Versions 1.2.2 through 1.2.5 were published briefly for packaging experiments and have been withdrawn.</p>
+</blockquote>
+<h2>1.2.1 — 2025-11-03</h2>
+<ul>
+<li>Packaging touch-up; functionality remains identical to 1.2.0.</li>
+</ul>
+<h2>1.2.0 — 2025-11-03</h2>
+<ul>
+<li>Reload the workflow state from disk for every tool call, preventing stale data when multiple clients manipulate the same project.</li>
+</ul>
+<h2>1.1.18 — 2025-11-03</h2>
+<ul>
+<li><code>commit_and_push</code> now auto-detects the primary branch (preferring <code>main</code>, then <code>master</code>) when none is supplied.</li>
+</ul>
+<h2>1.1.17 — 2025-10-31</h2>
+<ul>
+<li>Release bookkeeping only; no user-facing changes.</li>
+</ul>
+<h2>1.1.16 — 2025-10-31</h2>
+<ul>
+<li>Added npm provenance metadata so published packages include supply-chain attestations.</li>
+</ul>
+<h2>1.1.15 — 2025-10-31</h2>
+<ul>
+<li>Documented the automated npm publish workflow and ensured CI builds include provenance before publishing.</li>
+</ul>
+<h2>1.1.14 — 2025-10-31</h2>
+<ul>
+<li>Improved project-root detection for workflow state, fixing issues when the server runs from nested directories.</li>
+</ul>
+<h2>1.1.13 — 2025-10-30</h2>
+<ul>
+<li>Version bump to distribute refreshed dashboard assets; no new functionality beyond 1.1.12.</li>
+</ul>
+<h2>1.1.12 — 2025-10-30</h2>
+<ul>
+<li>Added a <code>node index.js call &lt;tool&gt;</code> CLI helper to invoke MCP tools without a client integration.</li>
+<li>Refreshed the web dashboard with a docs modal, dedicated docs API endpoints, and streamlined navigation.</li>
+</ul>
+<h2>1.1.11 — 2025-10-30</h2>
+<ul>
+<li>Introduced per-user workflow state stored under <code>.state/users/&lt;id&gt;/</code> to avoid collisions on shared repos.</li>
+<li>Added a SQLite-backed project knowledge summary and the dashboard that visualizes history and trends.</li>
+<li>Hardened resumable workflows by re-checking persisted summaries between steps.</li>
+</ul>
+<h2>1.1.10 — 2025-10-29</h2>
+<ul>
+<li>Shipped the initial project knowledge library with a persisted JSON summary for future database integrations.</li>
+</ul>
+<h2>1.1.9 — 2025-10-29</h2>
+<ul>
+<li>Made <code>run_full_workflow</code> resume intelligently from the current phase.</li>
+<li>Expanded automated tests around README/exec updates and other workflow paths.</li>
+</ul>
+<h2>1.1.8 — 2025-10-27</h2>
+<ul>
+<li>Documented the <code>DEV_WORKFLOW_STATE_FILE</code> override for relocating workflow state outside the repository.</li>
+</ul>
+<h2>1.1.7 — 2025-10-26</h2>
+<ul>
+<li>Added prompts guiding developers to document changes immediately after tests pass.</li>
+</ul>
+<h2>1.1.6 — 2025-10-26</h2>
+<ul>
+<li>Prevented <code>.state</code> from being created at filesystem roots.</li>
+<li>Enforced that commits must land before any release action can run.</li>
+</ul>
+<h2>1.1.5 — 2025-10-25</h2>
+<ul>
+<li>Introduced the release guard, blocking <code>npm run release:*</code> until every prerequisite tool has run.</li>
+<li>Standardized per-project workflow state creation during installs.</li>
+</ul>
+<h2>1.1.4 — 2025-10-25</h2>
+<ul>
+<li>Ensured the install script always targets the project root when initializing <code>.state</code>.</li>
+</ul>
+<h2>1.1.3 — 2025-10-25</h2>
+<ul>
+<li>Packaged the MCP server for project-level installs with per-project workflow state isolation.</li>
+</ul>
+<h2>1.1.2 — 2025-10-25</h2>
+<ul>
+<li>Version alignment release with no additional changes versus 1.1.1.</li>
+</ul>
+<h2>1.1.1 — 2025-10-25</h2>
+<ul>
+<li>Added <code>force_complete_task</code>, letting teams close tasks early with an audit trail.</li>
+</ul>
+<h2>1.1.0 — 2025-10-25</h2>
+<ul>
+<li>Added smart staging checks before commit, and made <code>continue_workflow</code> auto-run the next action in the commit phase.</li>
+<li>Enabled clean-tree commits to utilize <code>commit_and_push</code> and <code>perform_release</code> without manual staging.</li>
+<li>Clarified documentation for the commit/push step.</li>
+</ul>
+<h2>1.0.11 — 2025-10-25</h2>
+<ul>
+<li>Added contextual &quot;continue workflow&quot; guidance describing the next recommended tool.</li>
+<li>Blocked releases until commits are safely pushed.</li>
+</ul>
+<h2>1.0.10 — 2025-10-24</h2>
+<ul>
+<li>Modularized the workflow server internals for maintainability.</li>
+<li>Expanded automated tests around the release push flow.</li>
+</ul>
+<h2>1.0.9 — 2025-10-23</h2>
+<ul>
+<li>Documented how local workflow state is managed across projects.</li>
+</ul>
+<h2>1.0.8 — 2025-10-21</h2>
+<ul>
+<li>Added explicit workflows for skipping tests with justification and dropping tasks mid-flight.</li>
+</ul>
+<h2>1.0.7 — 2025-10-20</h2>
+<ul>
+<li>Version alignment update; no new functionality recorded.</li>
+</ul>
+<h2>1.0.6 — 2025-10-20</h2>
+<ul>
+<li>Strengthened release tests to ensure prerequisites are met before tagging.</li>
+</ul>
+<h2>1.0.5 — 2025-10-20</h2>
+<ul>
+<li>Updated tests around <code>workflowState</code> persistence and validation.</li>
+</ul>
+<h2>1.0.4 — 2025-10-20</h2>
+<ul>
+<li>Added an enforced release step after the ready check to ensure workflow order.</li>
+<li>Improved Windows compatibility by quoting commit messages safely.</li>
+</ul>
+<h2>1.0.3 — 2025-10-20</h2>
+<ul>
+<li>Added a project <code>.gitignore</code> and clarified cross-platform installation steps.</li>
+</ul>
+<h2>1.0.2 — 2025-10-19</h2>
+<ul>
+<li>Hardened <code>run_tests</code> argument validation and normalized tool call arguments.</li>
+<li>Expanded documentation around tool payload requirements.</li>
+</ul>
+<h2>1.0.1 — 2025-10-18</h2>
+<ul>
+<li>Configured release tooling to support semantic version tagging moving forward.</li>
+</ul>
+<h2>1.0.0 — 2025-10-18</h2>
+<ul>
+<li>Initial public release with the full MCP workflow (start → fix → tests → docs → commit → release → complete).</li>
+<li>Launched project governance, contribution guidelines, and tooling scaffolding.</li>
+</ul>

@@ -8,7 +8,7 @@ import path from 'path';
 const exec = promisify(execCallback);
 
 test('build generates dist/index.mjs file', async () => {
-  const { stderr } = await exec('npm run build');
+  const { stderr } = await exec('npm run build:server && npm run postbuild');
   // Allow the known vite warning about node:process
   const knownWarning = '[plugin vite:resolve] Module "node:process" has been externalized for browser compatibility';
   const tailwindOutput = '≈ tailwindcss';
@@ -43,6 +43,6 @@ test('build script exists in package.json', async () => {
   const content = await readFile(packagePath, 'utf-8');
   const pkg = JSON.parse(content);
 
-  assert.strictEqual(typeof pkg.scripts.build, 'string');
-  assert(pkg.scripts.build.includes('vite build'));
+  assert.strictEqual(typeof pkg.scripts['build:server'], 'string');
+  assert(pkg.scripts['build:server'].includes('vite build'));
 });

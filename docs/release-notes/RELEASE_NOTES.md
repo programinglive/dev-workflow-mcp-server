@@ -4,6 +4,9 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.0 — 2025-11-26
+- See CHANGELOG for details.
+
 ## 1.3.11 — 2025-11-23
 - Re-applied Plesk security fix (moved static files to `web/public/`).
 - Updated build configuration and server paths.

@@ -9,14 +9,15 @@
     "dev-workflow-mcp": "index.js"
   },
   "scripts": {
-    "build": "npm run build --prefix web",
+    "build": "npm run build:server && npm run build:web",
+    "build:server": "vite build",
     "build:web": "npm run build --prefix web",
     "watch:web": "npm run dev --prefix web",
-    "postbuild": "npm run build:web",
+    "postbuild": "node scripts/build-docs.js",
     "dev": "node --watch index.js",
     "start": "node index.js",
     "local": "node index.js",
-    "test": "echo \"Skipping tests for migration\"",
+    "test": "node --test",
     "check": "node --check index.js",
     "prepare": "husky",
     "postinstall": "node install.js",
