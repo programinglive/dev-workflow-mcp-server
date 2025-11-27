@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.2...v1.4.3) (2025-11-27)
+
+
+### 🧹 Chores
+
+* **release:** 1.4.2 ([fac8999](https://github.com/programinglive/dev-workflow-mcp-server/commit/fac899992d370c0198954a6f7c97ab7645514e25))
+
+
+### 🐛 Bug Fixes
+
+* remove invalid turbopack experimental config from next.config.ts ([af0a7ea](https://github.com/programinglive/dev-workflow-mcp-server/commit/af0a7ea7906654755a2520693fd81d7fb6633c13))
+
+
+### 📝 Documentation
+
+* add Plesk deployment guide ([de35675](https://github.com/programinglive/dev-workflow-mcp-server/commit/de356753231d1bb29fd3c87fdd9d095932fae4b0))
+
+
+### ✨ Features
+
+* update program tracks and fix fast refresh warning ([aa5bc9c](https://github.com/programinglive/dev-workflow-mcp-server/commit/aa5bc9cbc8a9bf9c9552e00e89b0b97ddeac0592))
+
 ### [1.4.2](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.1...v1.4.2) (2025-11-27)
 
 
