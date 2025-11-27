@@ -67,14 +67,16 @@ test("resolveStateFile prefers current working directory when multiple project m
 
     const state = new TempWorkflowState();
     const resolvedStateFile = state.stateFile;
+    const resolvedProjectA = await realpath(projectA);
+    const resolvedProjectB = await realpath(projectB);
 
     assert.ok(
-      resolvedStateFile.startsWith(path.join(projectB, ".state", "users")),
+      resolvedStateFile.startsWith(path.join(resolvedProjectB, ".state", "users")),
       "State file should resolve under the current working directory's project"
     );
 
     assert.ok(
-      !resolvedStateFile.startsWith(path.join(projectA, ".state")),
+      !resolvedStateFile.startsWith(path.join(resolvedProjectA, ".state")),
       "State file should not use INIT_CWD project when cwd has its own markers"
     );
   } finally {
@@ -303,9 +305,11 @@ test("WorkflowState resolves state file relative to project root", async () => {
     if (devStateWasSet) {
       delete process.env.DEV_WORKFLOW_STATE_FILE;
     }
+    const resolvedProjectRoot = await realpath(projectRoot);
+
     const state = new WorkflowState();
     assert.ok(
-      state.stateFile.startsWith(path.join(projectRoot, ".state", "users")),
+      state.stateFile.startsWith(path.join(resolvedProjectRoot, ".state", "users")),
       "state file should resolve under project .state/users directory"
     );
 
@@ -314,7 +318,6 @@ test("WorkflowState resolves state file relative to project root", async () => {
     delete process.env.DEV_WORKFLOW_STATE_FILE;
 
     const state2 = new WorkflowState();
-    const resolvedProjectRoot = await realpath(projectRoot);
     assert.ok(
       state2.stateFile.startsWith(path.join(resolvedProjectRoot, ".state", "users")),
       "state file should resolve to project root"

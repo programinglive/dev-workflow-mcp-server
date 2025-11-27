@@ -40,6 +40,84 @@ function createRequest(name, args) {
   };
 }
 
+test("run_tests guidance mentions core documentation types", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.bugFixed = true;
+    workflowState.state.testsCreated = true;
+    await workflowState.save();
+
+    const response = await handleToolCall({
+      request: createRequest("run_tests", {
+        passed: true,
+        testCommand: "npm test",
+      }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: async () => ({ stdout: "" }),
+      git: {
+        hasWorkingChanges: async () => false,
+        hasStagedChanges: async () => false,
+        hasTestChanges: async () => true,
+        getStagedChanges: async () => [],
+        getCurrentBranch: async () => "main",
+        getPrimaryBranch: async () => "main",
+        getLastCommitMessage: async () => "",
+        workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+      },
+      utils,
+    });
+
+    const text = response.content[0].text;
+    assert.ok(
+      text.includes("create or update documentation using 'create_documentation'"),
+      "run_tests guidance should mention create or update documentation",
+    );
+    assert.ok(
+      text.includes('"PRD", "README", "RELEASE_NOTES"'),
+      "run_tests guidance should list core documentation types",
+    );
+  });
+});
+
+test("create_documentation accepts PRD and records created/updated message", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.testsPassed = true;
+    await workflowState.save();
+
+    const response = await handleToolCall({
+      request: createRequest("create_documentation", {
+        documentationType: "PRD",
+        summary: "Updated PRD for documentation workflow expectations",
+      }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: async () => ({ stdout: "" }),
+      git: {
+        hasWorkingChanges: async () => false,
+        hasStagedChanges: async () => false,
+        hasTestChanges: async () => true,
+        getStagedChanges: async () => [],
+        getCurrentBranch: async () => "main",
+        getPrimaryBranch: async () => "main",
+        getLastCommitMessage: async () => "",
+        workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+      },
+      utils,
+    });
+
+    assert.equal(workflowState.state.documentationCreated, true);
+    assert.equal(workflowState.state.documentationType, "PRD");
+    assert.equal(
+      workflowState.state.documentationSummary,
+      "Updated PRD for documentation workflow expectations",
+    );
+    assert.ok(
+      response.content[0].text.includes("Documentation created/updated!"),
+      "create_documentation response should mention created/updated",
+    );
+  });
+});
+
 test("commit_and_push commits changes and pushes", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.readyToCommit = true;

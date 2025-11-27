@@ -90,7 +90,7 @@ export function getToolList() {
         properties: {
           documentationType: {
             type: "string",
-            enum: ["README", "inline-comments", "API-docs", "changelog", "other"],
+            enum: ["PRD", "README", "RELEASE_NOTES", "inline-comments", "API-docs", "changelog", "other"],
             description: "Type of documentation created",
           },
           summary: {
@@ -259,7 +259,7 @@ export function getToolList() {
           },
           documentationType: {
             type: "string",
-            enum: ["README", "inline-comments", "API-docs", "changelog", "other"],
+            enum: ["PRD", "README", "RELEASE_NOTES", "inline-comments", "API-docs", "changelog", "other"],
             description: "Type of documentation created",
           },
           documentationSummary: {

@@ -431,7 +431,7 @@ Use run_tests with:
 Mark that documentation has been created/updated. This is required before committing.
 
 **Parameters:**
-- `documentationType` (enum, required): "README", "inline-comments", "API-docs", "changelog", or "other"
+- `documentationType` (enum, required): "PRD", "README", "RELEASE_NOTES", "inline-comments", "API-docs", "changelog", or "other"
 - `summary` (string, required): What was documented
 
 ### `check_ready_to_commit`

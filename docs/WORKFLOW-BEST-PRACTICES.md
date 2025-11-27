@@ -42,3 +42,17 @@ check_ready → commit → release → complete  // CORRECT!
 ## Solution
 
 Always call `perform_release` BEFORE `complete_task`. Never use `--force` unless absolutely necessary.
+
+## Documentation Phase Expectations
+
+During the documentation step (`mcp0_create_documentation`), make sure the core project docs are created or updated as needed:
+
+1. `docs/product/PRD.md` – Product Requirements Document
+2. `README.md` – Project overview and usage
+3. `docs/release-notes/RELEASE_NOTES.md` – Release notes for changes in this task/version
+
+If one or more of these files already exist, **update them** instead of creating new variants. Use the `documentationType` argument to reflect what you touched:
+
+- `"PRD"` when you added/updated the PRD
+- `"README"` when you updated the main README
+- `"RELEASE_NOTES"` when you updated the release notes

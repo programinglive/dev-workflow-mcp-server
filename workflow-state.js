@@ -398,40 +398,26 @@ export function resolveStateFile() {
     return path.resolve(customPath);
   }
 
-  const initCwd = process.env.INIT_CWD || process.cwd();
-  const resolvedInitCwd = path.resolve(initCwd);
   const moduleRoot = path.resolve(__dirname, "..");
   const cwdResolved = path.resolve(process.cwd());
+  const initCwd = process.env.INIT_CWD ? path.resolve(process.env.INIT_CWD) : null;
 
-  const candidateRoots = [];
+  // 1. Prefer the project rooted at the current working directory
+  let projectRoot = findProjectRoot(cwdResolved);
 
-  const initProjectRoot = findProjectRoot(resolvedInitCwd);
-  const cwdProjectRoot = findProjectRoot(cwdResolved);
-  const moduleProjectRoot = findProjectRoot(moduleRoot);
-
-  normalizeAndStoreCandidate(candidateRoots, initProjectRoot);
-  normalizeAndStoreCandidate(candidateRoots, cwdProjectRoot);
-  if (!isRootPath(resolvedInitCwd)) {
-    normalizeAndStoreCandidate(candidateRoots, resolvedInitCwd);
-    addAncestorCandidates(candidateRoots, resolvedInitCwd);
-  }
-  if (!isRootPath(cwdResolved)) {
-    normalizeAndStoreCandidate(candidateRoots, cwdResolved);
-    addAncestorCandidates(candidateRoots, cwdResolved);
+  // 2. Fall back to the project rooted at INIT_CWD if different
+  if (!projectRoot && initCwd) {
+    projectRoot = findProjectRoot(initCwd);
   }
 
-  normalizeAndStoreCandidate(candidateRoots, moduleProjectRoot);
-  if (!isRootPath(moduleRoot)) {
-    normalizeAndStoreCandidate(candidateRoots, moduleRoot);
-  }
-  if (!isRootPath(__dirname)) {
-    normalizeAndStoreCandidate(candidateRoots, __dirname);
-  }
-
-  let projectRoot = selectProjectRoot(candidateRoots, moduleRoot);
-
+  // 3. Fall back to the project containing this module
   if (!projectRoot) {
-    projectRoot = path.resolve(__dirname);
+    projectRoot = findProjectRoot(moduleRoot);
+  }
+
+  // 4. Final fallback: use a non-root working directory or the module root
+  if (!projectRoot) {
+    projectRoot = !isRootPath(cwdResolved) ? cwdResolved : moduleRoot;
   }
 
   const stateDir = path.join(projectRoot, STATE_DIR);
