@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.6](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.5...v1.4.6) (2025-11-27)
+
+
+### 🧹 Chores
+
+* add MCP registry metadata (mcpName & server.json) ([66caea1](https://github.com/programinglive/dev-workflow-mcp-server/commit/66caea1d684473cfc916917faa42e16fc4ad9e14))
+
 ### [1.4.5](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.4...v1.4.5) (2025-11-27)
 
 
