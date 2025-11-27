@@ -35,6 +35,7 @@ Developers need structured guidance to maintain disciplined workflows across pro
 - Offer aggregated project summaries (JSON artifacts, SQLite sync, optional web dashboard).
 - Guard release commands to ensure prerequisites are satisfied.
 - Support `run_full_workflow` for scripted execution of all steps with validation.
+- Web dashboard displays version dynamically from `package.json` via `/api/version` endpoint to stay in sync after releases.
 
 ## 8. Technical Considerations
 - Node.js (ESM) codebase leveraging `@modelcontextprotocol/sdk`.

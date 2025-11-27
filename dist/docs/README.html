@@ -170,6 +170,7 @@ cd dev-workflow-mcp-server
 <li><strong>Environment overrides:</strong> Honors <code>PORT</code> (common on hosts like Plesk/Render) or <code>DEV_WORKFLOW_WEB_PORT</code> before falling back to auto-selection.</li>
 <li><strong>Query parameter:</strong> <code>?user=&lt;id&gt;</code> lets you inspect another user’s history (defaults to <code>default</code>).</li>
 <li><strong>API endpoints:</strong><ul>
+<li><code>GET /api/version</code> → current package version from <code>package.json</code> (used by dashboard to display version dynamically).</li>
 <li><code>GET /api/summary?user=&lt;id&gt;</code> → overall stats for the user.</li>
 <li><code>GET /api/history?user=&lt;id&gt;&amp;page=1&amp;pageSize=20&amp;startDate=YYYY-MM-DD&amp;endDate=YYYY-MM-DD</code> → paginated task history.</li>
 <li><code>GET /api/history-summary?user=&lt;id&gt;&amp;frequency=daily|monthly|yearly</code> → aggregated counts over time.</li>

@@ -7,12 +7,18 @@ import { useEffect, useState } from "react";
 
 export default function Hero() {
     const [downloads, setDownloads] = useState<number | null>(null);
+    const [version, setVersion] = useState<string | null>(null);
 
     useEffect(() => {
         fetch("/api/npm-downloads")
             .then(res => res.json())
             .then(data => setDownloads(data.downloads))
             .catch(() => setDownloads(null));
+
+        fetch("/api/version")
+            .then(res => res.json())
+            .then(data => setVersion(data.version))
+            .catch(() => setVersion(null));
     }, []);
 
     const formatDownloads = (num: number) => {
@@ -30,7 +36,7 @@ export default function Hero() {
                     <div className="animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-8">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>v1.3.12 - Active</span>
+                            <span>v{version ?? "..."} - Active</span>
                         </div>
                     </div>
 
@@ -51,7 +57,7 @@ export default function Hero() {
                     </div>
                     <div className="flex flex-wrap gap-6 sm:gap-8 text-sm animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
                         <div>
-                            <div className="text-2xl font-bold">1.3.12</div>
+                            <div className="text-2xl font-bold">{version ?? "..."}</div>
                             <div className="text-gray-500">Latest Version</div>
                         </div>
                         <div>

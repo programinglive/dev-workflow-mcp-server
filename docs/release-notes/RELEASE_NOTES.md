@@ -4,6 +4,25 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.4 — 2025-11-27 — ♻️ Refactors
+- consolidate workflow state to root .state folder only (3d69a14)
+- ensure release guard uses freshest workflow state (e07eb42)
+- remove invalid turbopack experimental config from next.config.ts (af0a7ea)
+- **web:** configure next.js root to silence warnings (22ed002)
+- **web:** improve mobile layout for hero section (53b26bf)
+- add Plesk deployment guide (de35675)
+- add 1.4.3 release notes (8b165f7)
+- fix release state detection (ed5dfd1)
+- prepare for release (a6ea2d0)
+- **release:** 1.4.2 (fac8999)
+- **release:** 1.4.2 🚀 (01b0b3c)
+- **release:** 1.4.3 🚀 (04d8c3b)
+- update task list (35663dd)
+- **web:** fix next.js lockfile warning (05ffce0)
+- add core doc types (PRD/README/RELEASE_NOTES) and fix CI build (8ed0567)
+- update hero text and meta description to emphasize Indonesian programmer community (681547b)
+- update program tracks and fix fast refresh warning (aa5bc9c)
+
 ## 1.4.3 — 2025-11-27 — 🧹 Chores
 - **release:** 1.4.2 (fac8999)
 - remove invalid turbopack experimental config from next.config.ts (af0a7ea)

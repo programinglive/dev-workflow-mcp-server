@@ -205,6 +205,7 @@ npm run web
 - **Environment overrides:** Honors `PORT` (common on hosts like Plesk/Render) or `DEV_WORKFLOW_WEB_PORT` before falling back to auto-selection.
 - **Query parameter:** `?user=<id>` lets you inspect another user’s history (defaults to `default`).
 - **API endpoints:**
+  - `GET /api/version` → current package version from `package.json` (used by dashboard to display version dynamically).
   - `GET /api/summary?user=<id>` → overall stats for the user.
   - `GET /api/history?user=<id>&page=1&pageSize=20&startDate=YYYY-MM-DD&endDate=YYYY-MM-DD` → paginated task history.
   - `GET /api/history-summary?user=<id>&frequency=daily|monthly|yearly` → aggregated counts over time.

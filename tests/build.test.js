@@ -46,3 +46,16 @@ test('build script exists in package.json', async () => {
   assert.strictEqual(typeof pkg.scripts['build:server'], 'string');
   assert(pkg.scripts['build:server'].includes('vite build'));
 });
+
+test('Hero component fetches version dynamically', async () => {
+  const heroPath = path.join(process.cwd(), 'web', 'components', 'Hero.tsx');
+  const heroContent = await readFile(heroPath, 'utf-8');
+
+  // Verify no hardcoded version strings
+  assert(!heroContent.includes('v1.3.12'), 'Hero should not have hardcoded v1.3.12');
+  assert(!heroContent.includes('"1.3.12"'), 'Hero should not have hardcoded "1.3.12"');
+
+  // Verify it fetches from /api/version
+  assert(heroContent.includes('fetch("/api/version")'), 'Hero should fetch version from API');
+  assert(heroContent.includes('useState<string | null>(null)'), 'Hero should have version state');
+});
