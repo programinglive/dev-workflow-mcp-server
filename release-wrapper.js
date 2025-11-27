@@ -43,23 +43,30 @@ async function main() {
   }
   const userStatePath = resolvedUserId ? path.join(baseStateDir, 'users', resolvedUserId, 'workflow-state.json') : null;
 
-  let statePath = legacyStatePath;
+  const candidateStatePaths = new Set();
+  candidateStatePaths.add(legacyStatePath);
   if (userStatePath) {
+    candidateStatePaths.add(userStatePath);
+  }
+  // Also consider the legacy default user path in case the user-id file is stale.
+  candidateStatePaths.add(path.join(baseStateDir, 'users', 'default', 'workflow-state.json'));
+
+  let statePath = null;
+  let state = null;
+  for (const candidate of candidateStatePaths) {
     try {
-      await fs.access(userStatePath);
-      statePath = userStatePath;
+      const raw = await fs.readFile(candidate, 'utf8');
+      state = JSON.parse(raw);
+      statePath = candidate;
+      break;
     } catch {
-      // fall back to legacy path
+      // try next candidate
     }
   }
-  let state;
 
-  try {
-    const raw = await fs.readFile(statePath, 'utf8');
-    state = JSON.parse(raw);
-  } catch (error) {
+  if (!state || !statePath) {
     console.error(
-      `❌ Release guard: cannot locate workflow state at ${statePath}. Make sure the dev-workflow MCP is installed and you have started a task.`
+      `❌ Release guard: cannot locate workflow state under ${baseStateDir}. Make sure the dev-workflow MCP is installed and you have started a task.`
     );
     process.exit(1);
   }
