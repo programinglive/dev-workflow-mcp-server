@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     turbopack: {
       root: path.resolve(process.cwd(), '..'),
     }
-  }
+  } as any
 };
 
 export default nextConfig;
