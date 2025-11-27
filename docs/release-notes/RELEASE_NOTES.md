@@ -4,6 +4,16 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.2 — 2025-11-27 — 🧹 Chores
+- fix release state detection (ed5dfd1)
+- prepare for release (a6ea2d0)
+- update task list (35663dd)
+- **web:** fix next.js lockfile warning (05ffce0)
+- ensure release guard uses freshest workflow state (e07eb42)
+- **web:** configure next.js root to silence warnings (22ed002)
+- **web:** improve mobile layout for hero section (53b26bf)
+- consolidate workflow state to root .state folder only (3d69a14)
+
 ## 1.4.1 — 2025-11-27 — 🐛 Bug Fixes
 - update build test to include postbuild (b1e2f48)
 - add custom server.js for Plesk (b3912cd)
