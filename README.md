@@ -228,6 +228,28 @@ For MCP server usage, point your client at `index.js` (source) to avoid stdio tr
 - Performance optimization
 - Embedding in other projects
 
+### MCP Tools Registry (Publishing)
+
+This package is configured for the official MCP Tools Registry using **npm package deployment**:
+
+- `package.json` declares `mcpName: "io.github.programinglive/dev-workflow-mcp-server"`.
+- `server.json` describes the server and links it to the npm package `@programinglive/dev-workflow-mcp-server`.
+
+To publish a new server version to the registry:
+
+1. Release a new npm version (for example):
+   - `npm test`
+   - `npm run release:patch` (runs your existing release pipeline and publishes to npm)
+2. Verify the new version exists on npm:
+   - `npm view @programinglive/dev-workflow-mcp-server version`
+3. Install the MCP publisher CLI (once per machine):
+   - `brew install mcp-publisher` (or follow the docs at https://modelcontextprotocol.info/tools/registry/publishing/)
+4. From this repo root, authenticate and publish:
+   - `mcp-publisher login github`
+   - `mcp-publisher publish`
+5. Optionally verify in the registry:
+   - `curl "https://registry.modelcontextprotocol.io/v0/servers?search=io.github.programinglive/dev-workflow-mcp-server"`
+
 #### PowerShell CLI tip
 
 When invoking the lightweight CLI from PowerShell, use `--%` to prevent PowerShell from rewriting JSON arguments, for example:

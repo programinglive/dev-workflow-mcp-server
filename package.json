@@ -3,6 +3,7 @@
   "version": "1.4.5",
   "description": "MCP server to enforce development workflow discipline",
   "homepage": "https://devworkflow.programinglive.com/",
+  "mcpName": "io.github.programinglive/dev-workflow-mcp-server",
   "type": "module",
   "main": "index.js",
   "bin": {

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.programinglive/dev-workflow-mcp-server",
+  "description": "MCP server to enforce development workflow discipline",
+  "version": "1.4.6",
+  "packages": [
+    {
+      "registry_type": "npm",
+      "identifier": "@programinglive/dev-workflow-mcp-server",
+      "version": "1.4.6"
+    }
+  ]
+}

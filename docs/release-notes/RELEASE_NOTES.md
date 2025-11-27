@@ -4,6 +4,9 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.5 — 2025-11-27 — 🐛 Bug Fixes
+- display dynamic version in web dashboard from /api/version (69f561d)
+
 ## 1.4.4 — 2025-11-27 — ♻️ Refactors
 - consolidate workflow state to root .state folder only (3d69a14)
 - ensure release guard uses freshest workflow state (e07eb42)
