@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.4](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.1...v1.4.4) (2025-11-27)
+
+
+### ♻️ Refactors
+
+* consolidate workflow state to root .state folder only ([3d69a14](https://github.com/programinglive/dev-workflow-mcp-server/commit/3d69a14e2abd7897bc91ede5e3c484b90eefc726))
+
+
+### 🐛 Bug Fixes
+
+* ensure release guard uses freshest workflow state ([e07eb42](https://github.com/programinglive/dev-workflow-mcp-server/commit/e07eb42179f17f2da282bff70392ce1b4652346a))
+* remove invalid turbopack experimental config from next.config.ts ([af0a7ea](https://github.com/programinglive/dev-workflow-mcp-server/commit/af0a7ea7906654755a2520693fd81d7fb6633c13))
+* **web:** configure next.js root to silence warnings ([22ed002](https://github.com/programinglive/dev-workflow-mcp-server/commit/22ed00256a4c6d7dbca13d2733baf0f4392b6650))
+* **web:** improve mobile layout for hero section ([53b26bf](https://github.com/programinglive/dev-workflow-mcp-server/commit/53b26bf3271cab3ac029be8ddb72a8d5312b150e))
+
+
+### 📝 Documentation
+
+* add Plesk deployment guide ([de35675](https://github.com/programinglive/dev-workflow-mcp-server/commit/de356753231d1bb29fd3c87fdd9d095932fae4b0))
+
+
+### 🧹 Chores
+
+* add 1.4.3 release notes ([8b165f7](https://github.com/programinglive/dev-workflow-mcp-server/commit/8b165f7a8201f6b8484dce60f3f907cb195abb83))
+* fix release state detection ([ed5dfd1](https://github.com/programinglive/dev-workflow-mcp-server/commit/ed5dfd15d296c555bd5c2731267a87ad4a371af9))
+* prepare for release ([a6ea2d0](https://github.com/programinglive/dev-workflow-mcp-server/commit/a6ea2d0c44f35f2a1e06c4e01bbe026177e9cff2))
+* **release:** 1.4.2 ([fac8999](https://github.com/programinglive/dev-workflow-mcp-server/commit/fac899992d370c0198954a6f7c97ab7645514e25))
+* **release:** 1.4.2 🚀 ([01b0b3c](https://github.com/programinglive/dev-workflow-mcp-server/commit/01b0b3c791c10b76c05bae01e4e8c5ce7435ce14))
+* **release:** 1.4.3 🚀 ([04d8c3b](https://github.com/programinglive/dev-workflow-mcp-server/commit/04d8c3b2873ce819633c95a12f6c48e73fe671ea))
+* update task list ([35663dd](https://github.com/programinglive/dev-workflow-mcp-server/commit/35663dd661d3b97a5fedb5013fbbca36e75605d8))
+* **web:** fix next.js lockfile warning ([05ffce0](https://github.com/programinglive/dev-workflow-mcp-server/commit/05ffce0b171cb804c6a14223521cd1fa876b80ae))
+
+
+### ✨ Features
+
+* add core doc types (PRD/README/RELEASE_NOTES) and fix CI build ([8ed0567](https://github.com/programinglive/dev-workflow-mcp-server/commit/8ed0567e8de772b95de6fb744a936b07ed3e1c32))
+* update hero text and meta description to emphasize Indonesian programmer community ([681547b](https://github.com/programinglive/dev-workflow-mcp-server/commit/681547b764b2fcf3a874cc637d9653c12bf62640))
+* update program tracks and fix fast refresh warning ([aa5bc9c](https://github.com/programinglive/dev-workflow-mcp-server/commit/aa5bc9cbc8a9bf9c9552e00e89b0b97ddeac0592))
+
 ### [1.4.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.2...v1.4.3) (2025-11-27)
 
 
