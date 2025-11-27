@@ -4,6 +4,9 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.6 — 2025-11-27 — 🧹 Chores
+- add MCP registry metadata (mcpName & server.json) (66caea1)
+
 ## 1.4.5 — 2025-11-27 — 🐛 Bug Fixes
 - display dynamic version in web dashboard from /api/version (69f561d)
 

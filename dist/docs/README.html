@@ -193,6 +193,37 @@ cd dev-workflow-mcp-server
 <li>Performance optimization</li>
 <li>Embedding in other projects</li>
 </ul>
+<h3>MCP Tools Registry (Publishing)</h3>
+<p>This package is configured for the official MCP Tools Registry using <strong>npm package deployment</strong>:</p>
+<ul>
+<li><code>package.json</code> declares <code>mcpName: &quot;io.github.programinglive/dev-workflow-mcp-server&quot;</code>.</li>
+<li><code>server.json</code> describes the server and links it to the npm package <code>@programinglive/dev-workflow-mcp-server</code>.</li>
+</ul>
+<p>To publish a new server version to the registry:</p>
+<ol>
+<li>Release a new npm version (for example):<ul>
+<li><code>npm test</code></li>
+<li><code>npm run release:patch</code> (runs your existing release pipeline and publishes to npm)</li>
+</ul>
+</li>
+<li>Verify the new version exists on npm:<ul>
+<li><code>npm view @programinglive/dev-workflow-mcp-server version</code></li>
+</ul>
+</li>
+<li>Install the MCP publisher CLI (once per machine):<ul>
+<li><code>brew install mcp-publisher</code> (or follow the docs at <a href="https://modelcontextprotocol.info/tools/registry/publishing/">https://modelcontextprotocol.info/tools/registry/publishing/</a>)</li>
+</ul>
+</li>
+<li>From this repo root, authenticate and publish:<ul>
+<li><code>mcp-publisher login github</code></li>
+<li><code>mcp-publisher publish</code></li>
+</ul>
+</li>
+<li>Optionally verify in the registry:<ul>
+<li><code>curl &quot;https://registry.modelcontextprotocol.io/v0/servers?search=io.github.programinglive/dev-workflow-mcp-server&quot;</code></li>
+</ul>
+</li>
+</ol>
 <h4>PowerShell CLI tip</h4>
 <p>When invoking the lightweight CLI from PowerShell, use <code>--%</code> to prevent PowerShell from rewriting JSON arguments, for example:</p>
 <pre><code class="language-powershell">node --% index.js call start_task --args &quot;{\&quot;description\&quot;:\&quot;Convert docs to HTML during build\&quot;,\&quot;type\&quot;:\&quot;feature\&quot;}&quot;

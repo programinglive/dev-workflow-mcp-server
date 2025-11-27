@@ -29,7 +29,6 @@ test("server.json is configured for npm package deployment", async () => {
     "io.github.programinglive/dev-workflow-mcp-server",
     "server.json name should match the MCP server namespace",
   );
-
   assert.ok(Array.isArray(server.packages) && server.packages.length > 0,
     "server.json should declare at least one package entry",
   );
@@ -37,9 +36,15 @@ test("server.json is configured for npm package deployment", async () => {
   const npmPkg = server.packages[0];
 
   assert.strictEqual(
-    npmPkg.registry_type,
+    npmPkg.registryType,
     "npm",
-    "First server.json package entry should use npm registry_type",
+    "First server.json package entry should use npm registryType",
+  );
+
+  assert.strictEqual(
+    npmPkg.registryBaseUrl,
+    "https://registry.npmjs.org",
+    "server.json npm registryBaseUrl should point at the public npm registry",
   );
 
   assert.strictEqual(
@@ -51,5 +56,10 @@ test("server.json is configured for npm package deployment", async () => {
   assert.ok(
     typeof npmPkg.version === "string" && npmPkg.version.length > 0,
     "server.json npm package version should be a non-empty string",
+  );
+
+  assert.ok(
+    npmPkg.transport && npmPkg.transport.type === "stdio",
+    "server.json npm package transport should be stdio",
   );
 });
