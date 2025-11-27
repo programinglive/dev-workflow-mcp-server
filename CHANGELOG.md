@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.2](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.1...v1.4.2) (2025-11-27)
+
+
+### 🧹 Chores
+
+* fix release state detection ([ed5dfd1](https://github.com/programinglive/dev-workflow-mcp-server/commit/ed5dfd15d296c555bd5c2731267a87ad4a371af9))
+* prepare for release ([a6ea2d0](https://github.com/programinglive/dev-workflow-mcp-server/commit/a6ea2d0c44f35f2a1e06c4e01bbe026177e9cff2))
+* update task list ([35663dd](https://github.com/programinglive/dev-workflow-mcp-server/commit/35663dd661d3b97a5fedb5013fbbca36e75605d8))
+* **web:** fix next.js lockfile warning ([05ffce0](https://github.com/programinglive/dev-workflow-mcp-server/commit/05ffce0b171cb804c6a14223521cd1fa876b80ae))
+
+
+### 🐛 Bug Fixes
+
+* ensure release guard uses freshest workflow state ([e07eb42](https://github.com/programinglive/dev-workflow-mcp-server/commit/e07eb42179f17f2da282bff70392ce1b4652346a))
+* **web:** configure next.js root to silence warnings ([22ed002](https://github.com/programinglive/dev-workflow-mcp-server/commit/22ed00256a4c6d7dbca13d2733baf0f4392b6650))
+* **web:** improve mobile layout for hero section ([53b26bf](https://github.com/programinglive/dev-workflow-mcp-server/commit/53b26bf3271cab3ac029be8ddb72a8d5312b150e))
+
+
+### ♻️ Refactors
+
+* consolidate workflow state to root .state folder only ([3d69a14](https://github.com/programinglive/dev-workflow-mcp-server/commit/3d69a14e2abd7897bc91ede5e3c484b90eefc726))
+
 ### [1.4.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.0...v1.4.1) (2025-11-27)
 
 
