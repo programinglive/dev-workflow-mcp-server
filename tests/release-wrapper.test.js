@@ -18,6 +18,8 @@ async function runWrapper({ state, args = ["patch"], env = {} }) {
   const statePath = path.join(stateDir, "workflow-state.json");
   await mkdir(stateDir, { recursive: true });
   await writeFile(statePath, JSON.stringify(state, null, 2));
+  // Create package.json so resolveStateFile recognizes this as a project root
+  await writeFile(path.join(dir, "package.json"), JSON.stringify({ name: "test-project" }));
 
   const childEnv = {
     ...process.env,
