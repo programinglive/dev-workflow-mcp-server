@@ -4,6 +4,13 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.1 — 2025-11-27 — 🐛 Bug Fixes
+- update build test to include postbuild (b1e2f48)
+- add custom server.js for Plesk (b3912cd)
+- migrate dashboard to Next.js with TypeScript and Tailwind CSS (bce1fec)
+- fix package.json scripts (fb25e98)
+- fix tsconfig and remove dist artifact (282759f)
+
 ## 1.4.0 — 2025-11-26
 - See CHANGELOG for details.
 

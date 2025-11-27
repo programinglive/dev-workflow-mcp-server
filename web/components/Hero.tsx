@@ -34,7 +34,7 @@ export default function Hero() {
                         </div>
                     </div>
 
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
                         Master Your<br />
                         <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Workflow</span>
                     </h1>
@@ -49,7 +49,7 @@ export default function Hero() {
                             Documentation
                         </Link>
                     </div>
-                    <div className="flex items-center gap-8 text-sm animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
+                    <div className="flex flex-wrap gap-6 sm:gap-8 text-sm animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
                         <div>
                             <div className="text-2xl font-bold">1.3.12</div>
                             <div className="text-gray-500">Latest Version</div>
