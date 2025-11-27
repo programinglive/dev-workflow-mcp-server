@@ -10,9 +10,9 @@ pids
 *.pid.lock
 node_modules/
 build/
-dist/*.mjs
-dist/*.js
-dist/assets/
+dist/
+test-output.html
+web/.next/
 lib/
 coverage/
 .nyc_output/
