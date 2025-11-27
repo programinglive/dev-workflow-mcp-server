@@ -4,6 +4,12 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.3 — 2025-11-27 — 🧹 Chores
+- **release:** 1.4.2 (fac8999)
+- remove invalid turbopack experimental config from next.config.ts (af0a7ea)
+- add Plesk deployment guide (de35675)
+- update program tracks and fix fast refresh warning (aa5bc9c)
+
 ## 1.4.2 — 2025-11-27 — 🧹 Chores
 - fix release state detection (ed5dfd1)
 - prepare for release (a6ea2d0)
