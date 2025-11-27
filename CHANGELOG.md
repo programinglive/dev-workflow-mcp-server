@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.0...v1.4.1) (2025-11-27)
+
+
+### 🐛 Bug Fixes
+
+* update build test to include postbuild ([b1e2f48](https://github.com/programinglive/dev-workflow-mcp-server/commit/b1e2f481334df825109e3f2934c88b8f14c1b4d0))
+
+
+### ✨ Features
+
+* add custom server.js for Plesk ([b3912cd](https://github.com/programinglive/dev-workflow-mcp-server/commit/b3912cdaf50085ae30cab553a9ebac2b7281ee28))
+
 ## [1.4.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.3.12...v1.4.0) (2025-11-26)
 
 
