@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.7](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.3...v1.4.7) (2025-11-29)
+
+
+### ✨ Features
+
+* add core doc types (PRD/README/RELEASE_NOTES) and fix CI build ([8ed0567](https://github.com/programinglive/dev-workflow-mcp-server/commit/8ed0567e8de772b95de6fb744a936b07ed3e1c32))
+* update hero text and meta description to emphasize Indonesian programmer community ([681547b](https://github.com/programinglive/dev-workflow-mcp-server/commit/681547b764b2fcf3a874cc637d9653c12bf62640))
+
+
+### 🐛 Bug Fixes
+
+* display dynamic version in web dashboard from /api/version ([69f561d](https://github.com/programinglive/dev-workflow-mcp-server/commit/69f561d369fa8347399fafe5dcdb3a2dbb485064))
+
+
+### 🧹 Chores
+
+* add 1.4.3 release notes ([8b165f7](https://github.com/programinglive/dev-workflow-mcp-server/commit/8b165f7a8201f6b8484dce60f3f907cb195abb83))
+* add MCP registry metadata (mcpName & server.json) ([66caea1](https://github.com/programinglive/dev-workflow-mcp-server/commit/66caea1d684473cfc916917faa42e16fc4ad9e14))
+* align MCP registry schema and docs ([e4e732d](https://github.com/programinglive/dev-workflow-mcp-server/commit/e4e732d6149a63ddf327ffb741f94d90103c903b))
+* **release:** 1.4.4 🚀 ([05a968f](https://github.com/programinglive/dev-workflow-mcp-server/commit/05a968fd08ca41e50d324893d993cb5117b2575c))
+* **release:** 1.4.5 🚀 ([7e823b9](https://github.com/programinglive/dev-workflow-mcp-server/commit/7e823b993c04c5372b4c6acbdf58c713458e8881))
+* **release:** 1.4.6 🚀 ([7e0b672](https://github.com/programinglive/dev-workflow-mcp-server/commit/7e0b67208756b2e6bb34f61ff0382022979b294e))
+
 ### [1.4.6](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.5...v1.4.6) (2025-11-27)
 
 
