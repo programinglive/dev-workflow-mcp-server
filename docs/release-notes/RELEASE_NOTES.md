@@ -4,6 +4,17 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.7 — 2025-11-29 — ✨ Features
+- add core doc types (PRD/README/RELEASE_NOTES) and fix CI build (8ed0567)
+- update hero text and meta description to emphasize Indonesian programmer community (681547b)
+- display dynamic version in web dashboard from /api/version (69f561d)
+- add 1.4.3 release notes (8b165f7)
+- add MCP registry metadata (mcpName & server.json) (66caea1)
+- align MCP registry schema and docs (e4e732d)
+- **release:** 1.4.4 🚀 (05a968f)
+- **release:** 1.4.5 🚀 (7e823b9)
+- **release:** 1.4.6 🚀 (7e0b672)
+
 ## 1.4.6 — 2025-11-27 — 🧹 Chores
 - add MCP registry metadata (mcpName & server.json) (66caea1)
 
