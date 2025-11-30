@@ -4,6 +4,10 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.8 — 2025-11-30 — 🐛 Bug Fixes
+- **dashboard:** improve responsive layout for admin stats cards (33d5b39)
+- **dashboard:** improve responsive layout for admin stats cards (530400d)
+
 ## 1.4.7 — 2025-11-29 — ✨ Features
 - add core doc types (PRD/README/RELEASE_NOTES) and fix CI build (8ed0567)
 - update hero text and meta description to emphasize Indonesian programmer community (681547b)
