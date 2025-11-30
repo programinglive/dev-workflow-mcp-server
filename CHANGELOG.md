@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.8](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.7...v1.4.8) (2025-11-30)
+
+
+### 🐛 Bug Fixes
+
+* **dashboard:** improve responsive layout for admin stats cards ([33d5b39](https://github.com/programinglive/dev-workflow-mcp-server/commit/33d5b3929ffda733d2328d1e9214c17c1e3d2b40))
+* **dashboard:** improve responsive layout for admin stats cards ([530400d](https://github.com/programinglive/dev-workflow-mcp-server/commit/530400d6ce266d151c617b4b2c7ea56cb1b15042))
+
 ### [1.4.7](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.3...v1.4.7) (2025-11-29)
 
 
