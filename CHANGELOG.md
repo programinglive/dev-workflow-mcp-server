@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.9](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.8...v1.4.9) (2025-11-30)
+
+
+### ♻️ Refactors
+
+* **dashboard:** combine analytics charts and use local Chart.js ([86ed3f4](https://github.com/programinglive/dev-workflow-mcp-server/commit/86ed3f4a88570b2f580cb1408e459da681288254))
+
 ### [1.4.8](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.7...v1.4.8) (2025-11-30)
 
 
