@@ -4,6 +4,9 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.9 — 2025-11-30 — ♻️ Refactors
+- **dashboard:** combine analytics charts and use local Chart.js (86ed3f4)
+
 ## 1.4.8 — 2025-11-30 — 🐛 Bug Fixes
 - **dashboard:** improve responsive layout for admin stats cards (33d5b39)
 - **dashboard:** improve responsive layout for admin stats cards (530400d)
