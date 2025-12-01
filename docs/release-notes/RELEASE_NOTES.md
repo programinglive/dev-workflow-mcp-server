@@ -4,6 +4,10 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.11 — 2025-12-01 — 🐛 Bug Fixes
+- move vite to dependencies to ensure build works on production (62fc4c0)
+- resolve sentry permission issues (c739f8e)
+
 ## 1.4.10 — 2025-12-01 — ✨ Features
 - **dashboard:** implement random data generation for analytics chart (17e2073)
 - move dompdf to require and resolve debugbar production error (e5d1cb6)
