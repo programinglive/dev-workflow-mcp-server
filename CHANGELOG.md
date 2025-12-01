@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.10](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.9...v1.4.10) (2025-12-01)
+
+
+### ✨ Features
+
+* **dashboard:** implement random data generation for analytics chart ([17e2073](https://github.com/programinglive/dev-workflow-mcp-server/commit/17e20737b719392a2bd90cb1a6f4cc6084b54ab5))
+
+
+### 🐛 Bug Fixes
+
+* move dompdf to require and resolve debugbar production error ([e5d1cb6](https://github.com/programinglive/dev-workflow-mcp-server/commit/e5d1cb68f70f0980fbbd69f914b76bf0fb09af18))
+
 ### [1.4.9](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.8...v1.4.9) (2025-11-30)
 
 
