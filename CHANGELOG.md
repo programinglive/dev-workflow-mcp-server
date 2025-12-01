@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.11](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.10...v1.4.11) (2025-12-01)
+
+
+### 🐛 Bug Fixes
+
+* move vite to dependencies to ensure build works on production ([62fc4c0](https://github.com/programinglive/dev-workflow-mcp-server/commit/62fc4c0fecf3ef4cfce231a2663bc67d34668c25))
+* resolve sentry permission issues ([c739f8e](https://github.com/programinglive/dev-workflow-mcp-server/commit/c739f8e2bc5b99d70d63dbc66cefc3fa3b187651))
+
 ### [1.4.10](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.9...v1.4.10) (2025-12-01)
 
 
