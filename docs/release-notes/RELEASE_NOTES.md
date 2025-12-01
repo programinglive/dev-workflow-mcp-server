@@ -4,6 +4,10 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.4.10 — 2025-12-01 — ✨ Features
+- **dashboard:** implement random data generation for analytics chart (17e2073)
+- move dompdf to require and resolve debugbar production error (e5d1cb6)
+
 ## 1.4.9 — 2025-11-30 — ♻️ Refactors
 - **dashboard:** combine analytics charts and use local Chart.js (86ed3f4)
 
