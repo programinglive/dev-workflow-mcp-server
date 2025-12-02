@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.6...v1.5.0) (2025-12-02)
+
+
+### ♻️ Refactors
+
+* **dashboard:** combine analytics charts and use local Chart.js ([86ed3f4](https://github.com/programinglive/dev-workflow-mcp-server/commit/86ed3f4a88570b2f580cb1408e459da681288254))
+
+
+### ✨ Features
+
+* **dashboard:** implement random data generation for analytics chart ([17e2073](https://github.com/programinglive/dev-workflow-mcp-server/commit/17e20737b719392a2bd90cb1a6f4cc6084b54ab5))
+
+
+### 🐛 Bug Fixes
+
+* **dashboard:** improve responsive layout for admin stats cards ([33d5b39](https://github.com/programinglive/dev-workflow-mcp-server/commit/33d5b3929ffda733d2328d1e9214c17c1e3d2b40))
+* **dashboard:** improve responsive layout for admin stats cards ([530400d](https://github.com/programinglive/dev-workflow-mcp-server/commit/530400d6ce266d151c617b4b2c7ea56cb1b15042))
+* move build dependencies to dependencies section ([701b07c](https://github.com/programinglive/dev-workflow-mcp-server/commit/701b07c91d31007bc63899a8ddd6350773d4704f))
+* move dompdf to require and resolve debugbar production error ([e5d1cb6](https://github.com/programinglive/dev-workflow-mcp-server/commit/e5d1cb68f70f0980fbbd69f914b76bf0fb09af18))
+* move vite to dependencies to ensure build works on production ([62fc4c0](https://github.com/programinglive/dev-workflow-mcp-server/commit/62fc4c0fecf3ef4cfce231a2663bc67d34668c25))
+* resolve sentry permission issues ([c739f8e](https://github.com/programinglive/dev-workflow-mcp-server/commit/c739f8e2bc5b99d70d63dbc66cefc3fa3b187651))
+
+
+### 🧹 Chores
+
+* align MCP registry schema and docs ([e4e732d](https://github.com/programinglive/dev-workflow-mcp-server/commit/e4e732d6149a63ddf327ffb741f94d90103c903b))
+* **release:** 1.4.10 🚀 ([74fa5c1](https://github.com/programinglive/dev-workflow-mcp-server/commit/74fa5c11e44bf9c3b29981314c4d13469691fab2))
+* **release:** 1.4.11 🚀 ([28c7a62](https://github.com/programinglive/dev-workflow-mcp-server/commit/28c7a62422d247369ea6652d0bf31b874534a1e4))
+* **release:** 1.4.7 🚀 ([ab4c218](https://github.com/programinglive/dev-workflow-mcp-server/commit/ab4c2184a4fe5e410f54d3723af247ecb0d06f28))
+* **release:** 1.4.8 🚀 ([b60681b](https://github.com/programinglive/dev-workflow-mcp-server/commit/b60681b801be01919711302be38fb6e576f99a8b))
+* **release:** 1.4.9 🚀 ([3f73564](https://github.com/programinglive/dev-workflow-mcp-server/commit/3f73564197068b6a055d36df560322150c0ba6b4))
+* remove web-legacy ([5f0d29e](https://github.com/programinglive/dev-workflow-mcp-server/commit/5f0d29e087918e6891b7e41aa58e262c710d4a67))
+
+
+### 📝 Documentation
+
+* update release notes html for 1.4.11 ([e683ab6](https://github.com/programinglive/dev-workflow-mcp-server/commit/e683ab6b06bfd5bbcc2dbd6441c9d121bec74feb))
+
 ### [1.4.11](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.10...v1.4.11) (2025-12-01)
 
 
