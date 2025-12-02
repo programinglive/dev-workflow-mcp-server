@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.0...v1.5.1) (2025-12-02)
+
+
+### 🏗️ Build System
+
+* add netlify.toml for static site deployment ([8667537](https://github.com/programinglive/dev-workflow-mcp-server/commit/8667537baf16889b830c46d3ffde5770589f868f))
+
+
+### ✨ Features
+
+* add Netlify deployment support for web dashboard ([c05a791](https://github.com/programinglive/dev-workflow-mcp-server/commit/c05a791b3dac12d708e971061c48d3783733f985))
+
+
+### 📝 Documentation
+
+* update generated web-dashboard.html ([96d47a5](https://github.com/programinglive/dev-workflow-mcp-server/commit/96d47a52a658b105d4d094e18156a8cfc2d13854))
+* update release notes for 1.5.0 ([d860460](https://github.com/programinglive/dev-workflow-mcp-server/commit/d860460826d179e94524807b1776f60854c1db4c))
+
 ## [1.5.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.4.6...v1.5.0) (2025-12-02)
 
 
