@@ -150,9 +150,37 @@
 <td>Set <code>DEV_WORKFLOW_WEB_PORT</code> to a free port before running <code>npm run web</code>.</td>
 </tr>
 </tbody></table>
+<h2>Deployment Options</h2>
+<p>The web dashboard can be deployed in multiple ways:</p>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Database Support</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Local (<code>npm run web</code>)</td>
+<td>Full SQLite</td>
+<td>Development and personal use</td>
+</tr>
+<tr>
+<td><a href="./NETLIFY_DEPLOYMENT.md">Netlify</a></td>
+<td>Static only</td>
+<td>Public documentation site</td>
+</tr>
+<tr>
+<td><a href="./PLESK_DEPLOYMENT.md">Plesk</a></td>
+<td>Full SQLite</td>
+<td>Self-hosted production</td>
+</tr>
+</tbody></table>
 <h2>Related Topics</h2>
 <ul>
 <li><a href="../README.md">Main README</a></li>
+<li><a href="./NETLIFY_DEPLOYMENT.md">Netlify Deployment</a></li>
+<li><a href="./PLESK_DEPLOYMENT.md">Plesk Deployment</a></li>
 <li><a href="./state.md">Workflow State Internals</a> <em>(coming soon)</em></li>
 <li><a href="../README.md#%F0%9F%9B%A0%EF%B8%8F-available-tools">CLI Tools</a></li>
 </ul>
