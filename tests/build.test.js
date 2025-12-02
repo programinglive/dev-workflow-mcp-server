@@ -47,27 +47,23 @@ test('build script exists in package.json', async () => {
   assert(pkg.scripts['build:server'].includes('vite build'));
 });
 
-test('Hero component fetches version dynamically', async () => {
+test('Hero component fetches npm downloads directly', async () => {
   const heroPath = path.join(process.cwd(), 'web', 'components', 'Hero.tsx');
   const heroContent = await readFile(heroPath, 'utf-8');
 
-  // Verify no hardcoded version strings
-  assert(!heroContent.includes('v1.3.12'), 'Hero should not have hardcoded v1.3.12');
-  assert(!heroContent.includes('"1.3.12"'), 'Hero should not have hardcoded "1.3.12"');
-
-  // Verify it fetches from /api/version
-  assert(heroContent.includes('fetch("/api/version")'), 'Hero should fetch version from API');
+  // Verify it fetches npm downloads directly from npm API
+  assert(heroContent.includes('api.npmjs.org'), 'Hero should fetch downloads from npm API');
   assert(heroContent.includes('useState<string | null>(null)'), 'Hero should have version state');
 });
 
-test('Netlify deployment configuration exists', async () => {
+test('Netlify deployment configuration exists for static export', async () => {
   const netlifyTomlPath = path.join(process.cwd(), 'web', 'netlify.toml');
   await access(netlifyTomlPath);
   
   const content = await readFile(netlifyTomlPath, 'utf-8');
   assert(content.includes('[build]'), 'netlify.toml should have build section');
   assert(content.includes('npm run build'), 'netlify.toml should have build command');
-  assert(content.includes('@netlify/plugin-nextjs'), 'netlify.toml should use Next.js plugin');
+  assert(content.includes('publish = "out"'), 'netlify.toml should publish out directory for static export');
 });
 
 test('Web package.json does not include better-sqlite3', async () => {
@@ -78,14 +74,10 @@ test('Web package.json does not include better-sqlite3', async () => {
   assert(!pkg.dependencies['better-sqlite3'], 'Web should not depend on better-sqlite3 for Netlify compatibility');
 });
 
-test('API routes return static data for Netlify deployment', async () => {
-  const summaryRoutePath = path.join(process.cwd(), 'web', 'app', 'api', 'summary', 'route.ts');
-  const historyRoutePath = path.join(process.cwd(), 'web', 'app', 'api', 'history', 'route.ts');
+test('Next.js config uses static export for Netlify', async () => {
+  const nextConfigPath = path.join(process.cwd(), 'web', 'next.config.ts');
+  const content = await readFile(nextConfigPath, 'utf-8');
   
-  const summaryContent = await readFile(summaryRoutePath, 'utf-8');
-  const historyContent = await readFile(historyRoutePath, 'utf-8');
-  
-  // Verify no database imports
-  assert(!summaryContent.includes('from "@/lib/db"'), 'Summary route should not import from db');
-  assert(!historyContent.includes('from "@/lib/db"'), 'History route should not import from db');
+  assert(content.includes("output: 'export'"), 'next.config.ts should use static export');
+  assert(content.includes('unoptimized: true'), 'next.config.ts should disable image optimization for static export');
 });

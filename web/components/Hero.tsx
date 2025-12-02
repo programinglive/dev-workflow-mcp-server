@@ -10,15 +10,14 @@ export default function Hero() {
     const [version, setVersion] = useState<string | null>(null);
 
     useEffect(() => {
-        fetch("/api/npm-downloads")
+        // Fetch npm downloads directly from npm API
+        fetch("https://api.npmjs.org/downloads/point/last-month/@programinglive/dev-workflow-mcp-server")
             .then(res => res.json())
-            .then(data => setDownloads(data.downloads))
+            .then(data => setDownloads(data.downloads || 0))
             .catch(() => setDownloads(null));
 
-        fetch("/api/version")
-            .then(res => res.json())
-            .then(data => setVersion(data.version))
-            .catch(() => setVersion(null));
+        // Version is hardcoded for static export
+        setVersion("1.5.1");
     }, []);
 
     const formatDownloads = (num: number) => {
