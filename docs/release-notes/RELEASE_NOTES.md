@@ -4,6 +4,9 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.5.0 — 2025-12-02
+- See CHANGELOG for details.
+
 ## 1.4.11 — 2025-12-01 — 🐛 Bug Fixes
 - move vite to dependencies to ensure build works on production (62fc4c0)
 - resolve sentry permission issues (c739f8e)
