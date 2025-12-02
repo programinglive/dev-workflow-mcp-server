@@ -43,6 +43,7 @@ Developers need structured guidance to maintain disciplined workflows across pro
 - Optional SQLite integration for history and summary caching.
 - Vite build pipeline for distribution bundle; source usage recommended for MCP.
 - Windows compatibility requirements (Python, Build Tools for native modules).
+- **Deployment options**: Local development, Netlify (static), Plesk (full-featured).
 
 ## 9. Success Metrics
 - ≥90% of workflow operations executed via MCP tools (vs. manual overrides).
@@ -51,8 +52,9 @@ Developers need structured guidance to maintain disciplined workflows across pro
 
 ## 10. Milestones
 1. **MVP**: Core workflow tools, state persistence, basic history (complete).
-2. **Enhancements**: Improved project root detection, compatibility mirrors, `run_full_workflow` automation (in progress).
-3. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
+2. **Enhancements**: Improved project root detection, compatibility mirrors, `run_full_workflow` automation (complete).
+3. **v1.5.0**: Netlify deployment support for static web dashboard (complete).
+4. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
 
 ## 11. Risks & Mitigations
 - **Risk**: Workflow feels overly prescriptive. **Mitigation**: Provide escape hatches (`force_complete_task`, `drop_task`) with audit trails.

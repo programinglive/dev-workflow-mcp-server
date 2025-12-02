@@ -59,3 +59,33 @@ test('Hero component fetches version dynamically', async () => {
   assert(heroContent.includes('fetch("/api/version")'), 'Hero should fetch version from API');
   assert(heroContent.includes('useState<string | null>(null)'), 'Hero should have version state');
 });
+
+test('Netlify deployment configuration exists', async () => {
+  const netlifyTomlPath = path.join(process.cwd(), 'web', 'netlify.toml');
+  await access(netlifyTomlPath);
+  
+  const content = await readFile(netlifyTomlPath, 'utf-8');
+  assert(content.includes('[build]'), 'netlify.toml should have build section');
+  assert(content.includes('npm run build'), 'netlify.toml should have build command');
+  assert(content.includes('@netlify/plugin-nextjs'), 'netlify.toml should use Next.js plugin');
+});
+
+test('Web package.json does not include better-sqlite3', async () => {
+  const webPackagePath = path.join(process.cwd(), 'web', 'package.json');
+  const content = await readFile(webPackagePath, 'utf-8');
+  const pkg = JSON.parse(content);
+  
+  assert(!pkg.dependencies['better-sqlite3'], 'Web should not depend on better-sqlite3 for Netlify compatibility');
+});
+
+test('API routes return static data for Netlify deployment', async () => {
+  const summaryRoutePath = path.join(process.cwd(), 'web', 'app', 'api', 'summary', 'route.ts');
+  const historyRoutePath = path.join(process.cwd(), 'web', 'app', 'api', 'history', 'route.ts');
+  
+  const summaryContent = await readFile(summaryRoutePath, 'utf-8');
+  const historyContent = await readFile(historyRoutePath, 'utf-8');
+  
+  // Verify no database imports
+  assert(!summaryContent.includes('from "@/lib/db"'), 'Summary route should not import from db');
+  assert(!historyContent.includes('from "@/lib/db"'), 'History route should not import from db');
+});

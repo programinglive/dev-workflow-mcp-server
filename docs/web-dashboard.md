@@ -156,8 +156,20 @@ Returns an array of task counts grouped by period.
 | Dashboard shows empty data | Confirm the MCP server has generated `.state/users/<user>/workflow-state.json` and that the chosen `user` matches. |
 | Port already in use | Set `DEV_WORKFLOW_WEB_PORT` to a free port before running `npm run web`. |
 
+## Deployment Options
+
+The web dashboard can be deployed in multiple ways:
+
+| Platform | Database Support | Best For |
+| --- | --- | --- |
+| Local (`npm run web`) | Full SQLite | Development and personal use |
+| [Netlify](./NETLIFY_DEPLOYMENT.md) | Static only | Public documentation site |
+| [Plesk](./PLESK_DEPLOYMENT.md) | Full SQLite | Self-hosted production |
+
 ## Related Topics
 
 - [Main README](../README.md)
+- [Netlify Deployment](./NETLIFY_DEPLOYMENT.md)
+- [Plesk Deployment](./PLESK_DEPLOYMENT.md)
 - [Workflow State Internals](./state.md) *(coming soon)*
 - [CLI Tools](../README.md#🛠️-available-tools)
