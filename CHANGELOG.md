@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.2...v) (2025-12-04)
+
+
+### 🐛 Bug Fixes
+
+* **news:** improve error handling and form accessibility ([5e0a1a8](https://github.com/programinglive/dev-workflow-mcp-server/commit/5e0a1a83ae18054f967ff9041c7ed81fd7d6d4eb))
+* switch to static export for Netlify deployment ([acddfd7](https://github.com/programinglive/dev-workflow-mcp-server/commit/acddfd78da86859febdb1c46b04a5e79fd8f176f))
+
 ### [1.5.2](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.1...v1.5.2) (2025-12-02)
 
 ### [1.5.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.0...v1.5.1) (2025-12-02)
