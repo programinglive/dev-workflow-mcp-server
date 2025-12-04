@@ -23,9 +23,9 @@
     "prepare": "husky",
     "postinstall": "node install.js",
     "release": "node scripts/release.cjs",
-    "release:major": "node release-wrapper.js major",
-    "release:minor": "node release-wrapper.js minor",
-    "release:patch": "node release-wrapper.js patch",
+    "release:major": "node scripts/release.cjs major",
+    "release:minor": "node scripts/release.cjs minor",
+    "release:patch": "node scripts/release.cjs patch",
     "web": "npm start --prefix web"
   },
   "keywords": [
