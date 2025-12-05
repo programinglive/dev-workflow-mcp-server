@@ -4,6 +4,9 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.5.11 — 2025-12-05
+- See CHANGELOG for details.
+
 ## 1.5.10 — 2025-12-05
 - See CHANGELOG for details.
 
