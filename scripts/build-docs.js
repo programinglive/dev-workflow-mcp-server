@@ -38,11 +38,6 @@ const docs = [
     source: path.join(projectRoot, 'docs', 'antigravity', 'TROUBLESHOOTING.md'),
     output: 'TROUBLESHOOTING.html',
   },
-  {
-    key: 'RELEASE_NOTES.md',
-    source: path.join(projectRoot, 'docs', 'release-notes', 'RELEASE_NOTES.md'),
-    output: 'RELEASE_NOTES.html',
-  },
 ];
 
 const distDocDir = path.join(projectRoot, 'dist', 'docs');

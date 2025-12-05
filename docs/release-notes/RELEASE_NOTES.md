@@ -4,6 +4,9 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.5.6 — 2025-12-05 — 🐛 Bug Fixes
+- **ci:** update github release workflow to use github-script (0990808)
+
 ## 1.5.5 — 2025-12-05 — 📝 Documentation
 - add unreleased note for release automation (a5478dc)
 - ensure GitHub release workflow writes release notes correctly
