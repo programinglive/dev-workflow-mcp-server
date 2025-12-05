@@ -1,6 +1,6 @@
 {
   "name": "@programinglive/dev-workflow-mcp-server",
-  "version": null,
+  "version": "1.5.2",
   "description": "MCP server to enforce development workflow discipline",
   "homepage": "https://devworkflow.programinglive.com/",
   "mcpName": "io.github.programinglive/dev-workflow-mcp-server",
@@ -38,7 +38,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/programinglive/dev-workflow-mcp-server.git"
+    "url": "git+https://github.com/programinglive/dev-workflow-mcp-server.git"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
