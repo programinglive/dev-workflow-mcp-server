@@ -22,7 +22,7 @@ export default function DocsPage() {
                     </p>
 
                     <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 mb-8">
-                        <p className="text-emerald-400 font-semibold">Version: 1.3.12</p>
+                        <p className="text-emerald-400 font-semibold">Version: 1.5.3</p>
                     </div>
 
                     <h2 className="text-3xl font-bold mt-12 mb-6">Features</h2>
