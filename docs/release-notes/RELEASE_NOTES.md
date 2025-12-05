@@ -3,6 +3,14 @@
 Authoritative history of user-visible changes for the Development Workflow MCP Server. Each entry highlights the improvements that shipped with the tagged version.
 
 ## Unreleased
+- ensure GitHub release workflow writes release notes correctly
+
+## 1.5.4 — 2025-12-05 — 🧹 Chores
+- **ci:** add github release automation workflow (80d5ded)
+- **release:** version 1.5.3 changes and changelog (c2698a7)
+- run release scripts via cjs (bc241c8)
+- **web:** update version display to 1.5.3 in docs page (25e37f3)
+- **web:** update version display to 1.5.3 in Hero component (b478449)
 
 ## 1.5.3 — 2025-12-05 — 🐛 Bug Fixes
 - correct package.json version from null to 1.5.2 for npm publish (be60c99)
