@@ -4,6 +4,9 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.5.7 — 2025-12-05 — 🐛 Bug Fixes
+- **ci:** checkout main branch for release notes and remove RELEASE_NOTES.html generation (5d50dc0)
+
 ## 1.5.6 — 2025-12-05 — 🐛 Bug Fixes
 - **ci:** update github release workflow to use github-script (0990808)
 

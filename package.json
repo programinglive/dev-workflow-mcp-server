@@ -14,7 +14,6 @@
     "build:server": "vite build",
     "build:web": "npm run build --prefix web",
     "watch:web": "npm run dev --prefix web",
-    "postbuild": "node scripts/build-docs.js",
     "dev": "node --watch index.js",
     "start": "node index.js",
     "local": "node index.js",

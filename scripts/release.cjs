@@ -185,6 +185,20 @@ function runRelease({
     const gitAddResult = spawnSync('git', ['add', releaseNotesPath], { stdio: 'inherit', cwd });
     if (!gitAddResult || typeof gitAddResult.status !== 'number' || gitAddResult.status !== 0) {
       console.warn('⚠️  Release notes updated but failed to stage. Please add manually: git add ' + releaseNotesPath);
+    } else {
+      // Amend the release commit to include release notes and move the tag
+      const pkg = loadPackageJson(cwd);
+      const version = pkg ? pkg.version : null;
+      if (version) {
+        const tagName = `v${version}`;
+        // Delete the old tag
+        spawnSync('git', ['tag', '-d', tagName], { stdio: 'inherit', cwd });
+        // Amend the commit to include release notes
+        spawnSync('git', ['commit', '--amend', '--no-edit'], { stdio: 'inherit', cwd });
+        // Recreate the tag on the amended commit
+        spawnSync('git', ['tag', tagName], { stdio: 'inherit', cwd });
+        console.log(`✅ Added release notes entry for version ${version}.`);
+      }
     }
   }
 
