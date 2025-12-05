@@ -3,6 +3,9 @@
 Authoritative history of user-visible changes for the Development Workflow MCP Server. Each entry highlights the improvements that shipped with the tagged version.
 
 ## Unreleased
+
+## 1.5.5 — 2025-12-05 — 📝 Documentation
+- add unreleased note for release automation (a5478dc)
 - ensure GitHub release workflow writes release notes correctly
 
 ## 1.5.4 — 2025-12-05 — 🧹 Chores
