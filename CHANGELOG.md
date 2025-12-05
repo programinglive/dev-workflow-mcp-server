@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.6](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.5...v1.5.6) (2025-12-05)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** update github release workflow to use github-script ([0990808](https://github.com/programinglive/dev-workflow-mcp-server/commit/099080891975f64088979ba69d78b305c5469613))
+
 ### [1.5.5](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.4...v1.5.5) (2025-12-05)
 
 
