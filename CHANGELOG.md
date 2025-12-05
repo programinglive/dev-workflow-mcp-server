@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.4](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.3...v1.5.4) (2025-12-05)
+
+
+### 🧹 Chores
+
+* **ci:** add github release automation workflow ([80d5ded](https://github.com/programinglive/dev-workflow-mcp-server/commit/80d5ded7e2be8f45c02d65c5564934c73262bc4c))
+* **release:** version 1.5.3 changes and changelog ([c2698a7](https://github.com/programinglive/dev-workflow-mcp-server/commit/c2698a7cf55acf5251b423f512621de5802ba09a))
+* run release scripts via cjs ([bc241c8](https://github.com/programinglive/dev-workflow-mcp-server/commit/bc241c80bc1ec7d9ffa4c7f2982d6cecf19853c1))
+* **web:** update version display to 1.5.3 in docs page ([25e37f3](https://github.com/programinglive/dev-workflow-mcp-server/commit/25e37f3c7dab550de37f79d5c31bd0395251489c))
+* **web:** update version display to 1.5.3 in Hero component ([b478449](https://github.com/programinglive/dev-workflow-mcp-server/commit/b478449b334beedafb13fa0bec4b3cf6e9739f81))
+
 ### [1.5.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.2...v1.5.3) (2025-12-05)
 
 
