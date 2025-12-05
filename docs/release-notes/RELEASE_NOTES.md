@@ -4,6 +4,9 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.5.8 — 2025-12-05 — 🐛 Bug Fixes
+- **release:** amend tag to include release notes, remove build-docs.js and dist/docs (a3cea9b)
+
 ## 1.5.7 — 2025-12-05 — 🐛 Bug Fixes
 - **ci:** checkout main branch for release notes and remove RELEASE_NOTES.html generation (5d50dc0)
 
