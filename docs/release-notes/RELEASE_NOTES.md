@@ -4,6 +4,13 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 ## Unreleased
 
+## 1.5.3 — 2025-12-05 — 🐛 Bug Fixes
+- correct package.json version from null to 1.5.2 for npm publish (be60c99)
+- **news:** improve error handling and form accessibility (5e0a1a8)
+- switch to static export for Netlify deployment (acddfd7)
+- **release:** null 🚀 (55d7f99)
+- **release:** prepare patch release 1.5.3 (5b92c42)
+
 ## 1.5.0 — 2025-12-02
 - See CHANGELOG for details.
 
