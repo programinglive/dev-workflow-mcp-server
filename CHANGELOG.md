@@ -2,13 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.2...v) (2025-12-04)
+### [1.5.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.2...v1.5.3) (2025-12-05)
 
 
 ### 🐛 Bug Fixes
 
+* correct package.json version from null to 1.5.2 for npm publish ([be60c99](https://github.com/programinglive/dev-workflow-mcp-server/commit/be60c99f1e79cdaf5d3b9cb7c780edd30356f420))
 * **news:** improve error handling and form accessibility ([5e0a1a8](https://github.com/programinglive/dev-workflow-mcp-server/commit/5e0a1a83ae18054f967ff9041c7ed81fd7d6d4eb))
 * switch to static export for Netlify deployment ([acddfd7](https://github.com/programinglive/dev-workflow-mcp-server/commit/acddfd78da86859febdb1c46b04a5e79fd8f176f))
+
+
+### 🧹 Chores
+
+* **release:** null 🚀 ([55d7f99](https://github.com/programinglive/dev-workflow-mcp-server/commit/55d7f9980ea8f188d284facb7c9d1d5d4a6d6210))
+* **release:** prepare patch release 1.5.3 ([5b92c42](https://github.com/programinglive/dev-workflow-mcp-server/commit/5b92c4215e4188a3dc6714d3f2999c65f460d2c9))
 
 ### [1.5.2](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.1...v1.5.2) (2025-12-02)
 
