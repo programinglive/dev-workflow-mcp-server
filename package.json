@@ -22,10 +22,10 @@
     "check": "node --check index.js",
     "prepare": "husky",
     "postinstall": "node install.js",
-    "release": "node scripts/release.js",
-    "release:major": "node scripts/release.js major",
-    "release:minor": "node scripts/release.js minor",
-    "release:patch": "node scripts/release.js patch",
+    "release": "node scripts/release.cjs",
+    "release:major": "node scripts/release.cjs major",
+    "release:minor": "node scripts/release.cjs minor",
+    "release:patch": "node scripts/release.cjs patch",
     "web": "npm start --prefix web"
   },
   "keywords": [
