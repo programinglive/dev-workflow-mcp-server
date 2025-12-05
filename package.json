@@ -22,10 +22,10 @@
     "check": "node --check index.js",
     "prepare": "husky",
     "postinstall": "node install.js",
-    "release": "node scripts/release.cjs",
-    "release:major": "node scripts/release.cjs major",
-    "release:minor": "node scripts/release.cjs minor",
-    "release:patch": "node scripts/release.cjs patch",
+    "release": "node scripts/release.js",
+    "release:major": "node scripts/release.js major",
+    "release:minor": "node scripts/release.js minor",
+    "release:patch": "node scripts/release.js patch",
     "web": "npm start --prefix web"
   },
   "keywords": [
@@ -52,8 +52,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
     "@programinglive/commiter": "^1.1.8",
     "autoprefixer": "^10.4.22",
     "husky": "^9.1.7",
