@@ -17,7 +17,7 @@ export default function Hero() {
             .catch(() => setDownloads(null));
 
         // Version is hardcoded for static export
-        setVersion("1.5.1");
+        setVersion("1.5.3");
     }, []);
 
     const formatDownloads = (num: number) => {
