@@ -4,10 +4,19 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.6.3 | 2025-12-06 | update release notes for 1.6.2 (f0c2d49) |
 | 1.6.2 | 2025-12-06 | update release notest for 1.6.1 (72a9284) |
 | 1.6.1 | 2025-12-06 | add table header to release notes for release script compatibility (44e47fc) |
 
 
+
+
+## 1.6.3 – 📝 Documentation
+
+Released on **2025-12-06**.
+
+- update release notes for 1.6.2 (f0c2d49)
+- add light mode support to docs page (490cf22)
 
 ## 1.6.2 – 📝 Documentation
 
