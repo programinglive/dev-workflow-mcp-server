@@ -4,8 +4,19 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.6.2 | 2025-12-06 | update release notest for 1.6.1 (72a9284) |
 | 1.6.1 | 2025-12-06 | add table header to release notes for release script compatibility (44e47fc) |
 
+
+
+## 1.6.2 – 📝 Documentation
+
+Released on **2025-12-06**.
+
+- update release notest for 1.6.1 (72a9284)
+- update create_documentation test to verify PRD check and remove incompatible jest test (a7f2b28)
+- add PRD file existence check to create_documentation workflow step (62cdee3)
+- add PRD file existence check to create_documentation workflow step (6c51012)
 
 ## 1.6.1 – 🐛 Bug Fixes
 
