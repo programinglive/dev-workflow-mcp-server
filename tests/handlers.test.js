@@ -79,7 +79,7 @@ test("run_tests guidance mentions core documentation types", async () => {
   });
 });
 
-test("create_documentation accepts PRD and records created/updated message", async () => {
+test("create_documentation verifies PRD file exists", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.testsPassed = true;
     await workflowState.save();
@@ -105,6 +105,7 @@ test("create_documentation accepts PRD and records created/updated message", asy
       utils,
     });
 
+    // Should succeed since PRD.md exists in the project
     assert.equal(workflowState.state.documentationCreated, true);
     assert.equal(workflowState.state.documentationType, "PRD");
     assert.equal(
@@ -114,6 +115,10 @@ test("create_documentation accepts PRD and records created/updated message", asy
     assert.ok(
       response.content[0].text.includes("Documentation created/updated!"),
       "create_documentation response should mention created/updated",
+    );
+    assert.ok(
+      response.content[0].text.includes("PRD verified"),
+      "create_documentation response should verify PRD file",
     );
   });
 });
