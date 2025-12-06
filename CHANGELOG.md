@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.2...v1.6.3) (2025-12-06)
+
+
+### 📝 Documentation
+
+* update release notes for 1.6.2 ([f0c2d49](https://github.com/programinglive/dev-workflow-mcp-server/commit/f0c2d4965f3e08afdaccae5eb49f7ea7d21a6ed3))
+
+
+### 🐛 Bug Fixes
+
+* add light mode support to docs page ([490cf22](https://github.com/programinglive/dev-workflow-mcp-server/commit/490cf2210253a7498cbb3d3a33d1c329672a2dfa))
+
 ### [1.6.2](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.1...v1.6.2) (2025-12-06)
 
 
