@@ -4,6 +4,15 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.6.1 | 2025-12-06 | add table header to release notes for release script compatibility (44e47fc) |
+
+
+## 1.6.1 – 🐛 Bug Fixes
+
+Released on **2025-12-06**.
+
+- add table header to release notes for release script compatibility (44e47fc)
+- add responsive vertical monitor support and dark/light mode toggle (5565765)
 
 ## Unreleased
 
