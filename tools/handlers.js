@@ -355,6 +355,16 @@ async function handleCreateDocumentation(args, workflowState) {
     return textResponse("⚠️ Please ensure tests are passing first! Run 'run_tests' with passed=true.");
   }
 
+  // Check if PRD exists in docs folder
+  const prdPath = path.join(__dirname, "..", "docs", "product", "PRD.md");
+  const prdExists = existsSync(prdPath);
+  
+  if (!prdExists) {
+    return textResponse(
+      `⚠️ PRD file not found!\n\nExpected location: docs/product/PRD.md\n\nPlease create or update the PRD before marking documentation as complete.`
+    );
+  }
+
   workflowState.state.documentationCreated = true;
   workflowState.state.documentationType = args.documentationType;
   workflowState.state.documentationSummary = args.summary;
@@ -368,7 +378,7 @@ async function handleCreateDocumentation(args, workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `✅ Documentation created/updated!\n\nType: ${args.documentationType}\nSummary: ${args.summary}\n\n🎉 You're ready to verify your work!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ✓ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit' to verify\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Mark as complete with 'complete_task'`
+    `✅ Documentation created/updated!\n\nType: ${args.documentationType}\nSummary: ${args.summary}\n✅ PRD verified: docs/product/PRD.md exists\n\n🎉 You're ready to verify your work!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ✓ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit' to verify\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Mark as complete with 'complete_task'`
   );
 }
 
