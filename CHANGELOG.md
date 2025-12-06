@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.2](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.1...v1.6.2) (2025-12-06)
+
+
+### 📝 Documentation
+
+* update release notest for 1.6.1 ([72a9284](https://github.com/programinglive/dev-workflow-mcp-server/commit/72a92847444436e2c4bd17407e664117fe08a31f))
+
+
+### ✅ Tests
+
+* update create_documentation test to verify PRD check and remove incompatible jest test ([a7f2b28](https://github.com/programinglive/dev-workflow-mcp-server/commit/a7f2b28e65116cfb556767e7e6b25c0b4cdba613))
+
+
+### ✨ Features
+
+* add PRD file existence check to create_documentation workflow step ([62cdee3](https://github.com/programinglive/dev-workflow-mcp-server/commit/62cdee3f7402ed70e3e36003020e84958cdd4a3d))
+* add PRD file existence check to create_documentation workflow step ([6c51012](https://github.com/programinglive/dev-workflow-mcp-server/commit/6c510121980789c3d0e96376fe0375fbaf78a656))
+
 ### [1.6.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.0...v1.6.1) (2025-12-06)
 
 
