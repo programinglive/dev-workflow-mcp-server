@@ -2,6 +2,9 @@
 
 Authoritative history of user-visible changes for the Development Workflow MCP Server. Each entry highlights the improvements that shipped with the tagged version.
 
+| Version | Date | Notes |
+|---------|------|-------|
+
 ## Unreleased
 
 ## 1.5.11 — 2025-12-05
