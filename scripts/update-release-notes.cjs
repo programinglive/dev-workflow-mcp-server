@@ -67,29 +67,33 @@ function updateReleaseNotes({
 
 function insertReleaseNotesEntry({ content, version, releaseDate, highlight, sectionHeading, detailBullets }) {
   const lines = content.split('\n');
-
-  // Find the "## Unreleased" section
-  const unreleasedIndex = lines.findIndex((line) => line.trim().startsWith('## Unreleased'));
-  if (unreleasedIndex === -1) {
-    throw new Error('Unable to locate "## Unreleased" section in release notes.');
+  const headerSeparatorIndex = lines.findIndex((line) => line.trim().startsWith('|---------'));
+  if (headerSeparatorIndex === -1) {
+    throw new Error('Unable to locate release notes table header.');
   }
+
+  const newRow = `| ${version} | ${releaseDate} | ${escapePipes(highlight)} |`;
+  lines.splice(headerSeparatorIndex + 1, 0, newRow);
 
   const sectionLines = [];
   sectionLines.push('');
   const trimmedHeading = typeof sectionHeading === 'string' ? sectionHeading.trim() : '';
-  const headingSuffix = trimmedHeading ? ` — ${trimmedHeading}` : '';
-
-  // Format: ## [Version] — [Date]
-  sectionLines.push(`## ${version} — ${releaseDate}${headingSuffix}`);
-
+  const headingSuffix = trimmedHeading ? ` – ${trimmedHeading}` : '';
+  sectionLines.push(`## ${version}${headingSuffix}`);
+  sectionLines.push('');
+  sectionLines.push(`Released on **${releaseDate}**.`);
+  sectionLines.push('');
   for (const bullet of detailBullets) {
     sectionLines.push(`- ${bullet}`);
   }
+  sectionLines.push('');
 
-  // Insert after the Unreleased header (and potentially some blank lines)
-  // We want to keep "## Unreleased" empty and add the new version below it.
-  // So we insert after the Unreleased line.
-  lines.splice(unreleasedIndex + 1, 0, ...sectionLines);
+  const firstSectionIndex = lines.findIndex((line, idx) => idx > headerSeparatorIndex && line.startsWith('## '));
+  if (firstSectionIndex === -1) {
+    lines.push(...sectionLines);
+  } else {
+    lines.splice(firstSectionIndex, 0, ...sectionLines);
+  }
 
   return lines.join('\n');
 }

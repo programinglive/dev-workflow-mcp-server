@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "Dev Workflow Dashboard",
@@ -26,10 +27,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className="antialiased bg-[#0a0a0f] text-white">
-        <Navbar />
-        {children}
-        <Footer />
+      <body className="antialiased bg-white dark:bg-[#0a0a0f] text-gray-900 dark:text-white transition-colors duration-300">
+        <ThemeProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

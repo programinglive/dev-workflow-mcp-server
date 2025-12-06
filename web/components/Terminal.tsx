@@ -107,7 +107,7 @@ export default function Terminal() {
     };
 
     return (
-        <div ref={containerRef} className="font-mono text-sm space-y-2 min-h-[400px]">
+        <div ref={containerRef} className="font-mono text-xs sm:text-sm space-y-1.5 sm:space-y-2 min-h-[300px] sm:min-h-[400px]">
             {lines}
         </div>
     );
