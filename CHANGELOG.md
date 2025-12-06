@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.11...v1.6.0) (2025-12-06)
+
+
+### ✨ Features
+
+* add responsive vertical monitor support and dark/light mode toggle ([5565765](https://github.com/programinglive/dev-workflow-mcp-server/commit/5565765f5e5db63d5239c9b82371ae1853a72085))
+
 ### [1.5.11](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.10...v1.5.11) (2025-12-05)
 
 ### [1.5.10](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.5.9...v1.5.10) (2025-12-05)
