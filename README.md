@@ -353,12 +353,17 @@ The tool will:
 2. `create_tests`
 3. `run_tests` with `testsPassed`, `testCommand`, and optional `testDetails`
 4. `create_documentation` with `documentationType` and `documentationSummary`
+   - **Requires**: `docs/product/PRD.md` must exist before documentation can be marked complete
 5. `check_ready_to_commit`
 6. `commit_and_push` with `commitMessage` and optional `branch`
 7. `perform_release` with `releaseCommand`, plus optional `releaseNotes`, `releaseType`, and `preset`
 8. `complete_task` reusing `commitMessage`
 
 All arguments except the optional flags are required and must be non-empty strings.
+
+### Documentation Requirements
+
+The `create_documentation` step enforces that a PRD (Product Requirements Document) exists at `docs/product/PRD.md` before documentation can be marked as complete. This ensures all projects maintain a current PRD that describes the product's goals, features, and requirements.
 
 ## 🚫 Releasing Without the Workflow Steps
 
