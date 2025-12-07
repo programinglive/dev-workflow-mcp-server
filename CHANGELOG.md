@@ -9,6 +9,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 * update release notes for 1.6.3 ([afb9fb9](https://github.com/programinglive/dev-workflow-mcp-server/commit/afb9fb9b4c14be0a9f8ecfada3bb72ca75b7f116))
 
+
+### 🧹 Chores
+
+* **release:** null 🚀 ([bcc7a3c](https://github.com/programinglive/dev-workflow-mcp-server/commit/bcc7a3c1a554dbea2dce16585ef926bed925e062))
+
 ### [1.6.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.2...v1.6.3) (2025-12-06)
 
 
