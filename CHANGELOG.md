@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.3...v) (2025-12-08)
+## [](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.3...v) (2025-12-11)
 
 
 ### 📝 Documentation
@@ -12,8 +12,14 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### 🧹 Chores
 
+* **release:** null 🚀 ([cd851ac](https://github.com/programinglive/dev-workflow-mcp-server/commit/cd851ac6d3ddd91286b63a83d05a1a5a5a17aee6))
 * **release:** null 🚀 ([49ec562](https://github.com/programinglive/dev-workflow-mcp-server/commit/49ec5629b8308dc9ed19672b07966c3711748817))
 * **release:** null 🚀 ([bcc7a3c](https://github.com/programinglive/dev-workflow-mcp-server/commit/bcc7a3c1a554dbea2dce16585ef926bed925e062))
+
+
+### 🐛 Bug Fixes
+
+* handle null CustPL in birthday-customers.blade.php (ERP-19) ([71b8f7e](https://github.com/programinglive/dev-workflow-mcp-server/commit/71b8f7ebbf83266008e28446630be97ae24e1d64))
 
 ### [1.6.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.2...v1.6.3) (2025-12-06)
 
