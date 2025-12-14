@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### 🧹 Chores
 
+* **release:** null 🚀 ([ac3cc6e](https://github.com/programinglive/dev-workflow-mcp-server/commit/ac3cc6e8a5dea2d119c072fbb8029947e234643c))
 * **release:** null 🚀 ([f3f9a00](https://github.com/programinglive/dev-workflow-mcp-server/commit/f3f9a00059c435d2e18940f8a4b41e166a779ff3))
 * **release:** null 🚀 ([bcf7d95](https://github.com/programinglive/dev-workflow-mcp-server/commit/bcf7d9560af34b0a257bfe6566a0cd1572ebb5d1))
 * **release:** null 🚀 ([74df6d6](https://github.com/programinglive/dev-workflow-mcp-server/commit/74df6d6d2972ab2c4702da7e773ab651a41daaa3))
