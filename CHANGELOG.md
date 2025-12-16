@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.4](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.3...v1.7.4) (2025-12-16)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** add id-token permission for npm provenance ([8930338](https://github.com/programinglive/dev-workflow-mcp-server/commit/8930338aaf90616f1c741c4634ac8e96d3c43fb7))
+
 ### [1.7.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.2...v1.7.3) (2025-12-16)
 
 
