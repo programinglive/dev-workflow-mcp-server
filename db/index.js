@@ -70,12 +70,4 @@ export async function getState(userId, projectPath) {
   return await db.getState(userId, projectPath);
 }
 
-export async function saveState(userId, projectPath, state) {
-  const db = await getAdapter();
-  await db.saveState(userId, projectPath, state);
-}
 
-export async function getState(userId, projectPath) {
-  const db = await getAdapter();
-  return await db.getState(userId, projectPath);
-}

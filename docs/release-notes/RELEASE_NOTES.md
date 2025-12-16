@@ -4,12 +4,20 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.0 | 2025-12-16 | See CHANGELOG for details. |
 | 1.6.3 | 2025-12-06 | update release notes for 1.6.2 (f0c2d49) |
 | 1.6.2 | 2025-12-06 | update release notest for 1.6.1 (72a9284) |
 | 1.6.1 | 2025-12-06 | add table header to release notes for release script compatibility (44e47fc) |
 
 
 
+
+
+## 1.7.0
+
+Released on **2025-12-16**.
+
+- See CHANGELOG for details.
 
 ## 1.6.3 – 📝 Documentation
 

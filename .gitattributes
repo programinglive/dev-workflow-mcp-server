@@ -1,0 +1,10 @@
+# Enforce LF for all text files (suppresses warnings on Windows)
+* text=auto eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
