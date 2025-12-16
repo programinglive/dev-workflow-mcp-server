@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.5](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.4...v1.7.5) (2025-12-16)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** switch to tokenless trusted publishing ([fdfc4a9](https://github.com/programinglive/dev-workflow-mcp-server/commit/fdfc4a9a86485ee60f0f650e16aa9195671d9ab3))
+
 ### [1.7.4](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.3...v1.7.4) (2025-12-16)
 
 
