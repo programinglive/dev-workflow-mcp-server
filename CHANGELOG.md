@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.0...v1.7.1) (2025-12-16)
+
+
+### 🐛 Bug Fixes
+
+* build errors and warnings ([dc24831](https://github.com/programinglive/dev-workflow-mcp-server/commit/dc2483188a58d932590503ec2058c51e3de78d0b))
+* suppress remaining build warnings ([f7d9b2d](https://github.com/programinglive/dev-workflow-mcp-server/commit/f7d9b2d9fb695e6699d65456747c21a301b62fee))
+
 ## [1.7.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.3...v1.7.0) (2025-12-16)
 
 
