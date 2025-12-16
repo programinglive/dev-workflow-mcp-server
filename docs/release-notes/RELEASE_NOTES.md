@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.10 | 2025-12-16 | update release notes and finalize ci config (92ac78a) |
 | 1.7.9 | 2025-12-16 | **ci:** apply official npm trusted publishing config (9256583) |
 | 1.7.8 | 2025-12-16 | **ci:** remove all token config for pure OIDC publishing (d4759cc) |
 | 1.7.7 | 2025-12-16 | **ci:** remove duplicates and apply robust trusted publishing config (eedb661) |
@@ -30,6 +31,14 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.10 – 🧹 Chores
+
+Released on **2025-12-16**.
+
+- update release notes and finalize ci config (92ac78a)
+- update PRD and release notes for v1.7.9 (024b3c2)
 
 ## 1.7.9 – 🐛 Bug Fixes
 

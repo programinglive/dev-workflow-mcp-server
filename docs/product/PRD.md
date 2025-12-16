@@ -4,7 +4,7 @@
 - **Product**: Development Workflow MCP Server
 - **Prepared by**: Cascade (AI assistant)
 - **Date**: 2025-12-16
-- **Status**: Live v1.6+
+- **Status**: Live v1.7.10
 
 ## 2. Problem Statement
 Developers need structured guidance to maintain disciplined workflows across projects. Existing tooling lacks enforcement of sequential best practices (testing, documentation, release hygiene) and offers limited visibility into historical task execution.
