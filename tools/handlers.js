@@ -23,7 +23,7 @@ async function resetToCommitIfWorkingChanges(workflowState, git) {
 
   const hasWorkingChanges = await git.hasWorkingChanges();
   const hasStagedChanges = await git.hasStagedChanges();
-  
+
   if (!hasWorkingChanges && !hasStagedChanges) {
     return false;
   }
@@ -105,9 +105,8 @@ function getContinueGuidance(status) {
         : "Run your automated tests and record the outcome with 'run_tests'. Fix any failures before moving forward.";
     case "documentation":
       return status.testsSkipped
-        ? `Document the change (including manual QA for skipped tests) with 'create_documentation'. Reason recorded: ${
-            status.testsSkippedReason || "(none provided)"
-          }.`
+        ? `Document the change (including manual QA for skipped tests) with 'create_documentation'. Reason recorded: ${status.testsSkippedReason || "(none provided)"
+        }.`
         : "Capture your updates with 'create_documentation' (provide the documentation type and a short summary).";
     case "ready":
       return "Run 'check_ready_to_commit' to verify all prerequisite steps before committing.";
@@ -358,7 +357,7 @@ async function handleCreateDocumentation(args, workflowState) {
   // Check if PRD exists in docs folder
   const prdPath = path.join(__dirname, "..", "docs", "product", "PRD.md");
   const prdExists = existsSync(prdPath);
-  
+
   if (!prdExists) {
     return textResponse(
       `⚠️ PRD file not found!\n\nExpected location: docs/product/PRD.md\n\nPlease create or update the PRD before marking documentation as complete.`
@@ -453,8 +452,7 @@ async function handleCommitAndPush(args, context) {
     await workflowState.save();
 
     return textResponse(
-      `ℹ️ No changes detected. Assuming commit and push already completed.\nLast commit: ${
-        effectiveCommitMessage || "(unavailable)"
+      `ℹ️ No changes detected. Assuming commit and push already completed.\nLast commit: ${effectiveCommitMessage || "(unavailable)"
       }\n\nNext: Run 'perform_release' to handle the release and push tags.`
     );
   }
@@ -520,8 +518,7 @@ async function handleCommitAndPush(args, context) {
   await workflowState.save();
 
   return textResponse(
-    `✅ Commit and push completed!\n\nCommit message: ${generatedSummary}\nPushed to: ${
-      branchForPush || "(default upstream)"
+    `✅ Commit and push completed!\n\nCommit message: ${generatedSummary}\nPushed to: ${branchForPush || "(default upstream)"
     }\n\nNext: Run 'perform_release' to handle the release and push tags.`
   );
 }
@@ -782,7 +779,11 @@ async function handleProjectSummaryData(workflowState) {
 async function handleProjectSummaryDb(workflowState) {
   const { getSummaryForUser } = await import("../db/index.js");
   const userId = process.env.DEV_WORKFLOW_USER_ID || "default";
-  const summary = getSummaryForUser(userId);
+
+  // Calculate project root from state file path: <root>/.state/users/<user>/workflow-state.json
+  const projectPath = path.dirname(path.dirname(path.dirname(path.dirname(workflowState.stateFile))));
+
+  const summary = await getSummaryForUser(userId, projectPath);
   if (!summary) {
     return textResponse("📜 No project summary in database yet.");
   }
@@ -801,7 +802,7 @@ async function handleRerunWorkflow(workflowState) {
 
   // Reset all progress flags but preserve history
   workflowState.reset();
-  
+
   // Restore task context after reset
   workflowState.state.currentPhase = "coding";
   workflowState.state.taskDescription = currentDescription;

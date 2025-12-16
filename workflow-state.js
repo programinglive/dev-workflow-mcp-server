@@ -535,12 +535,38 @@ export class WorkflowState {
     try {
       const { insertHistoryEntry, updateSummaryForUser } = await import("./db/index.js");
       const userId = getCurrentUserId();
+      // Use the project directory (parent of .state) as the project identifier
+      // this.stateFile is .../.state/users/<user>/workflow-state.json
+      // so we want resolution logic. For now, let's use the absolute path to the project root.
+      // We can derive it from stateFile path logic in resolveStateFile or just use the directory we are in.
+      // A safe bet that is unique per project on this machine is the project root found by resolveStateFile.
+      // Let's perform a simple resolution:
+
+      const stateDir = path.dirname(path.dirname(path.dirname(this.stateFile)));
+      // stateFile = <root>/.state/users/<user>/workflow-state.json
+      // dirname = <root>/.state/users/<user>
+      // dirname = <root>/.state/users
+      // dirname = <root>/.state
+      // dirname = <root>
+
+      // Wait, let's look at the path structure from resolveStateFile:
+      // path.join(userDir, STATE_FILENAME); where userDir is path.join(stateDir, "users", userId);
+      // and stateDir is path.join(projectRoot, STATE_DIR);
+      // So: projectRoot/.state/users/userId/workflow-state.json
+      // 1. dirname -> .../userId
+      // 2. dirname -> .../users
+      // 3. dirname -> .../.state
+      // 4. dirname -> .../projectRoot
+
+      const projectRoot = path.dirname(path.dirname(path.dirname(path.dirname(this.stateFile))));
+
       for (const entry of this.state.history || []) {
-        insertHistoryEntry(userId, entry);
+        await insertHistoryEntry(userId, projectRoot, entry);
       }
-      updateSummaryForUser(userId);
-    } catch {
-      // SQLite not available; skip sync
+      await updateSummaryForUser(userId, projectRoot);
+    } catch (error) {
+      // Database sync failed; log it but don't crash
+      console.error("Database sync failed:", error.message);
     }
   }
 
