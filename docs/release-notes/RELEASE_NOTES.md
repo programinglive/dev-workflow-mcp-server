@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.9 | 2025-12-16 | **ci:** apply official npm trusted publishing config (9256583) |
 | 1.7.8 | 2025-12-16 | **ci:** remove all token config for pure OIDC publishing (d4759cc) |
 | 1.7.7 | 2025-12-16 | **ci:** remove duplicates and apply robust trusted publishing config (eedb661) |
 | 1.7.6 | 2025-12-16 | **ci:** restore registry config with token fallback for Trusted Publishing (542615c) |
@@ -28,6 +29,13 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.9 – 🐛 Bug Fixes
+
+Released on **2025-12-16**.
+
+- **ci:** apply official npm trusted publishing config (9256583)
 
 ## 1.7.8 – 🐛 Bug Fixes
 
