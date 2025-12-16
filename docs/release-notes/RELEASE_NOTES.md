@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.11 | 2025-12-17 | test: comprehensive DB adapter tests, env support, and warning fixes (64b029a) |
 | 1.7.10 | 2025-12-16 | update release notes and finalize ci config (92ac78a) |
 | 1.7.9 | 2025-12-16 | **ci:** apply official npm trusted publishing config (9256583) |
 | 1.7.8 | 2025-12-16 | **ci:** remove all token config for pure OIDC publishing (d4759cc) |
@@ -32,6 +33,22 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.11 – 📝 Documentation
+
+Released on **2025-12-16**.
+
+- fix version status in PRD (fa7912b)
+- implement .env support and fix mysql date persistence (096797c)
+## 1.7.11 – 📝 Documentation & 🧪 Testing
+
+Released on **2025-12-17**.
+
+- test: comprehensive DB adapter tests for MySQL, PostgreSQL, and SQLite (64b029a)
+- test: implemented env support verification (64b029a)
+- test: fixed deprecation warnings and missing mock exports (64b029a)
+- docs: updated PRD and README with testing guide (64b029a)
 
 ## 1.7.10 – 🧹 Chores
 
