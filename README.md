@@ -266,6 +266,33 @@ Add the environment variable in your Windsurf MCP settings:
 ```
 
 
+
+### ✅ Testing
+
+The project uses Node.js native test runner (`node --test`).
+
+```bash
+npm test
+```
+
+This runs:
+- Unit tests for workflow logic
+- Integration tests for `.env` configuration
+- DB Adapter tests (SQLite always; MySQL/Postgres if configured)
+
+#### Testing Database Adapters
+To verify MySQL or PostgreSQL adapters, run tests with the environment variable set:
+
+```bash
+# Test MySQL
+export DEV_WORKFLOW_DB_URL="mysql://root:pass@localhost:3306/test_db"
+node --test tests/db-adapters.test.js
+
+# Test PostgreSQL
+export DEV_WORKFLOW_DB_URL="postgres://postgres:pass@localhost:5432/test_db"
+node --test tests/db-adapters.test.js
+```
+
 ### Scripts
 
 - `npm run build` - Bundle the source into `dist/index.mjs` for distribution

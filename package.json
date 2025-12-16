@@ -17,7 +17,7 @@
     "dev": "node --watch index.js",
     "start": "node index.js",
     "local": "node index.js",
-    "test": "node --test",
+    "test": "node --no-deprecation --test",
     "check": "node --check index.js",
     "prepare": "husky",
     "postinstall": "node install.js",

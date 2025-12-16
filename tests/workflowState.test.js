@@ -14,6 +14,13 @@ import { constants as fsConstants } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+
+// Isolate these tests from the real database configuration
+delete process.env.DEV_WORKFLOW_DB_TYPE;
+delete process.env.DEV_WORKFLOW_DB_URL;
+delete process.env.TEST_MYSQL_URL;
+delete process.env.TEST_POSTGRES_URL;
+
 import {
   WorkflowState,
   getNextStep,
@@ -50,7 +57,9 @@ test("resolveStateFile prefers current working directory when multiple project m
   const sourceModulePath = fileURLToPath(new URL("../workflow-state.js", import.meta.url));
   await copyFile(sourceModulePath, path.join(moduleDir, "workflow-state.js"));
 
-  await writeFile(path.join(moduleDir, "package.json"), JSON.stringify({ name: "module" }));
+  await writeFile(path.join(moduleDir, "package.json"), JSON.stringify({ name: "module", type: "module" }));
+  await mkdir(path.join(moduleDir, "db"), { recursive: true });
+  await writeFile(path.join(moduleDir, "db", "index.js"), 'export function getDbAdapter() { return { connect: async () => {}, saveState: async () => {}, getState: async () => null }; } export async function insertHistoryEntry() {} export async function updateSummaryForUser() {} export async function saveState() {} export async function getState() {} export async function getSummaryForUser() { return { totalTasks: 0, taskTypes: {} }; } export async function getHistoryForUser() { return { entries: [], total: 0 }; }');
   await writeFile(path.join(projectA, "package.json"), JSON.stringify({ name: "project-a" }));
   await writeFile(path.join(projectB, "package.json"), JSON.stringify({ name: "project-b" }));
 
@@ -101,6 +110,9 @@ test("WorkflowState mirrors state file to compatibility locations", async () => 
   await mkdir(path.join(tempRoot, "dist"), { recursive: true });
   await mkdir(stateDir, { recursive: true });
   await copyFile(sourceModulePath, path.join(moduleDir, "workflow-state.js"));
+  await writeFile(path.join(moduleDir, "package.json"), JSON.stringify({ name: "module", type: "module" }));
+  await mkdir(path.join(moduleDir, "db"), { recursive: true });
+  await writeFile(path.join(moduleDir, "db", "index.js"), 'export function getDbAdapter() { return { connect: async () => {}, saveState: async () => {}, getState: async () => null }; } export async function insertHistoryEntry() {} export async function updateSummaryForUser() {} export async function saveState() {} export async function getState() {} export async function getSummaryForUser() { return { totalTasks: 0, taskTypes: {} }; } export async function getHistoryForUser() { return { entries: [], total: 0 }; }');
   await writeFile(path.join(projectRoot, "package.json"), JSON.stringify({ name: "temp" }));
 
   const stateFile = path.join(stateDir, "workflow-state.json");
@@ -129,6 +141,9 @@ test("WorkflowState avoids filesystem root when no project markers found", async
 
   const sourceModulePath = fileURLToPath(new URL("../workflow-state.js", import.meta.url));
   await copyFile(sourceModulePath, path.join(moduleDir, "workflow-state.js"));
+  await writeFile(path.join(moduleDir, "package.json"), JSON.stringify({ name: "module", type: "module" }));
+  await mkdir(path.join(moduleDir, "db"), { recursive: true });
+  await writeFile(path.join(moduleDir, "db", "index.js"), 'export function getDbAdapter() { return { connect: async () => {}, saveState: async () => {}, getState: async () => null }; } export async function insertHistoryEntry() {} export async function updateSummaryForUser() {} export async function saveState() {} export async function getState() {} export async function getSummaryForUser() { return { totalTasks: 0, taskTypes: {} }; } export async function getHistoryForUser() { return { entries: [], total: 0 }; }');
 
   const moduleUrl = pathToFileURL(path.join(moduleDir, "workflow-state.js"));
   const { WorkflowState: TempWorkflowState } = await import(moduleUrl.href);

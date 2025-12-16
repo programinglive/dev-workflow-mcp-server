@@ -38,6 +38,10 @@ Developers need structured guidance to maintain disciplined workflows across pro
 - Guard release commands to ensure prerequisites are satisfied.
 - Support `run_full_workflow` for scripted execution of all steps with validation.
 - Web dashboard displays version dynamically from `package.json` via `/api/version` endpoint to stay in sync after releases.
+- [x] **Consolidated CI/CD**: Unified release and publish workflows.
+- [x] **Multi-Database Support**: SQLite, MySQL, and PostgreSQL adapters implemented and verified.
+- [x] **Environment Configuration**: `.env` file support added.
+- [x] **Comprehensive Testing**: Automated tests for DB adapters and environment loading.
 - **Multi-Database Support**: Abstract the storage layer to support:
     - SQLite (default/local)
     - MySQL
