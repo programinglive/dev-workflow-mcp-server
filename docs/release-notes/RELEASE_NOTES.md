@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.2 | 2025-12-16 | **ci:** consolidate release and publish workflows (98e5b31) |
 | 1.7.1 | 2025-12-16 | build errors and warnings (dc24831) |
 | 1.7.0 | 2025-12-16 | See CHANGELOG for details. |
 | 1.6.3 | 2025-12-06 | update release notes for 1.6.2 (f0c2d49) |
@@ -14,6 +15,13 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.2 – 🐛 Bug Fixes
+
+Released on **2025-12-16**.
+
+- **ci:** consolidate release and publish workflows (98e5b31)
 
 ## 1.7.1 – 🐛 Bug Fixes
 
