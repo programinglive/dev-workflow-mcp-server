@@ -183,9 +183,23 @@ See [Antigravity Getting Started](./docs/antigravity/GETTING-STARTED.md) for det
 
 ## ⚙️ Configuration
 
-### Database Backend
+### Database Setup
 
-By default, the server uses a local **SQLite** database stored in `.state/dev-workflow.db`. You can switch to **MySQL** or **PostgreSQL** for centralized storage using environment variables.
+The server supports **SQLite** (default), **MySQL**, and **PostgreSQL**.
+
+#### Configuration via `.env`
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Edit `.env` with your settings:
+   ```ini
+   DEV_WORKFLOW_DB_TYPE=mysql
+   DEV_WORKFLOW_DB_URL=mysql://user:pass@localhost:3306/db
+   ```
+
+#### Configuration via Environment Variables
+Alternatively, export variables directly:.
 
 | Variable | Description | Default |
 |----------|-------------|---------|

@@ -75,6 +75,13 @@ export class MysqlAdapter extends DbAdapter {
         }
     }
 
+    formatDate(date) {
+        // Ensure we have a string in 'YYYY-MM-DD HH:mm:ss' format
+        const d = date ? new Date(date) : new Date();
+        // slice(0, 19) gives YYYY-MM-DDTHH:mm:ss, then replace T with space
+        return d.toISOString().slice(0, 19).replace('T', ' ');
+    }
+
     async insertHistoryEntry(userId, projectPath, entry) {
         await this.connect();
         const normalizedProjectPath = projectPath || '';
@@ -98,7 +105,7 @@ export class MysqlAdapter extends DbAdapter {
             entry.taskDescription,
             entry.taskType,
             entry.commitMessage,
-            entry.timestamp || new Date().toISOString(),
+            this.formatDate(entry.timestamp),
             entry.forced ? 1 : 0,
             entry.forceReason || null,
             entry.dropped ? 1 : 0,
@@ -150,9 +157,9 @@ export class MysqlAdapter extends DbAdapter {
             normalizedProjectPath,
             rows.length,
             JSON.stringify(taskTypes),
-            lastActive,
+            this.formatDate(lastActive),
             JSON.stringify(recentTasks),
-            new Date().toISOString()
+            this.formatDate(new Date())
         ]);
     }
 
@@ -270,7 +277,7 @@ export class MysqlAdapter extends DbAdapter {
             userId,
             normalizedProjectPath,
             JSON.stringify(state),
-            new Date().toISOString()
+            this.formatDate(new Date())
         ]);
     }
 

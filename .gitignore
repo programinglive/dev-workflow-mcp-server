@@ -23,6 +23,7 @@ temp/
 Thumbs.db
 .env
 .env.*
+!.env.example
 .vscode/
 .idea/
 .state/
