@@ -181,9 +181,76 @@ Antigravity users should configure the MCP server in their `mcp_config.json`.
 
 See [Antigravity Getting Started](./docs/antigravity/GETTING-STARTED.md) for detailed instructions and troubleshooting.
 
-## 🏗️ Build System
+## ⚙️ Configuration
 
-This project includes a Vite-based build system for creating optimized distributions.
+### Database Backend
+
+By default, the server uses a local **SQLite** database stored in `.state/dev-workflow.db`. You can switch to **MySQL** or **PostgreSQL** for centralized storage using environment variables.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DEV_WORKFLOW_DB_TYPE` | Database driver (`sqlite`, `mysql`, `postgres`) | `sqlite` |
+| `DEV_WORKFLOW_DB_URL` | Connection string for MySQL/Postgres | `null` |
+| `DEV_WORKFLOW_DB_PATH` | Override path for the SQLite database file | `<project>/.state/dev-workflow.db` |
+
+#### Examples
+
+**MySQL:**
+```bash
+export DEV_WORKFLOW_DB_TYPE=mysql
+export DEV_WORKFLOW_DB_URL="mysql://user:password@localhost:3306/dev_workflow"
+```
+
+**PostgreSQL:**
+```bash
+export DEV_WORKFLOW_DB_TYPE=postgres
+export DEV_WORKFLOW_DB_URL="postgresql://user:password@localhost:5432/dev_workflow"
+```
+
+### User & State Management
+
+| Variable | Description |
+|----------|-------------|
+| `DEV_WORKFLOW_USER_ID` | Override the auto-generated user ID (e.g., set to your name/email) |
+| `DEV_WORKFLOW_STATE_FILE` | Override the location of the `workflow-state.json` file |
+
+### Using Multiple Clients (Antigravity & Windsurf)
+
+If you use multiple AI coding tools simultaneously (e.g., Antigravity and Windsurf) on the same project, they will share the same workflow state by default.
+
+To maintain **separate, distinct sessions** for each tool, configure a unique `DEV_WORKFLOW_USER_ID` for each.
+
+**Antigravity Config (`mcp_config.json`):**
+```json
+{
+  "mcpServers": {
+    "dev-workflow": {
+      "command": "node",
+      "args": ["path/to/server/index.js"],
+      "env": {
+        "DEV_WORKFLOW_USER_ID": "antigravity_user"
+      }
+    }
+  }
+}
+```
+
+**Windsurf Config:**
+Add the environment variable in your Windsurf MCP settings:
+```json
+{
+  "mcpServers": {
+    "dev-workflow": {
+      "command": "node",
+      "args": ["path/to/server/index.js"],
+      "env": {
+        "DEV_WORKFLOW_USER_ID": "windsurf_user"
+      }
+    }
+  }
+}
+```
+
 
 ### Scripts
 

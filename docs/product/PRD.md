@@ -3,8 +3,8 @@
 ## 1. Overview
 - **Product**: Development Workflow MCP Server
 - **Prepared by**: Cascade (AI assistant)
-- **Date**: 2025-10-31
-- **Status**: Draft v0.1
+- **Date**: 2025-12-16
+- **Status**: Live v1.6+
 
 ## 2. Problem Statement
 Developers need structured guidance to maintain disciplined workflows across projects. Existing tooling lacks enforcement of sequential best practices (testing, documentation, release hygiene) and offers limited visibility into historical task execution.
@@ -13,6 +13,7 @@ Developers need structured guidance to maintain disciplined workflows across pro
 1. Enforce a consistent, auditable development workflow across teams.
 2. Provide actionable guidance for each workflow phase within IDE-integrated environments.
 3. Maintain per-project, per-user workflow state while supporting shared infrastructure (e.g., SQLite summaries, dashboard).
+4. **Support flexible data persistence**: Enable usage of various database backends (MySQL, PostgreSQL, SQLite) to adapt to different hosting and enterprise environments.
 
 ## 4. Non-Goals
 - Replacing full-featured project management tools.
@@ -28,19 +29,24 @@ Developers need structured guidance to maintain disciplined workflows across pro
 1. As a developer, I want to be guided through the workflow steps so I can avoid skipping critical tasks.
 2. As a team lead, I want an auditable history of workflow completion so I can ensure compliance.
 3. As an integrator, I want a simple API (tools/prompts) so I can plug the MCP server into existing agent workflows.
+4. As a devops engineer, I want to configure the server to use my existing database infrastructure (MySQL/PostgreSQL) instead of local files.
 
 ## 7. Functional Requirements
 - Provide MCP tools covering the full workflow lifecycle (start task, fix, test, document, commit, release, complete).
 - Persist workflow state per project and per user, with compatibility handling for legacy locations.
-- Offer aggregated project summaries (JSON artifacts, SQLite sync, optional web dashboard).
+- Offer aggregated project summaries (JSON artifacts, Database sync, optional web dashboard).
 - Guard release commands to ensure prerequisites are satisfied.
 - Support `run_full_workflow` for scripted execution of all steps with validation.
 - Web dashboard displays version dynamically from `package.json` via `/api/version` endpoint to stay in sync after releases.
+- **Multi-Database Support**: Abstract the storage layer to support:
+    - SQLite (default/local)
+    - MySQL
+    - PostgreSQL
 
 ## 8. Technical Considerations
 - Node.js (ESM) codebase leveraging `@modelcontextprotocol/sdk`.
 - File-based state stored under `.state/users/<user>/workflow-state.json` with compatibility symlinks.
-- Optional SQLite integration for history and summary caching.
+- **Database Abstraction**: Implement an Adapter/Repository pattern or use an ORM (e.g., Knex, Prisma, Drizzle) to support multiple SQL dialects.
 - Vite build pipeline for distribution bundle; source usage recommended for MCP.
 - Windows compatibility requirements (Python, Build Tools for native modules).
 - **Deployment options**: Local development, Netlify (static), Plesk (full-featured).
@@ -49,17 +55,21 @@ Developers need structured guidance to maintain disciplined workflows across pro
 - ≥90% of workflow operations executed via MCP tools (vs. manual overrides).
 - Reduction in release guard violations to <5% of attempts.
 - Positive qualitative feedback on guidance clarity from pilot teams.
+- Seamless switching between SQLite, MySQL, and PostgreSQL via configuration.
 
 ## 10. Milestones
 1. **MVP**: Core workflow tools, state persistence, basic history (complete).
 2. **Enhancements**: Improved project root detection, compatibility mirrors, `run_full_workflow` automation (complete).
 3. **v1.5.0**: Netlify deployment support for static web dashboard (complete).
-4. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
+4. **v1.6.0+**: Dark/Light mode, UI Improvements (complete).
+5. **Multi-Database Support**: Refactor storage layer to support MySQL and PostgreSQL (Upcoming).
+6. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
 
 ## 11. Risks & Mitigations
 - **Risk**: Workflow feels overly prescriptive. **Mitigation**: Provide escape hatches (`force_complete_task`, `drop_task`) with audit trails.
 - **Risk**: State corruption due to concurrent access. **Mitigation**: File locking and defensive JSON parsing (existing code handles gracefully, but monitor).
 - **Risk**: Integration friction with IDE clients. **Mitigation**: Maintain detailed README instructions and example configurations.
+- **Risk**: Complicated setup for users not needing external DBs. **Mitigation**: Keep SQLite/File-system as the default zero-config option.
 
 ## 12. Open Questions
 - Should additional workflow phases (e.g., design review) be supported?
