@@ -36,6 +36,9 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 Released on **2025-12-16**.
 
 - **ci:** apply official npm trusted publishing config (9256583)
+  - Fixed recurring ENEEDAUTH errors by adhering strictly to npm's Trusted Publishing documentation.
+  - Configuration now includes `registry-url` in `setup-node` combined with `id-token: write` permission.
+  - Ensures a seamless, tokenless release process via OIDC.
 
 ## 1.7.8 – 🐛 Bug Fixes
 

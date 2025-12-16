@@ -62,7 +62,7 @@ Developers need structured guidance to maintain disciplined workflows across pro
 2. **Enhancements**: Improved project root detection, compatibility mirrors, `run_full_workflow` automation (complete).
 3. **v1.5.0**: Netlify deployment support for static web dashboard (complete).
 4. **v1.6.0+**: Dark/Light mode, UI Improvements (complete).
-5. **Multi-Database Support**: Refactor storage layer to support MySQL and PostgreSQL (Upcoming).
+5. **Multi-Database Support**: Refactor storage layer to support MySQL and PostgreSQL (complete v1.7.1).
 6. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
 
 ## 11. Risks & Mitigations
