@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.6 | 2025-12-16 | **ci:** restore registry config with token fallback for Trusted Publishing (542615c) |
 | 1.7.5 | 2025-12-16 | **ci:** switch to tokenless trusted publishing (fdfc4a9) |
 | 1.7.4 | 2025-12-16 | **ci:** add id-token permission for npm provenance (8930338) |
 | 1.7.3 | 2025-12-16 | **ci:** add web dependencies installation step (7d5dc62) |
@@ -22,6 +23,13 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.6 – 🐛 Bug Fixes
+
+Released on **2025-12-16**.
+
+- **ci:** restore registry config with token fallback for Trusted Publishing (542615c)
 
 ## 1.7.5 – 🐛 Bug Fixes
 
