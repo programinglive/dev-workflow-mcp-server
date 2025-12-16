@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.3...v) (2025-12-16)
+## [1.7.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.3...v1.7.0) (2025-12-16)
 
 
 ### 🐛 Bug Fixes
@@ -10,9 +10,21 @@ All notable changes to this project will be documented in this file. See [standa
 * handle null CustPL in birthday-customers.blade.php (ERP-19) ([71b8f7e](https://github.com/programinglive/dev-workflow-mcp-server/commit/71b8f7ebbf83266008e28446630be97ae24e1d64))
 
 
+### ♻️ Refactors
+
+* integrate database adapters into workflow state ([370cbb4](https://github.com/programinglive/dev-workflow-mcp-server/commit/370cbb416b49c758239177296978f7deba5e49e2))
+
+
+### 📝 Documentation
+
+* update PRD and add configuration guide ([1dfccf5](https://github.com/programinglive/dev-workflow-mcp-server/commit/1dfccf5e37eee2994acaf9067320cf13a64fd515))
+* update release notes for 1.6.3 ([afb9fb9](https://github.com/programinglive/dev-workflow-mcp-server/commit/afb9fb9b4c14be0a9f8ecfada3bb72ca75b7f116))
+
+
 ### 🧹 Chores
 
 * add mysql2 and pg dependencies ([94423d7](https://github.com/programinglive/dev-workflow-mcp-server/commit/94423d72aab3cb1c2ee47d9a4995e05cceda1f11))
+* **release:** null 🚀 ([93a17e2](https://github.com/programinglive/dev-workflow-mcp-server/commit/93a17e26f1995fda34d2ae40f61f39b697dc03bf))
 * **release:** null 🚀 ([033097e](https://github.com/programinglive/dev-workflow-mcp-server/commit/033097eecd04b2dd3f9299d497ebe71d32f470b9))
 * **release:** null 🚀 ([91c800a](https://github.com/programinglive/dev-workflow-mcp-server/commit/91c800a584f4b967fe60b8058684d5224543f26b))
 * **release:** null 🚀 ([f0958c4](https://github.com/programinglive/dev-workflow-mcp-server/commit/f0958c40f187c0bd4ff77cb2f628fb2338dafa6b))
@@ -34,17 +46,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### ✨ Features
 
 * implement database adapters for sqlite, mysql, postgres ([8e7416a](https://github.com/programinglive/dev-workflow-mcp-server/commit/8e7416a467286eaa26051e8e0b4af5f350295087))
-
-
-### ♻️ Refactors
-
-* integrate database adapters into workflow state ([370cbb4](https://github.com/programinglive/dev-workflow-mcp-server/commit/370cbb416b49c758239177296978f7deba5e49e2))
-
-
-### 📝 Documentation
-
-* update PRD and add configuration guide ([1dfccf5](https://github.com/programinglive/dev-workflow-mcp-server/commit/1dfccf5e37eee2994acaf9067320cf13a64fd515))
-* update release notes for 1.6.3 ([afb9fb9](https://github.com/programinglive/dev-workflow-mcp-server/commit/afb9fb9b4c14be0a9f8ecfada3bb72ca75b7f116))
+* persist active workflow state to database ([d29546d](https://github.com/programinglive/dev-workflow-mcp-server/commit/d29546dee52940170a9a855146ca870fa078cf66))
 
 ### [1.6.3](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.6.2...v1.6.3) (2025-12-06)
 
