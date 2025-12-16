@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.11](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.10...v1.7.11) (2025-12-16)
+
+
+### 📝 Documentation
+
+* fix version status in PRD ([fa7912b](https://github.com/programinglive/dev-workflow-mcp-server/commit/fa7912ba3354a88ce943fbc9a0f34f4bd1936e34))
+
+
+### ✨ Features
+
+* implement .env support and fix mysql date persistence ([096797c](https://github.com/programinglive/dev-workflow-mcp-server/commit/096797c689813f44106a027cfa36e90d3da4bfb4))
+
+
+### ✅ Tests
+
+* comprehensive DB adapter tests, env support, and warning fixes ([44814ff](https://github.com/programinglive/dev-workflow-mcp-server/commit/44814ffcc0a1efbc8e89948de22c3b196834b390))
+
 ### [1.7.10](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.9...v1.7.10) (2025-12-16)
 
 
