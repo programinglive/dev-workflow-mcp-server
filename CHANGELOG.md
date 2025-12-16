@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.8](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.7...v1.7.8) (2025-12-16)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** remove all token config for pure OIDC publishing ([d4759cc](https://github.com/programinglive/dev-workflow-mcp-server/commit/d4759ccf492396c22fa5aa0fdfbd624c571f7f42))
+
 ### [1.7.7](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.6...v1.7.7) (2025-12-16)
 
 
