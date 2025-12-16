@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.1 | 2025-12-16 | build errors and warnings (dc24831) |
 | 1.7.0 | 2025-12-16 | See CHANGELOG for details. |
 | 1.6.3 | 2025-12-06 | update release notes for 1.6.2 (f0c2d49) |
 | 1.6.2 | 2025-12-06 | update release notest for 1.6.1 (72a9284) |
@@ -12,6 +13,38 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.1 – 🐛 Bug Fixes
+
+Released on **2025-12-16**.
+
+- build errors and warnings (dc24831)
+- suppress remaining build warnings (f7d9b2d)
+- handle null CustPL in birthday-customers.blade.php (ERP-19) (71b8f7e)
+- integrate database adapters into workflow state (370cbb4)
+- update PRD and add configuration guide (1dfccf5)
+- update release notes for 1.6.3 (afb9fb9)
+- add mysql2 and pg dependencies (94423d7)
+- **release:** null 🚀 (93a17e2)
+- **release:** null 🚀 (033097e)
+- **release:** null 🚀 (91c800a)
+- **release:** null 🚀 (f0958c4)
+- **release:** null 🚀 (ac3cc6e)
+- **release:** null 🚀 (f3f9a00)
+- **release:** null 🚀 (bcf7d95)
+- **release:** null 🚀 (74df6d6)
+- **release:** null 🚀 (0d9dc4d)
+- **release:** null 🚀 (9667012)
+- **release:** null 🚀 (db25d0c)
+- **release:** null 🚀 (50d5353)
+- **release:** null 🚀 (ee0a540)
+- **release:** null 🚀 (92558af)
+- **release:** null 🚀 (cd851ac)
+- **release:** null 🚀 (49ec562)
+- **release:** null 🚀 (bcc7a3c)
+- implement database adapters for sqlite, mysql, postgres (8e7416a)
+- persist active workflow state to database (d29546d)
 
 ## 1.7.0
 
