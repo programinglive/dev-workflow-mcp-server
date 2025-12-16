@@ -57,6 +57,16 @@ export class PostgresAdapter extends DbAdapter {
           PRIMARY KEY (user_id, project_path)
         )
       `);
+
+            await client.query(`
+        CREATE TABLE IF NOT EXISTS workflow_state (
+          user_id TEXT,
+          project_path TEXT DEFAULT '',
+          state_json JSONB,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (user_id, project_path)
+        )
+      `);
         } finally {
             client.release();
         }
@@ -242,5 +252,40 @@ export class PostgresAdapter extends DbAdapter {
     `, params);
 
         return res.rows;
+    }
+
+    async saveState(userId, projectPath, state) {
+        await this.connect();
+        const normalizedProjectPath = projectPath || '';
+
+        const query = `
+      INSERT INTO workflow_state
+      (user_id, project_path, state_json, updated_at)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (user_id, project_path) DO UPDATE SET
+        state_json=EXCLUDED.state_json,
+        updated_at=EXCLUDED.updated_at
+    `;
+
+        await this.pool.query(query, [
+            userId,
+            normalizedProjectPath,
+            JSON.stringify(state),
+            new Date().toISOString()
+        ]);
+    }
+
+    async getState(userId, projectPath) {
+        await this.connect();
+        const normalizedProjectPath = projectPath || '';
+
+        const res = await this.pool.query(`
+      SELECT state_json FROM workflow_state WHERE user_id = $1 AND project_path = $2
+    `, [userId, normalizedProjectPath]);
+
+        const row = res.rows[0];
+        if (!row) return null;
+
+        return row.state_json; // pg automatically parses JSONB
     }
 }

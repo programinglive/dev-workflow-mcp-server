@@ -35,4 +35,12 @@ export class DbAdapter {
     async getHistorySummary(userId, projectPath, options = {}) {
         throw new Error("getHistorySummary() must be implemented by subclass");
     }
+
+    async saveState(userId, projectPath, state) {
+        throw new Error("saveState() must be implemented by subclass");
+    }
+
+    async getState(userId, projectPath) {
+        throw new Error("getState() must be implemented by subclass");
+    }
 }

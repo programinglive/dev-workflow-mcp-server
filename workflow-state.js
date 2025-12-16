@@ -533,7 +533,7 @@ export class WorkflowState {
 
   async syncToDatabase() {
     try {
-      const { insertHistoryEntry, updateSummaryForUser } = await import("./db/index.js");
+      const { insertHistoryEntry, updateSummaryForUser, saveState } = await import("./db/index.js");
       const userId = getCurrentUserId();
       // Use the project directory (parent of .state) as the project identifier
       // this.stateFile is .../.state/users/<user>/workflow-state.json
@@ -564,6 +564,7 @@ export class WorkflowState {
         await insertHistoryEntry(userId, projectRoot, entry);
       }
       await updateSummaryForUser(userId, projectRoot);
+      await saveState(userId, projectRoot, this.state);
     } catch (error) {
       // Database sync failed; log it but don't crash
       console.error("Database sync failed:", error.message);

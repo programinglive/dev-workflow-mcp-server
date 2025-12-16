@@ -72,6 +72,15 @@ export class SqliteAdapter extends DbAdapter {
         PRIMARY KEY (user_id, project_path)
       )
     `;
+        const createState = `
+      CREATE TABLE IF NOT EXISTS workflow_state (
+        user_id TEXT,
+        project_path TEXT DEFAULT '',
+        state_json TEXT NOT NULL,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (user_id, project_path)
+      )
+    `;
 
         this.db.exec(createHistory);
 
@@ -107,6 +116,7 @@ export class SqliteAdapter extends DbAdapter {
         }
 
         this.db.exec(createSummary); // Will create if we dropped it or if it didn't exist
+        this.db.exec(createState);
 
         // 4. Create Indexes (Safe now that columns exist)
         const idxHistory = `CREATE INDEX IF NOT EXISTS idx_workflow_history_user_project ON workflow_history(user_id, project_path)`;
@@ -292,5 +302,42 @@ export class SqliteAdapter extends DbAdapter {
         return stmt
             .all(userId, normalizedProjectPath, ...params)
             .map((row) => ({ period: row.period, count: row.count }));
+    }
+
+    async saveState(userId, projectPath, state) {
+        await this.connect();
+        const normalizedProjectPath = projectPath || '';
+
+        const stmt = this.db.prepare(`
+      INSERT INTO workflow_state (user_id, project_path, state_json, updated_at)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(user_id, project_path) DO UPDATE SET
+        state_json=excluded.state_json,
+        updated_at=excluded.updated_at
+    `);
+
+        stmt.run(
+            userId,
+            normalizedProjectPath,
+            JSON.stringify(state),
+            new Date().toISOString()
+        );
+    }
+
+    async getState(userId, projectPath) {
+        await this.connect();
+        const normalizedProjectPath = projectPath || '';
+
+        const stmt = this.db.prepare(`
+      SELECT state_json FROM workflow_state WHERE user_id = ? AND project_path = ?
+    `);
+        const row = stmt.get(userId, normalizedProjectPath);
+
+        if (!row) return null;
+        try {
+            return JSON.parse(row.state_json);
+        } catch {
+            return null;
+        }
     }
 }

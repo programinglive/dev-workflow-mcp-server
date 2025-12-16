@@ -59,6 +59,16 @@ export class MysqlAdapter extends DbAdapter {
         )
       `);
 
+            await conn.query(`
+        CREATE TABLE IF NOT EXISTS workflow_state (
+          user_id VARCHAR(255),
+          project_path VARCHAR(255) DEFAULT '',
+          state_json JSON,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (user_id, project_path)
+        )
+      `);
+
             // Indexes are effectively covered by PRIMARY/UNIQUE keys, but we can add secondary if needed.
         } finally {
             conn.release();
@@ -242,4 +252,41 @@ export class MysqlAdapter extends DbAdapter {
 
         return rows;
     }
+
+    async saveState(userId, projectPath, state) {
+        await this.connect();
+        const normalizedProjectPath = projectPath || '';
+
+        const query = `
+      INSERT INTO workflow_state
+      (user_id, project_path, state_json, updated_at)
+      VALUES (?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        state_json=VALUES(state_json),
+        updated_at=VALUES(updated_at)
+    `;
+
+        await this.pool.execute(query, [
+            userId,
+            normalizedProjectPath,
+            JSON.stringify(state),
+            new Date().toISOString()
+        ]);
+    }
+
+    async getState(userId, projectPath) {
+        await this.connect();
+        const normalizedProjectPath = projectPath || '';
+
+        const [rows] = await this.pool.execute(`
+      SELECT state_json FROM workflow_state WHERE user_id = ? AND project_path = ?
+    `, [userId, normalizedProjectPath]);
+
+        const row = rows[0];
+        if (!row) return null;
+
+        // mysql2 usually parses JSON columns, but if not:
+        return typeof row.state_json === 'string' ? JSON.parse(row.state_json) : row.state_json;
+    }
 }
+
