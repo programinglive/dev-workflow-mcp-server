@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.9](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.8...v1.7.9) (2025-12-16)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** apply official npm trusted publishing config ([9256583](https://github.com/programinglive/dev-workflow-mcp-server/commit/925658336c093c4e2fcfca30dfe469262d67c02d))
+
 ### [1.7.8](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.7...v1.7.8) (2025-12-16)
 
 
