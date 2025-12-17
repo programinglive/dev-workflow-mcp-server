@@ -38,6 +38,9 @@ export default function HistoryPage() {
             .then(res => {
                 if (res.ok) {
                     setIsAuthenticated(true);
+                    // Sync auth state with Navbar
+                    localStorage.setItem('isLoggedIn', 'true');
+                    window.dispatchEvent(new Event('authUpdate'));
                     return fetch('/api/workflow/history');
                 } else {
                     router.push('/login');

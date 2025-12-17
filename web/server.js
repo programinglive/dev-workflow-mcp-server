@@ -1,10 +1,12 @@
-const { createServer } = require('http');
-const { parse } = require('url');
-const next = require('next');
-const express = require('express');
-const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session);
-const pg = require('pg');
+import { createServer } from 'http';
+import { parse } from 'url';
+import next from 'next';
+import express from 'express';
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
+import pg from 'pg';
+
+const pgSession = connectPgSimple(session);
 const { Pool } = pg;
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -126,11 +128,34 @@ app.prepare().then(() => {
         }
 
         try {
-            const result = await pool.query(
-                `SELECT * FROM workflow_history 
-         ORDER BY completed_at DESC 
-         LIMIT 100`
-            );
+            // Get user details to filter history
+            // We assume workflow_history.user_id stores the username (based on schema)
+            const user = req.session.username; // This should be populated during login
+
+            let query = `
+                SELECT 
+                    id, 
+                    task_type, 
+                    task_description as description, 
+                    commit_message, 
+                    timestamp as completed_at, 
+                    tests_passed, 
+                    documentation_type 
+                FROM workflow_history 
+            `;
+
+            const params = [];
+
+            // If we have a username, filter by it. 
+            // Note: DB schema has user_id just as text, assuming it matches username
+            if (user) {
+                query += ` WHERE user_id = $1 `;
+                params.push(user);
+            }
+
+            query += ` ORDER BY timestamp DESC LIMIT 100`;
+
+            const result = await pool.query(query, params);
 
             res.json({ history: result.rows });
         } catch (error) {
