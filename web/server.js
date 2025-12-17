@@ -115,6 +115,30 @@ app.prepare().then(() => {
         }
     });
 
+    // Get workflow history
+    server.get('/api/workflow/history', async (req, res) => {
+        if (!req.session || !req.session.userId) {
+            return res.status(401).json({ error: 'Not authenticated' });
+        }
+
+        if (!pool) {
+            return res.status(500).json({ error: 'Database not configured' });
+        }
+
+        try {
+            const result = await pool.query(
+                `SELECT * FROM workflow_history 
+         ORDER BY completed_at DESC 
+         LIMIT 100`
+            );
+
+            res.json({ history: result.rows });
+        } catch (error) {
+            console.error('Get history error:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     // Next.js handler for all other routes
     server.all('*', (req, res) => {
         return handle(req, res);

@@ -3,8 +3,13 @@
 import { useState, useEffect } from "react";
 
 type HistoryItem = {
-    task_description: string;
-    created_at: string;
+    id: number;
+    task_type: string;
+    description: string;
+    commit_message: string;
+    completed_at: string;
+    tests_passed: boolean;
+    documentation_type: string;
 };
 
 type SummaryData = {
@@ -25,15 +30,39 @@ export default function History() {
     });
 
     const loadData = async () => {
-        // Placeholder for future API integration
-        // For now, show empty state
-        setHistory([]);
-        setTotalPages(1);
-        setSummary({
-            summary: {
-                totalTasks: 0,
-            },
-        });
+        try {
+            // Fetch workflow history from API
+            const response = await fetch('/api/workflow/history');
+
+            if (response.ok) {
+                const data = await response.json();
+                setHistory(data.history || []);
+                setTotalPages(Math.ceil((data.history?.length || 0) / 10));
+                setSummary({
+                    summary: {
+                        totalTasks: data.history?.length || 0,
+                    },
+                });
+            } else {
+                // Not authenticated or error - show empty state
+                setHistory([]);
+                setTotalPages(1);
+                setSummary({
+                    summary: {
+                        totalTasks: 0,
+                    },
+                });
+            }
+        } catch (error) {
+            // Silently handle errors - show empty state
+            setHistory([]);
+            setTotalPages(1);
+            setSummary({
+                summary: {
+                    totalTasks: 0,
+                },
+            });
+        }
     };
 
     useEffect(() => {
@@ -92,10 +121,24 @@ export default function History() {
                         <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Recent History</h3>
                         <div className="space-y-3">
                             {history.length > 0 ? (
-                                history.map((row, i) => (
-                                    <div key={i} className="p-4 rounded-lg bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10">
-                                        <div className="font-semibold text-gray-900 dark:text-white">{row.task_description}</div>
-                                        <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">{new Date(row.created_at).toLocaleString()}</div>
+                                history.map((row) => (
+                                    <div key={row.id} className="p-4 rounded-lg bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className={`px-2 py-1 rounded text-xs font-medium ${row.task_type === 'feature' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' :
+                                                row.task_type === 'bugfix' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                                                    'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                                                }`}>
+                                                {row.task_type}
+                                            </span>
+                                            <span className={`px-2 py-1 rounded text-xs font-medium ${row.tests_passed ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
+                                                'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
+                                                }`}>
+                                                {row.tests_passed ? '✓ Tests' : '⚠ Skipped'}
+                                            </span>
+                                        </div>
+                                        <div className="font-semibold text-gray-900 dark:text-white">{row.description}</div>
+                                        <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">{row.commit_message}</div>
+                                        <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">{new Date(row.completed_at).toLocaleString()}</div>
                                     </div>
                                 ))
                             ) : (

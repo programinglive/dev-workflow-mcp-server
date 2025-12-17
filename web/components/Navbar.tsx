@@ -28,7 +28,7 @@ export default function Navbar() {
                 }
             })
             .catch(() => {
-                setIsAuthenticated(false);
+                // Silently handle - user not authenticated
             });
     }, []);
 
