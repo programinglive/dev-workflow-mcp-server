@@ -1,0 +1,60 @@
+# Node modules - will be installed in container
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Development files
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Test files
+tests
+*.test.js
+coverage
+
+# Documentation
+docs
+*.md
+!README.md
+
+# CI/CD
+.github
+.husky
+
+# Build artifacts
+dist
+build
+.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Web frontend (if not needed in container)
+web/node_modules
+web/dist
+web/.next
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+.dockerignore

@@ -62,6 +62,26 @@ Plesk supports Node.js applications through its Node.js extension. To deploy the
 
 > **Important:** MCP clients (Windsurf, Claude Desktop, etc.) must launch the server process locally via stdio. Hosting the dashboard on a public domain does **not** expose the MCP interface. Without SSH or another way to execute `node index.js` on the server, users cannot connect their MCP clients to the hosted instance.
 
+### Option 4: Deploy with Docker on Google Cloud
+
+Deploy the MCP server to Google Cloud Compute Engine using Docker and PostgreSQL for a production-ready, cloud-hosted setup.
+
+**Quick Start:**
+1. SSH into your GCP instance
+2. Run the setup script: `bash scripts/setup-gcp-instance.sh`
+3. Clone the repository and configure `.env`
+4. Start containers: `docker-compose up -d`
+5. Update your local MCP client config to connect via SSH
+
+**Benefits:**
+- ✅ PostgreSQL database for robust data persistence
+- ✅ Containerized deployment for consistency
+- ✅ Remote access via SSH tunneling
+- ✅ Easy updates and rollbacks
+
+See the [GCP Deployment Guide](./docs/GCP_DEPLOYMENT.md) for complete step-by-step instructions.
+
+
 #### Two Usage Modes
 
 - **Local (source)**: Point your MCP client to `index.js`. This runs directly from source and requires no build step. Recommended for MCP usage.
