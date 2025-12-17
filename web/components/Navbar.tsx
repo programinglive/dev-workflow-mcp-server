@@ -27,6 +27,15 @@ export default function Navbar() {
         document.documentElement.classList.toggle("dark", newTheme === "dark");
     };
 
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0a0a0f]/80 backdrop-blur-lg border-b border-gray-200 dark:border-white/10 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
@@ -50,6 +59,12 @@ export default function Navbar() {
                             ) : (
                                 <Moon className="w-4 h-4" />
                             )}
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            className="px-3 py-1.5 lg:px-4 lg:py-2 bg-red-600 hover:bg-red-700 rounded-lg transition text-xs lg:text-sm text-white"
+                        >
+                            Logout
                         </button>
                         <a
                             href="https://github.com/programinglive/dev-workflow-mcp-server"
