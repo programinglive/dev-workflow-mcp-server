@@ -9,6 +9,8 @@ services:
       POSTGRES_USER: devworkflow
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devworkflow_secure_password_change_me}
       POSTGRES_DB: devworkflow
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
