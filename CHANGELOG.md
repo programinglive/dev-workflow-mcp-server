@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.12](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.11...v1.7.12) (2025-12-17)
+
+
+### 📝 Documentation
+
+* post-release cleanup v1.7.11 ([c2ee733](https://github.com/programinglive/dev-workflow-mcp-server/commit/c2ee733bb9ec21e6ad39e564aa1fc315ca79cff6))
+
+
+### ✨ Features
+
+* add authentication system with login page and protected routes ([2acb20e](https://github.com/programinglive/dev-workflow-mcp-server/commit/2acb20efb25cddb3d2b6ee80427310c3315582dc))
+* add Docker deployment support with PostgreSQL for GCP ([3adb4cb](https://github.com/programinglive/dev-workflow-mcp-server/commit/3adb4cb9ace571faf7f2138634481362c24f2730))
+* expose PostgreSQL port for remote access ([b1d4066](https://github.com/programinglive/dev-workflow-mcp-server/commit/b1d40665a1c01960184508d53c0bec0b5c051e4b))
+* revamp history page UI and remove history from landing ([a9d0e4e](https://github.com/programinglive/dev-workflow-mcp-server/commit/a9d0e4e70b8aa5ed3457f661cb3dbdca2d8d2a30))
+* simplify docker-compose to only PostgreSQL, improve logout button UI ([4530862](https://github.com/programinglive/dev-workflow-mcp-server/commit/4530862b33178d6391ee294f74ef222843f5d5a4))
+
+
+### 🐛 Bug Fixes
+
+* suppress 401 auth errors in console ([b63e63b](https://github.com/programinglive/dev-workflow-mcp-server/commit/b63e63b60a4ba8236db1848a77d2f39f49e644b3))
+* **web:** resolve 500 error on history API and auth sync ([88bbff0](https://github.com/programinglive/dev-workflow-mcp-server/commit/88bbff043f99e06a7b8ed9b9789d87d22e1f9035))
+
+
+### 🧹 Chores
+
+* configure commitlint and husky via commiter setup ([4de6c84](https://github.com/programinglive/dev-workflow-mcp-server/commit/4de6c8400b6869503bee8407bb23266779133144))
+* update website to v1.7.11 and fix dependencies ([da80b1c](https://github.com/programinglive/dev-workflow-mcp-server/commit/da80b1c9d5bdf10e1387d4b2d1e98b8d2fee5e92))
+
 ### [1.7.11](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.10...v1.7.11) (2025-12-16)
 
 
