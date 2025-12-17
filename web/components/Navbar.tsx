@@ -13,23 +13,13 @@ export default function Navbar() {
     useEffect(() => {
         // Get theme from localStorage or system preference
         const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-        if (savedTheme) {
-            setTheme(savedTheme);
-        } else {
-            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            setTheme(prefersDark ? "dark" : "light");
-        }
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-        // Check authentication status
-        fetch('/api/auth/me')
-            .then(res => {
-                if (res.ok) {
-                    setIsAuthenticated(true);
-                }
-            })
-            .catch(() => {
-                // Silently handle - user not authenticated
-            });
+        const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+        setTheme(initialTheme);
+
+        // Apply the class immediately
+        document.documentElement.classList.toggle("dark", initialTheme === "dark");
     }, []);
 
     const toggleTheme = () => {

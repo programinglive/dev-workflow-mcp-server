@@ -66,7 +66,11 @@ export default function History() {
     };
 
     useEffect(() => {
-        loadData();
+        // Only load if we're likely authenticated (reduces 401 errors)
+        // History component should only be on authenticated pages anyway
+        if (typeof window !== 'undefined' && window.location.pathname === '/history') {
+            loadData();
+        }
     }, [page]); // Reload when page changes
 
     const handleApplyFilters = () => {

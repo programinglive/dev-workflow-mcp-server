@@ -1,6 +1,5 @@
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
-import History from "@/components/History";
 import ApiReference from "@/components/ApiReference";
 
 export default function Home() {
@@ -8,7 +7,6 @@ export default function Home() {
     <main>
       <Hero />
       <Features />
-      <History />
       <ApiReference />
     </main>
   );
