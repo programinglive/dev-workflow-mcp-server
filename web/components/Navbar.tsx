@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Github, Menu, X, Moon, Sun } from "lucide-react";
+import { Github, Menu, X, Moon, Sun, LogOut } from "lucide-react";
 import Image from "next/image";
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [theme, setTheme] = useState<"light" | "dark">("dark");
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
         // Get theme from localStorage or system preference
@@ -18,6 +19,17 @@ export default function Navbar() {
             const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
             setTheme(prefersDark ? "dark" : "light");
         }
+
+        // Check authentication status
+        fetch('/api/auth/me')
+            .then(res => {
+                if (res.ok) {
+                    setIsAuthenticated(true);
+                }
+            })
+            .catch(() => {
+                setIsAuthenticated(false);
+            });
     }, []);
 
     const toggleTheme = () => {
@@ -46,7 +58,7 @@ export default function Navbar() {
                     </Link>
                     <div className="hidden md:flex items-center gap-3 lg:gap-6">
                         <Link href="/#features" className="text-xs lg:text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition">Features</Link>
-                        <Link href="/#history" className="text-xs lg:text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition">History</Link>
+                        <Link href="/history" className="text-xs lg:text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition">History</Link>
                         <Link href="/#api" className="text-xs lg:text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition">API</Link>
                         <Link href="/docs" className="text-xs lg:text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition">Docs</Link>
                         <button
@@ -60,12 +72,6 @@ export default function Navbar() {
                                 <Moon className="w-4 h-4" />
                             )}
                         </button>
-                        <button
-                            onClick={handleLogout}
-                            className="px-3 py-1.5 lg:px-4 lg:py-2 bg-red-600 hover:bg-red-700 rounded-lg transition text-xs lg:text-sm text-white"
-                        >
-                            Logout
-                        </button>
                         <a
                             href="https://github.com/programinglive/dev-workflow-mcp-server"
                             target="_blank"
@@ -75,6 +81,15 @@ export default function Navbar() {
                             <Github className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
                             GitHub
                         </a>
+                        {isAuthenticated && (
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-1.5 px-3 py-1.5 lg:px-4 lg:py-2 bg-red-100 dark:bg-red-900/50 hover:bg-red-200 dark:hover:bg-red-800/50 rounded-lg transition text-xs lg:text-sm text-red-700 dark:text-red-300"
+                            >
+                                <LogOut className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
+                                Logout
+                            </button>
+                        )}
                     </div>
                     <div className="md:hidden flex items-center gap-2">
                         <button
@@ -102,7 +117,7 @@ export default function Navbar() {
                 <div className="md:hidden border-t border-gray-200 dark:border-white/10 bg-white dark:bg-[#0a0a0f] transition-colors duration-300">
                     <div className="px-4 py-4 space-y-3">
                         <Link href="/#features" className="block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition" onClick={() => setIsOpen(false)}>Features</Link>
-                        <Link href="/#history" className="block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition" onClick={() => setIsOpen(false)}>History</Link>
+                        <Link href="/history" className="block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition" onClick={() => setIsOpen(false)}>History</Link>
                         <Link href="/#api" className="block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition" onClick={() => setIsOpen(false)}>API</Link>
                         <Link href="/docs" className="block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition" onClick={() => setIsOpen(false)}>Docs</Link>
                         <a

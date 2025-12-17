@@ -18,38 +18,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - mcp-network
-
-  mcp-server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: dev-workflow-mcp
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      DEV_WORKFLOW_DB_TYPE: postgres
-      DEV_WORKFLOW_DB_URL: postgres://devworkflow:${POSTGRES_PASSWORD:-devworkflow_secure_password_change_me}@postgres:5432/devworkflow
-      DEV_WORKFLOW_USER_ID: ${DEV_WORKFLOW_USER_ID:-default}
-      NODE_ENV: production
-    volumes:
-      # Mount data directory for any file-based state (optional)
-      - mcp_data:/app/data
-    networks:
-      - mcp-network
-    # MCP server uses stdio, so we use stdin_open and tty
-    stdin_open: true
-    tty: true
 
 volumes:
   postgres_data:
     driver: local
-  mcp_data:
-    driver: local
-
-networks:
-  mcp-network:
-    driver: bridge
