@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.13 | 2025-12-18 | remote db connection, history api 500 errors, and windows startup (ce559a6) |
 | 1.7.12 | 2025-12-17 | post-release cleanup v1.7.11 (c2ee733) |
 | 1.7.11 | 2025-12-17 | test: comprehensive DB adapter tests, env support, and warning fixes (64b029a) |
 | 1.7.10 | 2025-12-16 | update release notes and finalize ci config (92ac78a) |
@@ -36,6 +37,13 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.13 – 🐛 Bug Fixes
+
+Released on **2025-12-18**.
+
+- remote db connection, history api 500 errors, and windows startup (ce559a6)
 
 ## 1.7.12 – 📝 Documentation
 
