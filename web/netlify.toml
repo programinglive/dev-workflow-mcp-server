@@ -1,3 +1,5 @@
 [build]
   command = "npm run build"
-  # publish = "out" (Removed for dynamic Next.js build)
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
