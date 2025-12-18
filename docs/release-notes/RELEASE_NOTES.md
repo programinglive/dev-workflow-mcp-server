@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.12 | 2025-12-17 | post-release cleanup v1.7.11 (c2ee733) |
 | 1.7.11 | 2025-12-17 | test: comprehensive DB adapter tests, env support, and warning fixes (64b029a) |
 | 1.7.10 | 2025-12-16 | update release notes and finalize ci config (92ac78a) |
 | 1.7.9 | 2025-12-16 | **ci:** apply official npm trusted publishing config (9256583) |
@@ -34,6 +35,22 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.12 – 📝 Documentation
+
+Released on **2025-12-17**.
+
+- post-release cleanup v1.7.11 (c2ee733)
+- add authentication system with login page and protected routes (2acb20e)
+- add Docker deployment support with PostgreSQL for GCP (3adb4cb)
+- expose PostgreSQL port for remote access (b1d4066)
+- revamp history page UI and remove history from landing (a9d0e4e)
+- simplify docker-compose to only PostgreSQL, improve logout button UI (4530862)
+- suppress 401 auth errors in console (b63e63b)
+- **web:** resolve 500 error on history API and auth sync (88bbff0)
+- configure commitlint and husky via commiter setup (4de6c84)
+- update website to v1.7.11 and fix dependencies (da80b1c)
 
 ## 1.7.11 – 📝 Documentation
 

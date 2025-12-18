@@ -41,7 +41,7 @@ export default function HistoryPage() {
                     // Sync auth state with Navbar
                     localStorage.setItem('isLoggedIn', 'true');
                     window.dispatchEvent(new Event('authUpdate'));
-                    return fetch('/api/workflow/history');
+                    return fetch('/api/history-fallback');
                 } else {
                     router.push('/login');
                     throw new Error('Not authenticated');

@@ -5,6 +5,15 @@ import express from 'express';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
 import pg from 'pg';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load env from root
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const pgSession = connectPgSimple(session);
 const { Pool } = pg;
@@ -130,7 +139,8 @@ app.prepare().then(() => {
         try {
             // Get user details to filter history
             // We assume workflow_history.user_id stores the username (based on schema)
-            const user = req.session.username; // This should be populated during login
+            // We use userId (integer) to query the foreign key column
+            const userId = req.session.userId;
 
             let query = `
                 SELECT 
@@ -146,11 +156,9 @@ app.prepare().then(() => {
 
             const params = [];
 
-            // If we have a username, filter by it. 
-            // Note: DB schema has user_id just as text, assuming it matches username
-            if (user) {
+            if (userId) {
                 query += ` WHERE user_id = $1 `;
-                params.push(user);
+                params.push(userId);
             }
 
             query += ` ORDER BY timestamp DESC LIMIT 100`;
