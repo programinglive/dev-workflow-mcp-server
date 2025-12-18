@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.13](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.12...v1.7.13) (2025-12-18)
+
+
+### 🐛 Bug Fixes
+
+* remote db connection, history api 500 errors, and windows startup ([ce559a6](https://github.com/programinglive/dev-workflow-mcp-server/commit/ce559a6d87f28644b3b0d5a3bad17c51bff373b7))
+
 ### [1.7.12](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.11...v1.7.12) (2025-12-17)
 
 
