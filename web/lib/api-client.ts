@@ -34,18 +34,21 @@ export const apiClient = {
     },
 
     async getCurrentUser() {
-        const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-            credentials: 'include',
-        });
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // If using token, otherwise just rely on cookie
+                }
+            });
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                return null; // Not authenticated
+            if (!response.ok) {
+                return null;
             }
-            throw new Error('Failed to get current user');
-        }
 
-        return response.json();
+            return response.json();
+        } catch (error) {
+            return null;
+        }
     },
 
     async getHistory() {
