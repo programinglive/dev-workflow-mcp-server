@@ -269,6 +269,19 @@ export DEV_WORKFLOW_DB_TYPE=postgres
 export DEV_WORKFLOW_DB_URL="postgresql://user:password@localhost:5432/dev_workflow"
 ```
 
+#### 🛠️ Database Schema Normalization (Postgres/MySQL)
+To ensure compatibility with existing reporting dashboards, the `PostgresAdapter` and `MysqlAdapter` automatically normalize column names:
+- `task_description` → DB column: `description`
+- `timestamp` → DB column: `completed_at`
+
+The adapters use aliases in queries so the MCP tools still receive the expected `task_description` and `timestamp` fields.
+
+#### 👤 User ID Handling (Postgres/MySQL)
+These databases use an `INTEGER` column for `user_id`.
+- **Numeric strings** (e.g., `"1"`) are parsed directly into integers.
+- **Non-numeric strings** (e.g., `"programinglive"`) are automatically hashed into a consistent, positive integer to ensure compatibility with the schema while maintaining unique user isolation.
+
+
 ### User & State Management
 
 | Variable | Description |

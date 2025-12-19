@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.15 | 2025-12-19 | optimize startup performance and add database connection resilience (bff2714) |
 | 1.7.14 | 2025-12-19 | add API dependencies and update login to use API client (94bb42f) |
 | 1.7.13 | 2025-12-18 | remote db connection, history api 500 errors, and windows startup (ce559a6) |
 | 1.7.12 | 2025-12-17 | post-release cleanup v1.7.11 (c2ee733) |
@@ -40,6 +41,17 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.15 – 🐛 Bug Fixes
+
+Released on **2025-12-19**.
+
+- optimize startup performance and add database connection resilience (bff2714)
+- refactor Navbar and History to use absolute API client URLs v1.7.18 (dc33eae)
+- sync all version labels to 1.7.14 and improve netlify routing (78712eb)
+- sync all version strings to 1.7.14 (e2a1795)
+- sync version to 1.7.14 and fix static routing via trailingSlash (1c152bd)
 
 ## 1.7.14 – ✨ Features
 

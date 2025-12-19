@@ -15,6 +15,19 @@ export class PostgresAdapter extends DbAdapter {
         this.pool = null;
     }
 
+    getNumericUserId(userId) {
+        let numericUserId = parseInt(userId, 10);
+        if (isNaN(numericUserId)) {
+            let hash = 0;
+            for (let i = 0; i < userId.length; i++) {
+                hash = (hash << 5) - hash + userId.charCodeAt(i);
+                hash |= 0;
+            }
+            numericUserId = Math.abs(hash);
+        }
+        return numericUserId;
+    }
+
     async connect() {
         if (!this.pool) {
             this.pool = new Pool({
@@ -32,23 +45,55 @@ export class PostgresAdapter extends DbAdapter {
             await client.query(`
         CREATE TABLE IF NOT EXISTS workflow_history (
           id SERIAL PRIMARY KEY,
-          user_id TEXT NOT NULL,
+          user_id INTEGER NOT NULL,
           project_path TEXT DEFAULT '',
-          task_description TEXT NOT NULL,
+          description TEXT NOT NULL,
           task_type TEXT NOT NULL,
           commit_message TEXT,
-          timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           forced BOOLEAN DEFAULT FALSE,
           force_reason TEXT,
           dropped BOOLEAN DEFAULT FALSE,
           drop_reason TEXT,
-          UNIQUE (user_id, project_path, timestamp, task_description)
+          UNIQUE (user_id, project_path, completed_at, description)
         )
       `);
 
+            // Migration: Add columns to existing table if they don't exist
+            const columns = await client.query(`
+                SELECT column_name FROM information_schema.columns WHERE table_name = 'workflow_history'
+            `);
+            const existingColumns = columns.rows.map(r => r.column_name);
+
+            if (!existingColumns.includes('project_path')) {
+                await client.query('ALTER TABLE workflow_history ADD COLUMN project_path TEXT DEFAULT \'\'');
+            }
+            if (!existingColumns.includes('forced')) {
+                await client.query('ALTER TABLE workflow_history ADD COLUMN forced BOOLEAN DEFAULT FALSE');
+            }
+            if (!existingColumns.includes('force_reason')) {
+                await client.query('ALTER TABLE workflow_history ADD COLUMN force_reason TEXT');
+            }
+            if (!existingColumns.includes('dropped')) {
+                await client.query('ALTER TABLE workflow_history ADD COLUMN dropped BOOLEAN DEFAULT FALSE');
+            }
+            if (!existingColumns.includes('drop_reason')) {
+                await client.query('ALTER TABLE workflow_history ADD COLUMN drop_reason TEXT');
+            }
+            // Ensure completed_at vs timestamp handled if table exists
+            if (!existingColumns.includes('completed_at') && existingColumns.includes('timestamp')) {
+                await client.query('ALTER TABLE workflow_history RENAME COLUMN timestamp TO completed_at');
+            } else if (existingColumns.includes('completed_at') && !existingColumns.includes('timestamp')) {
+                // Keep completed_at
+            }
+            // Logic for description vs task_description
+            if (!existingColumns.includes('description') && existingColumns.includes('task_description')) {
+                await client.query('ALTER TABLE workflow_history RENAME COLUMN task_description TO description');
+            }
+
             await client.query(`
         CREATE TABLE IF NOT EXISTS project_summary (
-          user_id TEXT,
+          user_id INTEGER,
           project_path TEXT DEFAULT '',
           total_tasks INTEGER DEFAULT 0,
           task_types JSONB,
@@ -61,7 +106,7 @@ export class PostgresAdapter extends DbAdapter {
 
             await client.query(`
         CREATE TABLE IF NOT EXISTS workflow_state (
-          user_id TEXT,
+          user_id INTEGER,
           project_path TEXT DEFAULT '',
           state_json JSONB,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -76,12 +121,13 @@ export class PostgresAdapter extends DbAdapter {
     async insertHistoryEntry(userId, projectPath, entry) {
         await this.connect();
         const normalizedProjectPath = projectPath || '';
+        const numericUserId = this.getNumericUserId(userId);
 
         const query = `
       INSERT INTO workflow_history
-      (user_id, project_path, task_description, task_type, commit_message, timestamp, forced, force_reason, dropped, drop_reason)
+      (user_id, project_path, description, task_type, commit_message, completed_at, forced, force_reason, dropped, drop_reason)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      ON CONFLICT (user_id, project_path, timestamp, task_description) DO UPDATE SET
+      ON CONFLICT (user_id, project_path, completed_at, description) DO UPDATE SET
         commit_message=EXCLUDED.commit_message,
         forced=EXCLUDED.forced,
         force_reason=EXCLUDED.force_reason,
@@ -90,12 +136,12 @@ export class PostgresAdapter extends DbAdapter {
     `;
 
         await this.pool.query(query, [
-            userId,
+            numericUserId,
             normalizedProjectPath,
-            entry.taskDescription,
+            entry.taskDescription || entry.description,
             entry.taskType,
             entry.commitMessage,
-            entry.timestamp || new Date().toISOString(),
+            entry.timestamp || entry.completed_at || new Date().toISOString(),
             entry.forced || false,
             entry.forceReason || null,
             entry.dropped || false,
@@ -108,14 +154,16 @@ export class PostgresAdapter extends DbAdapter {
     async updateSummaryForUser(userId, projectPath) {
         await this.connect();
         const normalizedProjectPath = projectPath || '';
+        const numericUserId = this.getNumericUserId(userId);
 
         const res = await this.pool.query(`
-      SELECT task_type, timestamp, task_description
+      SELECT task_type, completed_at as timestamp, description as task_description
       FROM workflow_history
       WHERE user_id = $1 AND project_path = $2
-      ORDER BY timestamp DESC
+      ORDER BY completed_at DESC
       LIMIT 20
-    `, [userId, normalizedProjectPath]);
+    `, [numericUserId, normalizedProjectPath]);
+        // ... (lines continue similarly)
 
         const rows = res.rows;
 
@@ -145,7 +193,7 @@ export class PostgresAdapter extends DbAdapter {
     `;
 
         await this.pool.query(upsert, [
-            userId,
+            numericUserId,
             normalizedProjectPath,
             rows.length,
             JSON.stringify(taskTypes),
@@ -158,10 +206,11 @@ export class PostgresAdapter extends DbAdapter {
     async getSummaryForUser(userId, projectPath) {
         await this.connect();
         const normalizedProjectPath = projectPath || '';
+        const numericUserId = this.getNumericUserId(userId);
 
         const res = await this.pool.query(`
       SELECT * FROM project_summary WHERE user_id = $1 AND project_path = $2
-    `, [userId, normalizedProjectPath]);
+    `, [numericUserId, normalizedProjectPath]);
 
         const row = res.rows[0];
         if (!row) return null;
@@ -184,16 +233,18 @@ export class PostgresAdapter extends DbAdapter {
         const sanitizedPageSize = Math.min(100, Math.max(1, Number.isFinite(Number(pageSize)) ? Math.floor(Number(pageSize)) : 20));
         const offset = (sanitizedPage - 1) * sanitizedPageSize;
 
+        const numericUserId = this.getNumericUserId(userId);
+
         const clauses = [];
-        const params = [userId, normalizedProjectPath];
+        const params = [numericUserId, normalizedProjectPath];
         let paramIdx = 3;
 
         if (startDate) {
-            clauses.push(`DATE(timestamp) >= DATE($${paramIdx++})`);
+            clauses.push(`DATE(completed_at) >= DATE($${paramIdx++})`);
             params.push(startDate);
         }
         if (endDate) {
-            clauses.push(`DATE(timestamp) <= DATE($${paramIdx++})`);
+            clauses.push(`DATE(completed_at) <= DATE($${paramIdx++})`);
             params.push(endDate);
         }
 
@@ -206,10 +257,10 @@ export class PostgresAdapter extends DbAdapter {
         const total = parseInt(countRes.rows[0].total, 10);
 
         const entriesRes = await this.pool.query(`
-      SELECT *
+      SELECT *, description as task_description, completed_at as timestamp
       FROM workflow_history
       WHERE ${where}
-      ORDER BY timestamp DESC
+      ORDER BY completed_at DESC
       LIMIT $${paramIdx++}
       OFFSET $${paramIdx++}
     `, [...params, sanitizedPageSize, offset]);
@@ -229,23 +280,25 @@ export class PostgresAdapter extends DbAdapter {
         const { startDate, endDate, frequency = "daily" } = options;
         const format = FREQUENCY_FORMATS[frequency] || FREQUENCY_FORMATS.daily;
 
+        const numericUserId = this.getNumericUserId(userId);
+
         const clauses = [];
-        const params = [userId, normalizedProjectPath];
+        const params = [numericUserId, normalizedProjectPath];
         let paramIdx = 3;
 
         if (startDate) {
-            clauses.push(`DATE(timestamp) >= DATE($${paramIdx++})`);
+            clauses.push(`DATE(completed_at) >= DATE($${paramIdx++})`);
             params.push(startDate);
         }
         if (endDate) {
-            clauses.push(`DATE(timestamp) <= DATE($${paramIdx++})`);
+            clauses.push(`DATE(completed_at) <= DATE($${paramIdx++})`);
             params.push(endDate);
         }
 
         const where = [`user_id = $1`, `project_path = $2`, ...clauses].join(" AND ");
 
         const res = await this.pool.query(`
-      SELECT to_char(timestamp, '${format}') AS period, COUNT(*) AS count
+      SELECT to_char(completed_at, '${format}') AS period, COUNT(*) AS count
       FROM workflow_history
       WHERE ${where}
       GROUP BY period
@@ -268,8 +321,10 @@ export class PostgresAdapter extends DbAdapter {
         updated_at=EXCLUDED.updated_at
     `;
 
+        const numericUserId = this.getNumericUserId(userId);
+
         await this.pool.query(query, [
-            userId,
+            numericUserId,
             normalizedProjectPath,
             JSON.stringify(state),
             new Date().toISOString()
@@ -279,10 +334,11 @@ export class PostgresAdapter extends DbAdapter {
     async getState(userId, projectPath) {
         await this.connect();
         const normalizedProjectPath = projectPath || '';
+        const numericUserId = this.getNumericUserId(userId);
 
         const res = await this.pool.query(`
       SELECT state_json FROM workflow_state WHERE user_id = $1 AND project_path = $2
-    `, [userId, normalizedProjectPath]);
+    `, [numericUserId, normalizedProjectPath]);
 
         const row = res.rows[0];
         if (!row) return null;

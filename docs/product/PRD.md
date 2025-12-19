@@ -4,7 +4,7 @@
 - **Product**: Development Workflow MCP Server
 - **Prepared by**: Cascade (AI assistant)
 - **Date**: 2025-12-16
-- **Status**: Live v1.7.11
+- **Status**: Live v1.7.15
 
 ## 2. Problem Statement
 Developers need structured guidance to maintain disciplined workflows across projects. Existing tooling lacks enforcement of sequential best practices (testing, documentation, release hygiene) and offers limited visibility into historical task execution.
@@ -67,8 +67,9 @@ Developers need structured guidance to maintain disciplined workflows across pro
 3. **v1.5.0**: Netlify deployment support for static web dashboard (complete).
 4. **v1.6.0+**: Dark/Light mode, UI Improvements (complete).
 5. **Multi-Database Support**: Refactor storage layer to support MySQL and PostgreSQL (complete v1.7.1).
-7. **Performance & Resilience**: Implemented connection timeouts and optimized startup sequence for stdio clients (complete v1.7.14).
-8. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
+7. **v1.7.14 Performance & Resilience**: Implemented connection timeouts and optimized startup sequence for stdio clients (complete).
+8. **v1.7.15 Schema Alignment**: Implemented Postgres/MySQL column normalization and automated integer User ID hashing for cross-dashboard compatibility (complete).
+9. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
 
 ## 11. Risks & Mitigations
 - **Risk**: Workflow feels overly prescriptive. **Mitigation**: Provide escape hatches (`force_complete_task`, `drop_task`) with audit trails.
