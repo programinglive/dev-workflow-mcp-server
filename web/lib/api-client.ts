@@ -1,5 +1,5 @@
 // API configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://34.50.121.142:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://hollywood-andrew-cycle-genre.trycloudflare.com';
 
 export const apiClient = {
     async login(username: string, password: string) {
