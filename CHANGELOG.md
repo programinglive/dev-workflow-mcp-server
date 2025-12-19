@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.14](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.13...v1.7.14) (2025-12-19)
+
+
+### ✨ Features
+
+* add API dependencies and update login to use API client ([94bb42f](https://github.com/programinglive/dev-workflow-mcp-server/commit/94bb42f27b4bd225bb3813b81d5f2bff973edb16))
+* add REST API server for frontend database access ([cdb347c](https://github.com/programinglive/dev-workflow-mcp-server/commit/cdb347cf204ce423b94db7e72980783e986a124d))
+* implement JWT authentication and update client ([8efbe80](https://github.com/programinglive/dev-workflow-mcp-server/commit/8efbe80c3a69046f716b247fc359158dc8fec3e2))
+
+
+### ♻️ Refactors
+
+* remove session cookies, enforce JWT only ([bacd83a](https://github.com/programinglive/dev-workflow-mcp-server/commit/bacd83a16510499667143f4906d0cc8de0127d61))
+
+
+### 🐛 Bug Fixes
+
+* add credentials:include to getCurrentUser to persist session ([b8f2df5](https://github.com/programinglive/dev-workflow-mcp-server/commit/b8f2df531a2d2bae78ad3c3ea2c7dcda62e5e835))
+* add root netlify.toml for monorepo support ([54c5ed3](https://github.com/programinglive/dev-workflow-mcp-server/commit/54c5ed3960aafd5a814773efa487efe9197d4385))
+* enable trust proxy and force secure cookies for cross-domain session ([2c5d6e8](https://github.com/programinglive/dev-workflow-mcp-server/commit/2c5d6e858d05de06304d88286b931b1f12a95bf1))
+* ensure getMe uses full API URL ([b3bd0da](https://github.com/programinglive/dev-workflow-mcp-server/commit/b3bd0da097de57b42d9253615f791677011486af))
+* force API URL to tunnel address to resolve cached old IP ([1883731](https://github.com/programinglive/dev-workflow-mcp-server/commit/18837313a7b96395f1cf04b56d7fe1a74e13b1ed))
+* inline auth functions in API server ([eefd73c](https://github.com/programinglive/dev-workflow-mcp-server/commit/eefd73c82dcf47d419662eaeb8854f6047e6464a))
+* remove duplicate variable declarations in API server ([31d3621](https://github.com/programinglive/dev-workflow-mcp-server/commit/31d3621213ddb3560ee0570fdf6411d9acf7018f))
+* remove dynamic API route for static export ([05a4dd0](https://github.com/programinglive/dev-workflow-mcp-server/commit/05a4dd0e4901e5ac329e50ebe392839d1242de4e))
+* remove explicit publish path to fix netlify build ([cd64bcf](https://github.com/programinglive/dev-workflow-mcp-server/commit/cd64bcf0b4effb71be090235357d665d1f26b567))
+* remove incorrect netlify publish dir for dynamic build ([ea34cf4](https://github.com/programinglive/dev-workflow-mcp-server/commit/ea34cf464466b4ddc8eaa6432434d1fbabb3583e))
+* remove incorrect publish dir from netlify config ([010236f](https://github.com/programinglive/dev-workflow-mcp-server/commit/010236fd0eb1419f7cae4429159f4aac1a988174))
+* restore static export for netlify deployment ([685d841](https://github.com/programinglive/dev-workflow-mcp-server/commit/685d84178b239b5cd681b4d479456e69519a8af8))
+* update API URL to use Cloudflare Tunnel for HTTPS ([ab72f6c](https://github.com/programinglive/dev-workflow-mcp-server/commit/ab72f6c0b8acc6974aba7c8df8418e35da6f2a51))
+* use apiClient in history page and add version indicator ([4889669](https://github.com/programinglive/dev-workflow-mcp-server/commit/48896694166cd5d42ab4134d4dbfdb0df8ca0d44))
+* use npm install instead of ci to avoid lockfile issues ([e5fae26](https://github.com/programinglive/dev-workflow-mcp-server/commit/e5fae26f767c5f0e4aba2593df321c700ac14a38))
+
+
+### 🧹 Chores
+
+* bump version to 1.7.14 to ensure fresh build ([f7d8886](https://github.com/programinglive/dev-workflow-mcp-server/commit/f7d88861ceb111c57e3b34bf4b5a5cc25a19805b))
+* bump version to 1.7.15 for JWT frontend deploy ([7850268](https://github.com/programinglive/dev-workflow-mcp-server/commit/7850268d019251619d60a0a841db2bab8061be04))
+* cleanup post-release and update website version to 1.7.13 ([7341d44](https://github.com/programinglive/dev-workflow-mcp-server/commit/7341d446bbddcb9232e70606acaf950fde7ff5c2))
+* save pending changes before release ([4d4b1c9](https://github.com/programinglive/dev-workflow-mcp-server/commit/4d4b1c9e6122baed3cc6782a572fe3700dabf19b))
+
 ### [1.7.13](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.12...v1.7.13) (2025-12-18)
 
 
