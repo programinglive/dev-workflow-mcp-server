@@ -71,6 +71,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Trust proxy is required for secure cookies behind Cloudflare/Nginx
+app.set('trust proxy', 1);
+
 // Session configuration
 app.use(
     session({
@@ -82,10 +85,10 @@ app.use(
         resave: false,
         saveUninitialized: false,
         cookie: {
-            secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+            secure: true, // Always true because we are on HTTPS (Cloudflare Tunnel)
             httpOnly: true,
             maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Cross-site for production
+            sameSite: 'none', // Required for cross-domain (Netlify -> Cloudflare)
         },
     })
 );
