@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Lock, User } from 'lucide-react';
+import { apiClient } from '@/lib/api-client';
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -21,9 +22,9 @@ export default function LoginPage() {
             return;
         }
 
-        fetch('/api/auth/me')
-            .then(res => {
-                if (res.ok) {
+        apiClient.getCurrentUser()
+            .then(user => {
+                if (user) {
                     router.push('/history');
                 }
             })
@@ -37,23 +38,17 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
-            });
+            const data = await apiClient.login(username, password);
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (data.success) {
                 localStorage.setItem('isLoggedIn', 'true');
                 window.dispatchEvent(new Event('authUpdate'));
                 router.push('/history');
             } else {
-                setError(data.error || 'Login failed');
+                setError('Login failed');
             }
-        } catch (err) {
-            setError('Network error. Please try again.');
+        } catch (err: any) {
+            setError(err.message || 'Network error. Please try again.');
         } finally {
             setLoading(false);
         }

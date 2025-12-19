@@ -4,9 +4,57 @@ import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
 import pg from 'pg';
 import dotenv from 'dotenv';
-import { authenticateUser, getUserById } from './lib/auth.js';
+import bcrypt from 'bcrypt';
 
 dotenv.config({ path: '../.env' });
+
+const app = express();
+const pgSession = connectPgSimple(session);
+const { Pool } = pg;
+
+const PORT = process.env.API_PORT || 8080;
+const dbUrl = process.env.DEV_WORKFLOW_DB_URL;
+
+if (!dbUrl) {
+    console.error('❌ DEV_WORKFLOW_DB_URL is not set');
+    process.exit(1);
+}
+
+const pool = new Pool({ connectionString: dbUrl });
+
+// Authentication helper functions
+async function authenticateUser(pool, username, password) {
+    const result = await pool.query(
+        'SELECT * FROM users WHERE username = $1',
+        [username]
+    );
+
+    if (result.rows.length === 0) {
+        return null;
+    }
+
+    const user = result.rows[0];
+    const isValid = await bcrypt.compare(password, user.password_hash);
+
+    if (!isValid) {
+        return null;
+    }
+
+    return {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+    };
+}
+
+async function getUserById(pool, userId) {
+    const result = await pool.query(
+        'SELECT id, username, email FROM users WHERE id = $1',
+        [userId]
+    );
+
+    return result.rows[0] || null;
+}
 
 const app = express();
 const pgSession = connectPgSimple(session);
