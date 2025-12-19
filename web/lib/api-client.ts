@@ -37,8 +37,9 @@ export const apiClient = {
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // If using token, otherwise just rely on cookie
-                }
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                credentials: 'include', // Required for sending session cookie
             });
 
             if (!response.ok) {
