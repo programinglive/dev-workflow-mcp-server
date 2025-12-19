@@ -2,8 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // Static export for Netlify deployment
-  // Static export removed for server-side features
-  // output: 'export',
+  output: 'export',
   // Set turbopack root to silence multi-lockfile warning
   turbopack: {
     root: __dirname,
