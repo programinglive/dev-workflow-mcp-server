@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/api-client";
 
 type HistoryItem = {
     id: number;
@@ -31,11 +32,10 @@ export default function History() {
 
     const loadData = async () => {
         try {
-            // Fetch workflow history from API
-            const response = await fetch('/api/workflow/history');
+            // Fetch workflow history from API via apiClient
+            const data = await apiClient.getHistory();
 
-            if (response.ok) {
-                const data = await response.json();
+            if (data?.history) {
                 setHistory(data.history || []);
                 setTotalPages(Math.ceil((data.history?.length || 0) / 10));
                 setSummary({

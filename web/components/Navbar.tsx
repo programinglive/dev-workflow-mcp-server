@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Github, Menu, X, Moon, Sun, LogOut } from "lucide-react";
 import Image from "next/image";
+import { apiClient } from "@/lib/api-client";
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -29,18 +30,16 @@ export default function Navbar() {
             const mightBeLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
             if (mightBeLoggedIn) {
-                fetch('/api/auth/me')
-                    .then(res => {
-                        if (res.ok) {
-                            return res.json();
-                        }
-                        throw new Error('Not authenticated');
-                    })
+                apiClient.getCurrentUser()
                     .then(data => {
-                        setIsAuthenticated(true);
-                        setUsername(data.user?.username || 'User');
-                        // Ensure local storage is in sync
-                        localStorage.setItem('isLoggedIn', 'true');
+                        if (data) {
+                            setIsAuthenticated(true);
+                            setUsername(data.username || 'User');
+                            // Ensure local storage is in sync
+                            localStorage.setItem('isLoggedIn', 'true');
+                        } else {
+                            throw new Error('Not authenticated');
+                        }
                     })
                     .catch(() => {
                         // Session invalid/expired
@@ -74,7 +73,7 @@ export default function Navbar() {
 
     const handleLogout = async () => {
         try {
-            await fetch('/api/auth/logout', { method: 'POST' });
+            await apiClient.logout();
             localStorage.removeItem('isLoggedIn');
             setIsAuthenticated(false);
             setUsername(null);

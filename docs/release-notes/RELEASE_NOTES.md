@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.14 | 2025-12-19 | add API dependencies and update login to use API client (94bb42f) |
 | 1.7.13 | 2025-12-18 | remote db connection, history api 500 errors, and windows startup (ce559a6) |
 | 1.7.12 | 2025-12-17 | post-release cleanup v1.7.11 (c2ee733) |
 | 1.7.11 | 2025-12-17 | test: comprehensive DB adapter tests, env support, and warning fixes (64b029a) |
@@ -38,6 +39,35 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.14 – ✨ Features
+
+Released on **2025-12-19**.
+
+- add API dependencies and update login to use API client (94bb42f)
+- add REST API server for frontend database access (cdb347c)
+- implement JWT authentication and update client (8efbe80)
+- remove session cookies, enforce JWT only (bacd83a)
+- add credentials:include to getCurrentUser to persist session (b8f2df5)
+- add root netlify.toml for monorepo support (54c5ed3)
+- enable trust proxy and force secure cookies for cross-domain session (2c5d6e8)
+- ensure getMe uses full API URL (b3bd0da)
+- force API URL to tunnel address to resolve cached old IP (1883731)
+- inline auth functions in API server (eefd73c)
+- remove duplicate variable declarations in API server (31d3621)
+- remove dynamic API route for static export (05a4dd0)
+- remove explicit publish path to fix netlify build (cd64bcf)
+- remove incorrect netlify publish dir for dynamic build (ea34cf4)
+- remove incorrect publish dir from netlify config (010236f)
+- restore static export for netlify deployment (685d841)
+- update API URL to use Cloudflare Tunnel for HTTPS (ab72f6c)
+- use apiClient in history page and add version indicator (4889669)
+- use npm install instead of ci to avoid lockfile issues (e5fae26)
+- bump version to 1.7.14 to ensure fresh build (f7d8886)
+- bump version to 1.7.15 for JWT frontend deploy (7850268)
+- cleanup post-release and update website version to 1.7.13 (7341d44)
+- save pending changes before release (4d4b1c9)
 
 ## 1.7.13 – 🐛 Bug Fixes
 
