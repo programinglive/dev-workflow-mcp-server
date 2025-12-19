@@ -460,7 +460,8 @@ export class WorkflowState {
         ...parsed,
       };
       // Ensure compatibility mirrors exist whenever the primary file is present
-      await ensureCompatibilityLinks(this.stateFile);
+      // Run this as non-blocking to speed up startup
+      ensureCompatibilityLinks(this.stateFile).catch(() => { });
       if (typeof this.state.testsCreated !== "boolean") {
         this.state.testsCreated = false;
       }
@@ -512,7 +513,7 @@ export class WorkflowState {
 
     // Always ensure a fresh project summary so dependent tooling can read it immediately.
     await this.updateProjectSummary();
-    await ensureCompatibilityLinks(this.stateFile);
+    ensureCompatibilityLinks(this.stateFile).catch(() => { });
 
     return created;
   }

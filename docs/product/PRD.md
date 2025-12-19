@@ -67,7 +67,8 @@ Developers need structured guidance to maintain disciplined workflows across pro
 3. **v1.5.0**: Netlify deployment support for static web dashboard (complete).
 4. **v1.6.0+**: Dark/Light mode, UI Improvements (complete).
 5. **Multi-Database Support**: Refactor storage layer to support MySQL and PostgreSQL (complete v1.7.1).
-6. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
+7. **Performance & Resilience**: Implemented connection timeouts and optimized startup sequence for stdio clients (complete v1.7.14).
+8. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
 
 ## 11. Risks & Mitigations
 - **Risk**: Workflow feels overly prescriptive. **Mitigation**: Provide escape hatches (`force_complete_task`, `drop_task`) with audit trails.

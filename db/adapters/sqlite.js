@@ -25,9 +25,15 @@ export class SqliteAdapter extends DbAdapter {
         // Otherwise, attempt to find project root relative to CWD
         const initCwd = process.env.INIT_CWD || process.cwd();
         let projectRoot = initCwd;
-        while (projectRoot !== path.dirname(projectRoot)) {
+        let limit = 20; // Prevent infinite loop in weird environments
+        while (projectRoot !== path.dirname(projectRoot) && limit > 0) {
             if (existsSync(path.join(projectRoot, "package.json"))) break;
             projectRoot = path.dirname(projectRoot);
+            limit--;
+        }
+        if (limit === 0) {
+            console.error("Warning: Could not find project root effectively, defaulting to INIT_CWD");
+            projectRoot = initCwd;
         }
         return path.join(projectRoot, ".state", DB_FILENAME);
     }

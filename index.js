@@ -191,20 +191,30 @@ Use 'check_ready_to_commit' to verify workflow completion.
 
 // Start server
 export async function main() {
+  const startTime = Date.now();
+  console.error(`[${new Date().toISOString()}] MCP Server starting...`);
+
   try {
     // Initialize workflow state
     workflowState = new WorkflowState();
+    console.error(`[${new Date().toISOString()}] Loading workflow state...`);
     await workflowState.load();
+    console.error(`[${new Date().toISOString()}] Workflow state loaded.`);
+
+    console.error(`[${new Date().toISOString()}] Ensuring primary file...`);
     await workflowState.ensurePrimaryFile();
+    console.error(`[${new Date().toISOString()}] Workflow state initialization complete.`);
   } catch (error) {
-    console.error("Warning: Failed to initialize workflow state:", error.message);
+    console.error(`[${new Date().toISOString()}] Warning: Failed to initialize workflow state:`, error.message);
     // Continue anyway - workflow state is optional for MCP to function
     workflowState = new WorkflowState();
   }
 
   const transport = new StdioServerTransport();
+  console.error(`[${new Date().toISOString()}] Connecting transport...`);
   await server.connect(transport);
-  console.error("Dev Workflow MCP Server running on stdio");
+  const duration = Date.now() - startTime;
+  console.error(`[${new Date().toISOString()}] Dev Workflow MCP Server running on stdio (startup took ${duration}ms)`);
 }
 
 // --- Lightweight CLI: dev-workflow-mcp call <toolName> [--args '<json>'] ---

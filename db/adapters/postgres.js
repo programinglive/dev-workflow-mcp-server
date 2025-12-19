@@ -19,7 +19,8 @@ export class PostgresAdapter extends DbAdapter {
         if (!this.pool) {
             this.pool = new Pool({
                 connectionString: this.config.connectionUrl,
-                // pg pool handles connections automatically
+                connectionTimeoutMillis: 5000, // 5 second timeout for new connections
+                idleTimeoutMillis: 10000,      // close idle connections after 10 seconds
             });
             await this.migrate();
         }

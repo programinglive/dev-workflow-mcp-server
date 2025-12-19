@@ -8,6 +8,11 @@
 
 An MCP (Model Context Protocol) server that helps enforce development discipline and workflow best practices. This server acts as your coding conscience, reminding you to follow proper development workflows.
 
+### 🛡️ Resilience Features
+- **Startup Resilience**: 5-second connection timeouts for external databases.
+- **Background Loading**: Non-critical assets (compatibility mirrors) initialize in the background to ensure sub-second startup.
+- **Diagnostic Mode**: Automatic startup timing logs displayed in stderr.
+
 ## 🎯 Purpose
 
 This MCP server guides you through a disciplined development workflow:
@@ -200,6 +205,29 @@ Antigravity users should configure the MCP server in their `mcp_config.json`.
 ```
 
 See [Antigravity Getting Started](./docs/antigravity/GETTING-STARTED.md) for detailed instructions and troubleshooting.
+
+### ⚡ Performance Optimization (Recommended)
+
+To ensure the fastest possible startup (critical for IDE-integrated clients like Claude Desktop), we recommend pointing directly to `index.js` using `node` rather than `npx`. This avoids the overhead of checking for package updates.
+
+**Optimized Configuration:**
+
+```json
+{
+  "mcpServers": {
+    "dev-workflow": {
+      "command": "node",
+      "args": ["<PROJECT_ROOT>\\index.js"],
+      "env": {
+        "DEV_WORKFLOW_USER_ID": "your_user_id"
+      }
+    }
+  }
+}
+```
+
+The server automatically times its own startup and logs it to stderr:
+`Dev Workflow MCP Server running on stdio (startup took 15ms)`
 
 ## ⚙️ Configuration
 
