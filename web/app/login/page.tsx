@@ -73,7 +73,7 @@ export default function LoginPage() {
                         Sign in to access your workflow history
                     </p>
                     <p className="mt-1 text-xs text-gray-400 font-mono">
-                        v1.7.14
+                        v1.7.15
                     </p>
                 </div>
 
