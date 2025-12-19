@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.15](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.14...v1.7.15) (2025-12-19)
+
+
+### 🐛 Bug Fixes
+
+* optimize startup performance and add database connection resilience ([bff2714](https://github.com/programinglive/dev-workflow-mcp-server/commit/bff27146fe9537788741e4a084191bce93588569))
+* refactor Navbar and History to use absolute API client URLs v1.7.18 ([dc33eae](https://github.com/programinglive/dev-workflow-mcp-server/commit/dc33eae612067c5246ca69d08960090c0a0ad6bd))
+* sync all version labels to 1.7.14 and improve netlify routing ([78712eb](https://github.com/programinglive/dev-workflow-mcp-server/commit/78712eb398458605f77b2ba78c9ff61a0be1d335))
+* sync all version strings to 1.7.14 ([e2a1795](https://github.com/programinglive/dev-workflow-mcp-server/commit/e2a1795a7b794c8874b1e610de3370cd6ed5fa7a))
+* sync version to 1.7.14 and fix static routing via trailingSlash ([1c152bd](https://github.com/programinglive/dev-workflow-mcp-server/commit/1c152bd23bbfd30a73e0a89107f4ea18564d20d0))
+
 ### [1.7.14](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.13...v1.7.14) (2025-12-19)
 
 
