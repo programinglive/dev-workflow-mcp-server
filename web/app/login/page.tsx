@@ -72,6 +72,9 @@ export default function LoginPage() {
                     <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                         Sign in to access your workflow history
                     </p>
+                    <p className="mt-1 text-xs text-gray-400 font-mono">
+                        v1.7.16 (JWT Mode)
+                    </p>
                 </div>
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiClient } from '@/lib/api-client';
 import {
     CheckCircle,
     XCircle,
@@ -34,27 +35,33 @@ export default function HistoryPage() {
     const router = useRouter();
 
     useEffect(() => {
-        fetch('/api/auth/me')
-            .then(res => {
-                if (res.ok) {
-                    setIsAuthenticated(true);
-                    // Sync auth state with Navbar
-                    localStorage.setItem('isLoggedIn', 'true');
-                    window.dispatchEvent(new Event('authUpdate'));
-                    return fetch('/api/history-fallback');
-                } else {
-                    router.push('/login');
+        const loadData = async () => {
+            try {
+                // Verify auth
+                const user = await apiClient.getCurrentUser();
+                if (!user) {
                     throw new Error('Not authenticated');
                 }
-            })
-            .then(res => res?.json())
-            .then(data => {
-                if (data?.history) {
-                    setHistory(data.history);
+
+                setIsAuthenticated(true);
+                // Sync auth state
+                localStorage.setItem('isLoggedIn', 'true');
+                window.dispatchEvent(new Event('authUpdate'));
+
+                // Fetch history
+                const result = await apiClient.getHistory();
+                if (result?.history) {
+                    setHistory(result.history);
                 }
-            })
-            .catch(() => { })
-            .finally(() => setLoading(false));
+            } catch (error) {
+                console.error('History load error:', error);
+                router.push('/login');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
     }, [router]);
 
     const stats = useMemo(() => {
