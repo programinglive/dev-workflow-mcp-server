@@ -56,20 +56,6 @@ async function getUserById(pool, userId) {
     return result.rows[0] || null;
 }
 
-const app = express();
-const pgSession = connectPgSimple(session);
-const { Pool } = pg;
-
-const PORT = process.env.API_PORT || 8080;
-const dbUrl = process.env.DEV_WORKFLOW_DB_URL;
-
-if (!dbUrl) {
-    console.error('❌ DEV_WORKFLOW_DB_URL is not set');
-    process.exit(1);
-}
-
-const pool = new Pool({ connectionString: dbUrl });
-
 // CORS configuration - allow Netlify domain
 const corsOptions = {
     origin: [
