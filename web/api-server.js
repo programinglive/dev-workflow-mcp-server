@@ -1,19 +1,18 @@
 import express from 'express';
 import cors from 'cors';
-import session from 'express-session';
-import connectPgSimple from 'connect-pg-simple';
 import pg from 'pg';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 dotenv.config({ path: '../.env' });
 
 const app = express();
-const pgSession = connectPgSimple(session);
 const { Pool } = pg;
 
 const PORT = process.env.API_PORT || 8080;
 const dbUrl = process.env.DEV_WORKFLOW_DB_URL;
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-workflow-jwt-secret-change-me';
 
 if (!dbUrl) {
     console.error('❌ DEV_WORKFLOW_DB_URL is not set');
@@ -60,9 +59,9 @@ async function getUserById(pool, userId) {
 const corsOptions = {
     origin: [
         'https://devworkflow.programinglive.com',
-        'http://localhost:3000', // For local development
+        'http://localhost:3000',
     ],
-    credentials: true, // Allow cookies
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
@@ -70,38 +69,32 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Trust proxy is required for secure cookies behind Cloudflare/Nginx
 app.set('trust proxy', 1);
 
-// Session configuration
-app.use(
-    session({
-        store: new pgSession({
-            pool,
-            tableName: 'session',
-        }),
-        secret: process.env.SESSION_SECRET || 'dev-workflow-secret-change-in-production',
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            secure: true, // Always true because we are on HTTPS (Cloudflare Tunnel)
-            httpOnly: true,
-            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-            sameSite: 'none', // Required for cross-domain (Netlify -> Cloudflare)
-        },
-    })
-);
+// Middleware to verify JWT
+const requireAuth = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            req.user = decoded;
+            return next();
+        } catch (err) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+    }
+
+    return res.status(401).json({ error: 'Authentication required' });
+};
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// JWT secret
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-workflow-jwt-secret-change-me';
-import jwt from 'jsonwebtoken';
-
+// Authentication endpoints
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -123,13 +116,9 @@ app.post('/api/auth/login', async (req, res) => {
             { expiresIn: '30d' }
         );
 
-        // Store user in session (legacy support / backup)
-        req.session.userId = user.id;
-        req.session.username = user.username;
-
         res.json({
             success: true,
-            token, // Send token to client
+            token,
             user: {
                 id: user.id,
                 username: user.username,
@@ -143,37 +132,9 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.post('/api/auth/logout', (req, res) => {
-    req.session.destroy((err) => {
-        // Client should also remove token from localStorage
-        res.json({ success: true });
-    });
+    // Client-side only action for JWT
+    res.json({ success: true });
 });
-
-// Middleware to verify JWT or Session
-const requireAuth = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-
-    // 1. Check for JWT Check
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-        const token = authHeader.split(' ')[1];
-        try {
-            const decoded = jwt.verify(token, JWT_SECRET);
-            req.user = decoded; // Attach decoded user to request
-            req.session.userId = decoded.userId; // Sync with session logic
-            return next();
-        } catch (err) {
-            // Invalid token, fall through to session check
-        }
-    }
-
-    // 2. Check for Session (Cookie)
-    if (req.session && req.session.userId) {
-        req.user = { userId: req.session.userId };
-        return next();
-    }
-
-    return res.status(401).json({ error: 'Not authenticated' });
-};
 
 app.get('/api/auth/me', requireAuth, async (req, res) => {
     try {
