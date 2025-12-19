@@ -8,7 +8,7 @@ export const apiClient = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include', // Important for cookies
+            credentials: 'include',
             body: JSON.stringify({ username, password }),
         });
 
@@ -17,7 +17,14 @@ export const apiClient = {
             throw new Error(error.error || 'Login failed');
         }
 
-        return response.json();
+        const data = await response.json();
+
+        // Store JWT token if present
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+        }
+
+        return data;
     },
 
     async logout() {
@@ -30,16 +37,24 @@ export const apiClient = {
             throw new Error('Logout failed');
         }
 
+        // Clear token
+        localStorage.removeItem('token');
+
         return response.json();
     },
 
     async getCurrentUser() {
         try {
+            const token = localStorage.getItem('token');
+            const headers: Record<string, string> = {};
+
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
             const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                credentials: 'include', // Required for sending session cookie
+                headers,
+                credentials: 'include',
             });
 
             if (!response.ok) {
@@ -53,7 +68,17 @@ export const apiClient = {
     },
 
     async getHistory() {
+        const token = localStorage.getItem('token');
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+        };
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${API_BASE_URL}/api/history`, {
+            headers,
             credentials: 'include',
         });
 
@@ -72,11 +97,18 @@ export const apiClient = {
         tests_passed?: boolean;
         documentation_type?: string;
     }) {
+        const token = localStorage.getItem('token');
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+        };
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${API_BASE_URL}/api/history`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers,
             credentials: 'include',
             body: JSON.stringify(data),
         });

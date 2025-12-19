@@ -98,7 +98,10 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Authentication endpoints
+// JWT secret
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-workflow-jwt-secret-change-me';
+import jwt from 'jsonwebtoken';
+
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -113,12 +116,20 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        // Store user in session
+        // Generate JWT Token
+        const token = jwt.sign(
+            { userId: user.id, username: user.username },
+            JWT_SECRET,
+            { expiresIn: '30d' }
+        );
+
+        // Store user in session (legacy support / backup)
         req.session.userId = user.id;
         req.session.username = user.username;
 
         res.json({
             success: true,
+            token, // Send token to client
             user: {
                 id: user.id,
                 username: user.username,
@@ -133,20 +144,40 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.post('/api/auth/logout', (req, res) => {
     req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Failed to logout' });
-        }
+        // Client should also remove token from localStorage
         res.json({ success: true });
     });
 });
 
-app.get('/api/auth/me', async (req, res) => {
-    try {
-        if (!req.session.userId) {
-            return res.status(401).json({ error: 'Not authenticated' });
-        }
+// Middleware to verify JWT or Session
+const requireAuth = (req, res, next) => {
+    const authHeader = req.headers.authorization;
 
-        const user = await getUserById(pool, req.session.userId);
+    // 1. Check for JWT Check
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            req.user = decoded; // Attach decoded user to request
+            req.session.userId = decoded.userId; // Sync with session logic
+            return next();
+        } catch (err) {
+            // Invalid token, fall through to session check
+        }
+    }
+
+    // 2. Check for Session (Cookie)
+    if (req.session && req.session.userId) {
+        req.user = { userId: req.session.userId };
+        return next();
+    }
+
+    return res.status(401).json({ error: 'Not authenticated' });
+};
+
+app.get('/api/auth/me', requireAuth, async (req, res) => {
+    try {
+        const user = await getUserById(pool, req.user.userId);
 
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -164,19 +195,15 @@ app.get('/api/auth/me', async (req, res) => {
 });
 
 // Workflow history endpoints
-app.get('/api/history', async (req, res) => {
+app.get('/api/history', requireAuth, async (req, res) => {
     try {
-        if (!req.session.userId) {
-            return res.status(401).json({ error: 'Not authenticated' });
-        }
-
         const result = await pool.query(
             `SELECT id, task_type, description, commit_message, completed_at, tests_passed, documentation_type
              FROM workflow_history
              WHERE user_id = $1
              ORDER BY completed_at DESC
              LIMIT 100`,
-            [req.session.userId]
+            [req.user.userId]
         );
 
         res.json({
@@ -188,19 +215,15 @@ app.get('/api/history', async (req, res) => {
     }
 });
 
-app.post('/api/history', async (req, res) => {
+app.post('/api/history', requireAuth, async (req, res) => {
     try {
-        if (!req.session.userId) {
-            return res.status(401).json({ error: 'Not authenticated' });
-        }
-
         const { task_type, description, commit_message, tests_passed, documentation_type } = req.body;
 
         const result = await pool.query(
             `INSERT INTO workflow_history (user_id, task_type, description, commit_message, tests_passed, documentation_type, completed_at)
              VALUES ($1, $2, $3, $4, $5, $6, NOW())
              RETURNING *`,
-            [req.session.userId, task_type, description, commit_message, tests_passed, documentation_type]
+            [req.user.userId, task_type, description, commit_message, tests_passed, documentation_type]
         );
 
         res.json({
