@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.16](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.15...v1.7.16) (2025-12-24)
+
+
+### 🐛 Bug Fixes
+
+* align database schema with dashboard and improve user ID handling ([69e7f38](https://github.com/programinglive/dev-workflow-mcp-server/commit/69e7f381955d15bb727a6e309082a344729d1c1e))
+
+
+### 🧹 Chores
+
+* cleanup temporary debugging scripts ([a5e2b15](https://github.com/programinglive/dev-workflow-mcp-server/commit/a5e2b15b894632efadce46d83caf4d008e50fdd3))
+* sync version to 1.7.15 across web and landing pages ([c520e4a](https://github.com/programinglive/dev-workflow-mcp-server/commit/c520e4a5d795c880fb74f31142b128a9c55beb6f))
+
+
+### 📝 Documentation
+
+* update macOS MCP config instructions ([1e368da](https://github.com/programinglive/dev-workflow-mcp-server/commit/1e368da37bede45e0282b1312002f2fedeb6ad60))
+
 ### [1.7.15](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.14...v1.7.15) (2025-12-19)
 
 
