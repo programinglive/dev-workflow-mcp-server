@@ -8,7 +8,7 @@ import path from 'path';
 const exec = promisify(execCallback);
 
 test('build generates dist/index.mjs file', async () => {
-  const { stderr } = await exec('npm run build:server');
+  const { stderr } = await exec('NODE_ENV=development npm run build:server');
   // Allow the known vite warning about node:process
   const knownWarning = '[plugin vite:resolve] Module "node:process" has been externalized for browser compatibility';
   const tailwindOutput = '≈ tailwindcss';

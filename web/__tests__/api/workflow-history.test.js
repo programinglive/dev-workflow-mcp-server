@@ -1,11 +1,13 @@
-const request = require('supertest');
-const express = require('express');
+import { test, describe } from 'node:test';
+import assert from 'node:assert';
+import request from 'supertest';
+import express from 'express';
 
 describe('Workflow History API', () => {
     let app;
     let server;
 
-    beforeAll(() => {
+    test('setup app', () => {
         // Mock Express app for testing
         app = express();
         app.use(express.json());
@@ -40,9 +42,9 @@ describe('Workflow History API', () => {
             .get('/api/workflow/history')
             .expect(200);
 
-        expect(response.body).toHaveProperty('history');
-        expect(Array.isArray(response.body.history)).toBe(true);
-        expect(response.body.history.length).toBeGreaterThan(0);
+        assert(response.body.history, 'History property should exist');
+        assert(Array.isArray(response.body.history), 'History should be an array');
+        assert(response.body.history.length > 0, 'History should not be empty');
     });
 
     test('History items have required fields', async () => {
@@ -51,11 +53,11 @@ describe('Workflow History API', () => {
             .expect(200);
 
         const item = response.body.history[0];
-        expect(item).toHaveProperty('id');
-        expect(item).toHaveProperty('task_type');
-        expect(item).toHaveProperty('description');
-        expect(item).toHaveProperty('commit_message');
-        expect(item).toHaveProperty('completed_at');
-        expect(item).toHaveProperty('tests_passed');
+        assert(item.id, 'Item should have id');
+        assert(item.task_type, 'Item should have task_type');
+        assert(item.description, 'Item should have description');
+        assert(item.commit_message, 'Item should have commit_message');
+        assert(item.completed_at, 'Item should have completed_at');
+        assert(item.tests_passed !== undefined, 'Item should have tests_passed');
     });
 });

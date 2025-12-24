@@ -105,7 +105,12 @@ Point your MCP client to the server entry point. Replace `<PROJECT_ROOT>` with t
   "mcpServers": {
     "dev-workflow": {
       "command": "node",
-      "args": ["<PROJECT_ROOT>/index.js"]
+      "cwd": "<PROJECT_ROOT>",
+      "args": ["index.js"],
+      "env": {
+        "DEV_WORKFLOW_DB_TYPE": "postgres",
+        "DEV_WORKFLOW_DB_URL": "postgres://USER:PASS@HOST:5432/devworkflow"
+      }
     }
   }
 }
@@ -181,6 +186,28 @@ Point your MCP client to the server entry point. Replace `<PROJECT_ROOT>` with t
 ```
 
 > **Note:** On Windows paths in JSON require escaped backslashes (e.g., `"C:\\path\\to\\project"`).
+
+#### Full Windsurf MCP Config Example (macOS)
+
+If you keep this repository checked out at `/Users/alex/code/dev-workflow-mcp-server` and want to point Windsurf at a hosted PostgreSQL instance, drop the following into `~/Library/Application Support/Windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "dev-workflow": {
+      "command": "node",
+      "cwd": "/Users/alex/code/dev-workflow-mcp-server",
+      "args": ["index.js"],
+      "env": {
+        "DEV_WORKFLOW_DB_TYPE": "postgres",
+        "DEV_WORKFLOW_DB_URL": "postgres://devworkflow:devworkflow_secure_password@34.50.121.142:5432/devworkflow"
+      }
+    }
+  }
+}
+```
+
+This mirrors the Windows configuration shared in previous releases, but avoids `npx` lookup issues on macOS by launching the local `index.js` directly.
 
 ### 4. Restart Windsurf/Claude Desktop
 
