@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.16 | 2025-12-24 | align database schema with dashboard and improve user ID handling (69e7f38) |
 | 1.7.15 | 2025-12-19 | optimize startup performance and add database connection resilience (bff2714) |
 | 1.7.14 | 2025-12-19 | add API dependencies and update login to use API client (94bb42f) |
 | 1.7.13 | 2025-12-18 | remote db connection, history api 500 errors, and windows startup (ce559a6) |
@@ -42,6 +43,16 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.16 – 🐛 Bug Fixes
+
+Released on **2025-12-24**.
+
+- align database schema with dashboard and improve user ID handling (69e7f38)
+- cleanup temporary debugging scripts (a5e2b15)
+- sync version to 1.7.15 across web and landing pages (c520e4a)
+- update macOS MCP config instructions (1e368da)
 
 ## 1.7.15 – 🐛 Bug Fixes
 
