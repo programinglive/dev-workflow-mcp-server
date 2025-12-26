@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.8.0...v1.8.1) (2025-12-26)
+
+
+### 📝 Documentation
+
+* add release notes for v1.8.0 ([5a4025b](https://github.com/programinglive/dev-workflow-mcp-server/commit/5a4025b8cc6bbd4aa389c7435d585ee15cd3416b))
+* refresh PRD and README for v1.8.0 ([d7ff89e](https://github.com/programinglive/dev-workflow-mcp-server/commit/d7ff89eaf2c8bf89e52110f91b8b84fa26a9ceed))
+
 ## [1.8.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.17...v1.8.0) (2025-12-26)
 
 
