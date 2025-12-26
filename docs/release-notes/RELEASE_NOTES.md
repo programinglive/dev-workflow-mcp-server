@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.8.1 | 2025-12-26 | add release notes for v1.8.0 (5a4025b) |
 | 1.8.0 | 2025-12-27 | See CHANGELOG for details. |
 | 1.7.17 | 2025-12-26 | update release notes for v1.7.16 (0afd96b) |
 | 1.7.16 | 2025-12-24 | align database schema with dashboard and improve user ID handling (69e7f38) |
@@ -48,6 +49,16 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.8.1 – 📝 Documentation
+
+Released on **2025-12-26**.
+
+- add release notes for v1.8.0 (5a4025b)
+- refresh PRD and README for v1.8.0 (d7ff89e)
+- complete handlers.js modularization and fix all tests (af5b3d6)
+- split handlers.test.js into smaller focused test modules (321bbe5)
 
 ## 1.8.0
 
