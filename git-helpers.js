@@ -151,6 +151,15 @@ export async function getCurrentBranch() {
   }
 }
 
+export async function getStatusOutput() {
+  try {
+    const { stdout } = await exec("git status --porcelain");
+    return stdout;
+  } catch (error) {
+    return "";
+  }
+}
+
 export async function getPrimaryBranch() {
   try {
     // Check if 'main' exists on origin

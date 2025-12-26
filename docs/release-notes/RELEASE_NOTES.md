@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.7.17 | 2025-12-26 | update release notes for v1.7.16 (0afd96b) |
 | 1.7.16 | 2025-12-24 | align database schema with dashboard and improve user ID handling (69e7f38) |
 | 1.7.15 | 2025-12-19 | optimize startup performance and add database connection resilience (bff2714) |
 | 1.7.14 | 2025-12-19 | add API dependencies and update login to use API client (94bb42f) |
@@ -44,6 +45,15 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.7.17 – 📝 Documentation
+
+Released on **2025-12-26**.
+
+- update release notes for v1.7.16 (0afd96b)
+- allow skipping release step (004e4fa)
+- add @programinglive/commiter setup (1d2a19d)
 
 ## 1.7.16 – 🐛 Bug Fixes
 

@@ -147,6 +147,8 @@ test("commit_and_push commits changes and pushes", async () => {
       getCurrentBranch: async () => "main",
       getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
+      getStatusOutput: async () => "M tests/handlers.test.js\nM src/index.js",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -215,6 +217,8 @@ test("run_full_workflow iterates until commit/release complete with clean tree",
       getCurrentBranch: async () => "main",
       getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "chore: existing",
+      getStatusOutput: async () => "",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -272,6 +276,8 @@ test("commit_and_push uses primary branch when no branch specified", async () =>
       getCurrentBranch: async () => "feature/test",
       getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
+      getStatusOutput: async () => "M tests/handlers.test.js\nM src/index.js",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -321,6 +327,8 @@ test("commit_and_push falls back to master when main not found", async () => {
       getCurrentBranch: async () => "feature/test",
       getPrimaryBranch: async () => "master",
       getLastCommitMessage: async () => "",
+      getStatusOutput: async () => "M tests/handlers.test.js\nM src/index.js",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -377,6 +385,8 @@ test("run_full_workflow uses provided branch for release push when commit is cle
       getCurrentBranch: async () => "feature/local",
       getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "chore: existing",
+      getStatusOutput: async () => "",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -433,6 +443,8 @@ test("project_summary_data reads persisted file and falls back", async () => {
         getCurrentBranch: async () => "main",
         getPrimaryBranch: async () => "main",
         getLastCommitMessage: async () => "",
+        getStatusOutput: async () => "",
+        containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
         workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
       },
       utils,
@@ -467,6 +479,8 @@ test("project_summary aggregates task types and recent activity", async () => {
         getCurrentBranch: async () => "main",
         getPrimaryBranch: async () => "main",
         getLastCommitMessage: async () => "",
+        getStatusOutput: async () => "",
+        containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
         workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
       },
       utils,
@@ -510,6 +524,8 @@ test("run_full_workflow executes all steps successfully", async () => {
       getCurrentBranch: async () => "main",
       getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
+      getStatusOutput: async () => workingChanges ? "M tests/handlers.test.js\nM src/app.js" : "",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () =>
         workingChanges
           ? { hasChanges: true, lines: ["M src/app.js"] }
@@ -587,6 +603,8 @@ test("run_full_workflow resumes from current phase when steps are already comple
       getCurrentBranch: async () => "main",
       getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
+      getStatusOutput: async () => "",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -652,6 +670,8 @@ test("run_full_workflow validates required arguments", async () => {
         getCurrentBranch: async () => "main",
         getPrimaryBranch: async () => "main",
         getLastCommitMessage: async () => "",
+        getStatusOutput: async () => "",
+        containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
         workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
       },
       utils,
@@ -688,6 +708,8 @@ test("force_complete_task records entry and resets state", async () => {
         getCurrentBranch: async () => "main",
         getPrimaryBranch: async () => "main",
         getLastCommitMessage: async () => "",
+        getStatusOutput: async () => "",
+        containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
         workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
       },
       utils,
@@ -727,6 +749,8 @@ test("perform_release blocks when new changes detected", async () => {
       getCurrentBranch: async () => "main",
       getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
+      getStatusOutput: async () => "?? new-file.js",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: true, lines: ["?? new-file.js"] }),
     };
 
@@ -758,6 +782,8 @@ test("continue_workflow warns when workflow is idle", async () => {
       getCurrentBranch: async () => "main",
       getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
+      getStatusOutput: async () => "",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -792,6 +818,8 @@ test("continue_workflow resets to commit when new changes detected", async () =>
       getCurrentBranch: async () => "main",
       getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "",
+      getStatusOutput: async () => "?? new-file.js",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: true, lines: ["?? new-file.js"] }),
     };
 
@@ -837,6 +865,8 @@ test("commit_and_push recognizes already committed work", async () => {
       getCurrentBranch: async () => "main",
       getPrimaryBranch: async () => "main",
       getLastCommitMessage: async () => "fix: previous work",
+      getStatusOutput: async () => "",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -886,6 +916,8 @@ test("perform_release runs release command before pushing with tags", async () =
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
       getLastCommitMessage: async () => "",
+      getStatusOutput: async () => "",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -951,6 +983,8 @@ test("perform_release accepts shorthand patch command", async () => {
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
       getLastCommitMessage: async () => "fix: adjust labels",
+      getStatusOutput: async () => "",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -994,6 +1028,8 @@ test("skip_release records justification and advances to completion phase", asyn
         getCurrentBranch: async () => "main",
         getPrimaryBranch: async () => "main",
         getLastCommitMessage: async () => "chore: docs",
+        getStatusOutput: async () => "",
+        containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
         workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
       },
       utils,
@@ -1033,6 +1069,8 @@ test("perform_release respects explicit releaseType option", async () => {
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
       getLastCommitMessage: async () => "feat: import improvements",
+      getStatusOutput: async () => "",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
@@ -1079,6 +1117,8 @@ test("perform_release requires commit_and_push completion when tree is clean", a
       getStagedChanges: async () => [],
       getCurrentBranch: async () => "main",
       getLastCommitMessage: async () => "chore: already pushed",
+      getStatusOutput: async () => "",
+      containsTestFilesInStatus: (statusOutput) => statusOutput.includes("tests/"),
       workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
     };
 
