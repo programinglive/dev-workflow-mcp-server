@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.8.0 | 2025-12-27 | See CHANGELOG for details. |
 | 1.7.17 | 2025-12-26 | update release notes for v1.7.16 (0afd96b) |
 | 1.7.16 | 2025-12-24 | align database schema with dashboard and improve user ID handling (69e7f38) |
 | 1.7.15 | 2025-12-19 | optimize startup performance and add database connection resilience (bff2714) |
@@ -46,6 +47,13 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.8.0
+
+Released on **2025-12-27**.
+
+- See CHANGELOG for details.
 
 ## 1.7.17 – 📝 Documentation
 
