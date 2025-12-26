@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.17...v1.8.0) (2025-12-26)
+
+
+### ♻️ Refactors
+
+* complete handlers.js modularization and fix all tests ([af5b3d6](https://github.com/programinglive/dev-workflow-mcp-server/commit/af5b3d60db025611e9a84a27ccc78f5999d0ead7))
+* split handlers.test.js into smaller focused test modules ([321bbe5](https://github.com/programinglive/dev-workflow-mcp-server/commit/321bbe50d34348202f9e096e5b1903cae519dac6))
+
 ### [1.7.17](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.7.16...v1.7.17) (2025-12-26)
 
 
