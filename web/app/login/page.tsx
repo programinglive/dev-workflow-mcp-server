@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Lock, User } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
+import { WEB_VERSION } from '@/lib/version';
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -73,7 +74,7 @@ export default function LoginPage() {
                         Sign in to access your workflow history
                     </p>
                     <p className="mt-1 text-xs text-gray-400 font-mono">
-                        v1.7.15
+                        v{WEB_VERSION}
                     </p>
                 </div>
 

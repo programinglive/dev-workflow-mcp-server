@@ -4,10 +4,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Terminal from "./Terminal";
 import { useEffect, useState } from "react";
+import { WEB_VERSION } from "@/lib/version";
 
 export default function Hero() {
     const [downloads, setDownloads] = useState<number | null>(null);
-    const [version, setVersion] = useState<string | null>(null);
 
     useEffect(() => {
         // Fetch npm downloads directly from npm API
@@ -16,8 +16,6 @@ export default function Hero() {
             .then(data => setDownloads(data.downloads || 0))
             .catch(() => setDownloads(null));
 
-        // Version is hardcoded for static export
-        setVersion("1.7.15");
     }, []);
 
     const formatDownloads = (num: number) => {
@@ -35,7 +33,7 @@ export default function Hero() {
                     <div className="animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-8">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>v{version ?? "..."} - Active</span>
+                            <span>v{WEB_VERSION} - Active</span>
                         </div>
                     </div>
 
@@ -56,7 +54,7 @@ export default function Hero() {
                     </div>
                     <div className="flex flex-wrap gap-4 sm:gap-6 lg:gap-8 text-xs sm:text-sm animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
                         <div>
-                            <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{version ?? "..."}</div>
+                            <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{WEB_VERSION}</div>
                             <div className="text-gray-600 dark:text-gray-500">Latest Version</div>
                         </div>
                         <div>
