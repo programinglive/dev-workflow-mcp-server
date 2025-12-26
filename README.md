@@ -25,6 +25,14 @@ This MCP server guides you through a disciplined development workflow:
 6. **Commit & Push** - Let the server stage, commit, **and push** your changes once verification passes (if you make new edits afterward, the workflow moves back to this step automatically)
 7. **Release** - After the push succeeds, record the release details before closing out the task
 
+## 🆕 What's New in v1.8.0
+
+- **Modular Handler Architecture** – `tools/handlers.js` now re-exports focused handler modules, improving maintainability and bundler behavior.
+- **Organized Test Suite** – The 1k-line `tests/handlers.test.js` has been split into `handlers-*.test.js` files with shared helpers, reducing duplication and clarifying intent.
+- **Shared Test Utilities** – New `tests/test-helpers.js` centralizes workflow state setup, request builders, and git mocks.
+- **Documentation Refresh** – PRD moved to `docs/PRD.md` root, status bumped to v1.8.0, and release notes updated to reflect the current workflow.
+- **Release Hygiene** – Recommended flow now includes `npm run release:<type>` followed by `git push --follow-tags origin main` to keep stages clean.
+
 ## 🚀 Installation
 
 ### Option 1: Install as Dependency in Your Project (Recommended)

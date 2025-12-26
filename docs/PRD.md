@@ -3,8 +3,8 @@
 ## 1. Overview
 - **Product**: Development Workflow MCP Server
 - **Prepared by**: Cascade (AI assistant)
-- **Date**: 2025-12-16
-- **Status**: Live v1.7.15
+- **Date**: 2025-12-27
+- **Status**: Live v1.8.0
 
 ## 2. Problem Statement
 Developers need structured guidance to maintain disciplined workflows across projects. Existing tooling lacks enforcement of sequential best practices (testing, documentation, release hygiene) and offers limited visibility into historical task execution.
@@ -42,6 +42,9 @@ Developers need structured guidance to maintain disciplined workflows across pro
 - [x] **Multi-Database Support**: SQLite, MySQL, and PostgreSQL adapters implemented and verified.
 - [x] **Environment Configuration**: `.env` file support added.
 - [x] **Comprehensive Testing**: Automated tests for DB adapters and environment loading.
+- [x] **Modular Architecture**: Refactored handlers.js into focused handler modules for better maintainability.
+- [x] **Test Organization**: Split monolithic test file into focused test modules with shared utilities.
+- [x] **PRD Location**: Moved PRD.md to docs/ root for easier access.
 - **Multi-Database Support**: Abstract the storage layer to support:
     - SQLite (default/local)
     - MySQL
