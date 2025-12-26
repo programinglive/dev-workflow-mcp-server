@@ -16,6 +16,10 @@ const textResponse = (text) => ({
   ],
 });
 
+function isReleaseSatisfied(state) {
+  return Boolean(state?.released || state?.releaseSkipped);
+}
+
 async function resetToCommitIfWorkingChanges(workflowState, git) {
   if (!workflowState.state.commitAndPushCompleted) {
     return false;
@@ -30,6 +34,8 @@ async function resetToCommitIfWorkingChanges(workflowState, git) {
 
   workflowState.state.commitAndPushCompleted = false;
   workflowState.state.released = false;
+  workflowState.state.releaseSkipped = false;
+  workflowState.state.releaseSkippedReason = "";
   workflowState.state.currentPhase = "commit";
   workflowState.state.releaseCommand = "";
   workflowState.state.releaseNotes = "";
@@ -113,7 +119,7 @@ function getContinueGuidance(status) {
     case "commit":
       return "All checks passed—run 'commit_and_push' with your commit message (and optional branch).";
     case "release":
-      return "Commit recorded. Execute 'perform_release' with the release command you ran to publish changes.";
+      return "Commit recorded. Execute 'perform_release' with the release command you ran to publish changes, or call 'skip_release' with a justification if no release is required.";
     case "ready_to_complete":
       return "Release recorded. Finish up by calling 'complete_task' with the commit message you used.";
     default:
@@ -185,7 +191,7 @@ async function handleStartTask(args, workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `✅ Task Started: ${args.description}\n\n🎯 Be conscious about what you're coding!\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Run 'check_ready_to_commit'\n7. ⏳ Run 'commit_and_push' (commits and pushes)\n8. ⏳ Run 'perform_release' (handles versioning and tags)\n9. ⏳ Complete task\n\nReminder: Focus on writing clean, maintainable code!`
+    `✅ Task Started: ${args.description}\n\n🎯 Be conscious about what you're coding!\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Run 'check_ready_to_commit'\n7. ⏳ Run 'commit_and_push' (commits and pushes)\n8. ⏳ Run 'perform_release' (handles versioning and tags) or 'skip_release' (when no release is needed)\n9. ⏳ Complete task\n\nReminder: Focus on writing clean, maintainable code!`
   );
 }
 
@@ -225,6 +231,8 @@ async function handleMarkBugFixed(args, workflowState) {
   workflowState.state.fixSummary = args.summary;
   workflowState.state.readyCheckCompleted = false;
   workflowState.state.released = false;
+  workflowState.state.releaseSkipped = false;
+  workflowState.state.releaseSkippedReason = "";
   workflowState.state.releaseCommand = "";
   workflowState.state.releaseNotes = "";
   workflowState.state.commitAndPushCompleted = false;
@@ -233,7 +241,7 @@ async function handleMarkBugFixed(args, workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `✅ Feature/Bug marked as fixed!\n\n⚠️ CRITICAL REMINDER: You MUST create tests now!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ⏳ Create tests for: ${args.summary}\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Complete task\n\n🚫 DO NOT SKIP TESTING!`
+    `✅ Feature/Bug marked as fixed!\n\n⚠️ CRITICAL REMINDER: You MUST create tests now!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ⏳ Create tests for: ${args.summary}\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release' (or 'skip_release' if no release applies)\n8. ⏳ Complete task\n\n🚫 DO NOT SKIP TESTING!`
   );
 }
 
@@ -247,13 +255,15 @@ async function handleCreateTests(workflowState) {
   workflowState.state.testsSkippedReason = "";
   workflowState.state.readyCheckCompleted = false;
   workflowState.state.released = false;
+  workflowState.state.releaseSkipped = false;
+  workflowState.state.releaseSkippedReason = "";
   workflowState.state.commitAndPushCompleted = false;
   workflowState.state.lastCommitMessage = "";
   workflowState.state.lastPushBranch = "";
   await workflowState.save();
 
   return textResponse(
-    "✅ Tests recorded!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Complete task\n\n🧪 Run your test command and record the results using 'run_tests'."
+    "✅ Tests recorded!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release' (or 'skip_release' if appropriate)\n8. ⏳ Complete task\n\n🧪 Run your test command and record the results using 'run_tests'."
   );
 }
 
@@ -280,6 +290,8 @@ async function handleSkipTests(args, workflowState) {
   workflowState.state.readyToCommit = false;
   workflowState.state.readyCheckCompleted = false;
   workflowState.state.released = false;
+  workflowState.state.releaseSkipped = false;
+  workflowState.state.releaseSkippedReason = "";
   workflowState.state.commitAndPushCompleted = false;
   workflowState.state.lastCommitMessage = "";
   workflowState.state.lastPushBranch = "";
@@ -297,7 +309,7 @@ Next Steps:
 3. ⏳ Create/update documentation
 4. ⏳ Run 'check_ready_to_commit'
 5. ⏳ Run 'commit_and_push'
-6. ⏳ Run 'perform_release'
+6. ⏳ Run 'perform_release' or 'skip_release'
 7. ⏳ Complete task`
   );
 }
@@ -328,6 +340,8 @@ async function handleRunTests(args, workflowState) {
   workflowState.state.testsSkippedReason = "";
   workflowState.state.readyCheckCompleted = false;
   workflowState.state.released = false;
+  workflowState.state.releaseSkipped = false;
+  workflowState.state.releaseSkippedReason = "";
   workflowState.state.commitAndPushCompleted = false;
   workflowState.state.lastCommitMessage = "";
   workflowState.state.lastPushBranch = "";
@@ -345,7 +359,7 @@ async function handleRunTests(args, workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `✅ All tests passed! 🎉\n\nTest command: ${args.testCommand}\n\n📝 Now create or update documentation using 'create_documentation' with:\n- documentationType: "PRD", "README", "RELEASE_NOTES", "inline-comments", "API-docs", "changelog", or "other"\n- summary: Brief description of what was documented\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ⏳ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Complete task`
+    `✅ All tests passed! 🎉\n\nTest command: ${args.testCommand}\n\n📝 Now create or update documentation using 'create_documentation' with:\n- documentationType: "PRD", "README", "RELEASE_NOTES", "inline-comments", "API-docs", "changelog", or "other"\n- summary: Brief description of what was documented\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ⏳ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release' (or use 'skip_release' if no release is needed)\n8. ⏳ Complete task`
   );
 }
 
@@ -371,13 +385,58 @@ async function handleCreateDocumentation(args, workflowState) {
   workflowState.state.readyToCommit = true;
   workflowState.state.readyCheckCompleted = false;
   workflowState.state.released = false;
+  workflowState.state.releaseSkipped = false;
+  workflowState.state.releaseSkippedReason = "";
   workflowState.state.commitAndPushCompleted = false;
   workflowState.state.lastCommitMessage = "";
   workflowState.state.lastPushBranch = "";
   await workflowState.save();
 
   return textResponse(
-    `✅ Documentation created/updated!\n\nType: ${args.documentationType}\nSummary: ${args.summary}\n✅ PRD verified: docs/product/PRD.md exists\n\n🎉 You're ready to verify your work!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ✓ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit' to verify\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release'\n8. ⏳ Mark as complete with 'complete_task'`
+    `✅ Documentation created/updated!\n\nType: ${args.documentationType}\nSummary: ${args.summary}\n✅ PRD verified: docs/product/PRD.md exists\n\n🎉 You're ready to verify your work!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ✓ Create tests\n3. ✓ Run tests (GREEN!)\n4. ✓ Create/update documentation\n5. ⏳ Run 'check_ready_to_commit' to verify\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release' (or 'skip_release' when applicable)\n8. ⏳ Mark as complete with 'complete_task'`
+  );
+}
+
+async function handleSkipRelease(args, workflowState) {
+  if (workflowState.state.currentPhase === "idle") {
+    return textResponse("⚠️ Please start a task first using 'start_task' before skipping release.");
+  }
+
+  const reason = typeof args.reason === "string" ? args.reason.trim() : "";
+  if (!reason) {
+    return textResponse("⚠️ Provide a non-empty 'reason' explaining why the release step is being skipped.");
+  }
+
+  if (workflowState.state.releaseSkipped) {
+    workflowState.state.releaseSkippedReason = reason;
+    await workflowState.save();
+    return textResponse(
+      `ℹ️ Release step was already skipped for this task.\nUpdated reason: ${reason}\n\nNext: run 'complete_task' to wrap up.`
+    );
+  }
+
+  if (workflowState.state.released) {
+    return textResponse("⚠️ A release command has already been recorded. Continue with 'complete_task'.");
+  }
+
+  if (!workflowState.state.readyCheckCompleted) {
+    return textResponse("⚠️ Please run 'check_ready_to_commit' and ensure all prerequisites pass before skipping release.");
+  }
+
+  if (!workflowState.state.commitAndPushCompleted) {
+    return textResponse("⚠️ Please complete 'commit_and_push' before skipping release.");
+  }
+
+  workflowState.state.releaseSkipped = true;
+  workflowState.state.releaseSkippedReason = reason;
+  workflowState.state.released = false;
+  workflowState.state.releaseCommand = "(skipped)";
+  workflowState.state.releaseNotes = "";
+  workflowState.state.currentPhase = "ready_to_complete";
+  await workflowState.save();
+
+  return textResponse(
+    `⚠️ Release step skipped.\nReason: ${reason}\n\n✅ Next: run 'complete_task' with your final commit message to close out the workflow.`
   );
 }
 
@@ -404,11 +463,11 @@ async function handleReadyCheck(workflowState) {
 
   workflowState.state.readyCheckCompleted = allDone;
   if (allDone) {
-    workflowState.state.currentPhase = workflowState.state.commitAndPushCompleted
-      ? workflowState.state.released
-        ? "ready_to_complete"
-        : "release"
-      : "commit";
+    if (workflowState.state.commitAndPushCompleted) {
+      workflowState.state.currentPhase = isReleaseSatisfied(workflowState.state) ? "ready_to_complete" : "release";
+    } else {
+      workflowState.state.currentPhase = "commit";
+    }
   }
   await workflowState.save();
 
@@ -448,7 +507,7 @@ async function handleCommitAndPush(args, context) {
     workflowState.state.commitAndPushCompleted = true;
     workflowState.state.lastCommitMessage = effectiveCommitMessage || "";
     workflowState.state.lastPushBranch = branchForPush;
-    workflowState.state.currentPhase = workflowState.state.released ? "ready_to_complete" : "release";
+    workflowState.state.currentPhase = isReleaseSatisfied(workflowState.state) ? "ready_to_complete" : "release";
     await workflowState.save();
 
     return textResponse(
@@ -457,10 +516,10 @@ async function handleCommitAndPush(args, context) {
     );
   }
 
-  if (!(await git.hasTestChanges()) && !workflowState.state.testsSkipped) {
-    return textResponse(
-      "⚠️ Please include test updates in your changes before running 'commit_and_push'. Ensure at least one test file is modified."
-    );
+  const statusOutput = await git.getStatusOutput();
+
+  if (!workflowState.state.testsSkipped && !git.containsTestFilesInStatus(statusOutput)) {
+    return textResponse("⚠️ Please include test updates in your changes before running 'commit_and_push'. Ensure at least one test file is modified.");
   }
 
   try {
@@ -514,7 +573,7 @@ async function handleCommitAndPush(args, context) {
   workflowState.state.commitAndPushCompleted = true;
   workflowState.state.lastCommitMessage = generatedSummary;
   workflowState.state.lastPushBranch = branchForPush;
-  workflowState.state.currentPhase = workflowState.state.released ? "ready_to_complete" : "release";
+  workflowState.state.currentPhase = isReleaseSatisfied(workflowState.state) ? "ready_to_complete" : "release";
   await workflowState.save();
 
   return textResponse(
@@ -936,7 +995,7 @@ async function handleRunFullWorkflow(args, { workflowState, exec, git, utils }) 
       continue;
     }
 
-    if (!state.released) {
+    if (!isReleaseSatisfied(state)) {
       const resp = await executeStep("perform_release", handlePerformRelease, [
         releaseArgs,
         { workflowState, exec, git, utils },
@@ -996,6 +1055,8 @@ export async function handleToolCall({
         return handleCommitAndPush(args, { workflowState, exec, git, utils });
       case "perform_release":
         return handlePerformRelease(args, { workflowState, exec, git, utils });
+      case "skip_release":
+        return handleSkipRelease(args, workflowState);
       case "complete_task":
         return handleCompleteTask(args, workflowState);
       case "force_complete_task":

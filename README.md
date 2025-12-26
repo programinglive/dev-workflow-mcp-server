@@ -512,7 +512,7 @@ This keeps workflow state local to each developer's machine.
 - `create_documentation` - Mark documentation as created
 - `check_ready_to_commit` - Verify all steps are complete
 - `commit_and_push` - Commit and push changes
-- `perform_release` - Record release details
+- `perform_release` - Record release details (or use `skip_release` when the project has no release automation)
 - `complete_task` - Mark task as complete and reset
 - `force_complete_task` - Force completion with reason
 - `drop_task` - Abandon current task
@@ -553,6 +553,7 @@ The tool will:
 5. `check_ready_to_commit`
 6. `commit_and_push` with `commitMessage` and optional `branch`
 7. `perform_release` with `releaseCommand`, plus optional `releaseNotes`, `releaseType`, and `preset`
+   - Alternatively call `skip_release` with a justification when the repository has no Node-based release step (e.g., Python-only or docs-only tasks)
 8. `complete_task` reusing `commitMessage`
 
 All arguments except the optional flags are required and must be non-empty strings.
@@ -571,7 +572,7 @@ The package ships with a release guard (`release-wrapper.js`) that backs the `np
 
 If any requirements are missing, the guard exits with guidance to return to the MCP tools. This prevents accidentally bumping versions or tagging releases outside the managed workflow. To release correctly:
 
-1. Use `perform_release {"command":"patch"}` (or `minor`/`major`) via the MCP client.
+1. Use `perform_release {"command":"patch"}` (or `minor`/`major`) via the MCP client, or `skip_release {"reason":"<explanation>"}` if no release applies.
 2. The guard runs automatically, verifies the workflow state, and records the release before letting you finish with `complete_task`.
 
 ### Automated npm Publishing

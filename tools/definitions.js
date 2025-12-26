@@ -149,6 +149,21 @@ export function getToolList() {
       },
     },
     {
+      name: "skip_release",
+      description:
+        "Record that the release step was intentionally skipped (e.g., non-Node projects or documentation-only work). Requires a justification.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          reason: {
+            type: "string",
+            description: "Why the release step is being skipped",
+          },
+        },
+        required: ["reason"],
+      },
+    },
+    {
       name: "complete_task",
       description:
         "Mark the task as complete after successful commit & push. Resets workflow for next task.",

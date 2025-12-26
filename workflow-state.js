@@ -440,6 +440,8 @@ export class WorkflowState {
       readyToCommit: false,
       readyCheckCompleted: false,
       released: false,
+      releaseSkipped: false,
+      releaseSkippedReason: "",
       releaseCommand: "",
       releaseNotes: "",
       commitAndPushCompleted: false,
@@ -476,6 +478,12 @@ export class WorkflowState {
       }
       if (typeof this.state.released !== "boolean") {
         this.state.released = false;
+      }
+      if (typeof this.state.releaseSkipped !== "boolean") {
+        this.state.releaseSkipped = false;
+      }
+      if (typeof this.state.releaseSkippedReason !== "string") {
+        this.state.releaseSkippedReason = "";
       }
       if (typeof this.state.commitAndPushCompleted !== "boolean") {
         this.state.commitAndPushCompleted = false;
@@ -622,6 +630,8 @@ export class WorkflowState {
       readyToCommit: false,
       readyCheckCompleted: false,
       released: false,
+      releaseSkipped: false,
+      releaseSkippedReason: "",
       releaseCommand: "",
       releaseNotes: "",
       commitAndPushCompleted: false,

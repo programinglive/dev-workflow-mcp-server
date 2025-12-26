@@ -970,6 +970,45 @@ test("perform_release accepts shorthand patch command", async () => {
   });
 });
 
+test("skip_release records justification and advances to completion phase", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.currentPhase = "release";
+    workflowState.state.commitAndPushCompleted = true;
+    workflowState.state.readyCheckCompleted = true;
+    workflowState.state.lastCommitMessage = "chore: docs";
+    workflowState.state.releaseSkipped = false;
+    workflowState.state.released = false;
+    workflowState.state.releaseCommand = "";
+    await workflowState.save();
+
+    const response = await handleToolCall({
+      request: createRequest("skip_release", { reason: "Python project – no npm release" }),
+      normalizeRequestArgs,
+      workflowState,
+      exec: async () => ({ stdout: "" }),
+      git: {
+        hasWorkingChanges: async () => false,
+        hasStagedChanges: async () => false,
+        hasTestChanges: async () => true,
+        getStagedChanges: async () => [],
+        getCurrentBranch: async () => "main",
+        getPrimaryBranch: async () => "main",
+        getLastCommitMessage: async () => "chore: docs",
+        workingTreeSummary: () => ({ hasChanges: false, lines: [] }),
+      },
+      utils,
+    });
+
+    const text = response.content[0].text;
+    assert.ok(text.includes("Release step skipped"), "response should mention release was skipped");
+    assert.equal(workflowState.state.releaseSkipped, true);
+    assert.equal(workflowState.state.releaseSkippedReason, "Python project – no npm release");
+    assert.equal(workflowState.state.releaseCommand, "(skipped)");
+    assert.equal(workflowState.state.currentPhase, "ready_to_complete");
+    assert.equal(workflowState.state.released, false);
+  });
+});
+
 test("perform_release respects explicit releaseType option", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.currentPhase = "release";
