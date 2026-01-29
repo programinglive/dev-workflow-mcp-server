@@ -12,17 +12,19 @@ type TerminalLine = {
 const terminalLines: TerminalLine[] = [
     { type: 'command', text: 'start_task', delay: 500 },
     { type: 'success', text: '✓ Task started: Implement user auth', delay: 1500 },
-    { type: 'comment', text: '# Write code...', delay: 2500 },
-    { type: 'command', text: 'mark_bug_fixed', delay: 4000 },
-    { type: 'info', text: '✨ Feature complete! Now create tests...', delay: 5000 },
-    { type: 'command', text: 'create_tests', delay: 6500 },
-    { type: 'success', text: '✓ Tests created', delay: 7500 },
-    { type: 'command', text: 'run_tests', delay: 8500 },
-    { type: 'success', text: '✓ All tests passed!', delay: 9500 },
-    { type: 'command', text: 'create_documentation', delay: 10500 },
-    { type: 'success', text: '✓ Documentation updated', delay: 11500 },
-    { type: 'command', text: 'commit_and_push', delay: 12500 },
-    { type: 'final', text: 'Ready to release!', delay: 13500 }
+    { type: 'command', text: 'create_feature_flow', delay: 2500 },
+    { type: 'success', text: '✓ Feature flow created with Mermaid', delay: 3500 },
+    { type: 'comment', text: '# Write code...', delay: 4500 },
+    { type: 'command', text: 'mark_bug_fixed', delay: 6000 },
+    { type: 'info', text: '✨ Feature complete! Now create tests...', delay: 7000 },
+    { type: 'command', text: 'create_tests', delay: 8500 },
+    { type: 'success', text: '✓ Tests created', delay: 9500 },
+    { type: 'command', text: 'run_tests', delay: 10500 },
+    { type: 'success', text: '✓ All tests passed!', delay: 11500 },
+    { type: 'command', text: 'create_documentation', delay: 12500 },
+    { type: 'success', text: '✓ Documentation updated', delay: 13500 },
+    { type: 'command', text: 'commit_and_push', delay: 14500 },
+    { type: 'final', text: 'Ready to release!', delay: 15500 }
 ];
 
 export default function Terminal() {

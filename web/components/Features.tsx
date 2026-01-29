@@ -1,4 +1,4 @@
-import { ShieldCheck, TestTube, FileText, GitBranch, History, Zap } from "lucide-react";
+import { ShieldCheck, TestTube, FileText, GitBranch, History, Zap, Layout } from "lucide-react";
 
 export default function Features() {
     return (
@@ -37,9 +37,9 @@ export default function Features() {
                         bg="bg-blue-500/20"
                     />
                     <FeatureCard
-                        icon={<Zap className="w-6 h-6 text-pink-400" />}
-                        title="Smart Prompts"
-                        description="Provides quick reminders and guidance on best practices as you work."
+                        icon={<Layout className="w-6 h-6 text-pink-400" />}
+                        title="Visual Planning"
+                        description="Automatically generate Mermaid diagrams to visualize your implementation plan before you code."
                         bg="bg-pink-500/20"
                     />
                 </div>
