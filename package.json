@@ -1,6 +1,6 @@
 {
   "name": "@programinglive/dev-workflow-mcp-server",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "MCP server to enforce development workflow discipline",
   "homepage": "https://devworkflow.programinglive.com/",
   "mcpName": "io.github.programinglive/dev-workflow-mcp-server",

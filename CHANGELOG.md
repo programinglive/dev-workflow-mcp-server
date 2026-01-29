@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.9.0...v1.9.1) (2026-01-29)
+
+
+### ✨ Features
+
+* **workflow:** add mermaid diagram and fix high severity tar vulnerability ([32b47fa](https://github.com/programinglive/dev-workflow-mcp-server/commit/32b47fac21693eafe3cfe6dc8b6986c010b76f34))
+
 ## [1.9.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.8.1...v1.9.0) (2026-01-29)
 
 
