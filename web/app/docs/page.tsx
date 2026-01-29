@@ -22,7 +22,7 @@ export default function DocsPage() {
                     </p>
 
                     <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-lg p-4 mb-8">
-                        <p className="text-emerald-700 dark:text-emerald-400 font-semibold">Version: 1.8.1</p>
+                        <p className="text-emerald-700 dark:text-emerald-400 font-semibold">Version: 1.9.1</p>
                     </div>
 
                     <h2 className="text-3xl font-bold mt-12 mb-6 text-gray-900 dark:text-white">Features</h2>
@@ -77,7 +77,17 @@ export default function DocsPage() {
                             </div>
                         </li>
                         <li className="flex gap-4">
-                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold">2</span>
+                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">2</span>
+                            <div>
+                                <h3 className="font-semibold mb-1 text-gray-900 dark:text-white">Describe Feature Flow</h3>
+                                <p className="text-gray-600 dark:text-gray-400">Visualize your implementation plan using Mermaid syntax.</p>
+                                <div className="bg-gray-100 dark:bg-[#1a1a24] rounded-lg p-3 mt-2 border border-gray-300 dark:border-white/10">
+                                    <code className="text-sm text-gray-700 dark:text-gray-300">create_feature_flow</code>
+                                </div>
+                            </div>
+                        </li>
+                        <li className="flex gap-4">
+                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold">3</span>
                             <div>
                                 <h3 className="font-semibold mb-1 text-gray-900 dark:text-white">Mark Bug Fixed</h3>
                                 <p className="text-gray-600 dark:text-gray-400">Once you've implemented your feature or fix, mark it as complete.</p>
@@ -87,7 +97,7 @@ export default function DocsPage() {
                             </div>
                         </li>
                         <li className="flex gap-4">
-                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">3</span>
+                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">4</span>
                             <div>
                                 <h3 className="font-semibold mb-1 text-gray-900 dark:text-white">Create Tests</h3>
                                 <p className="text-gray-600 dark:text-gray-400">Write tests to verify your changes work correctly.</p>
@@ -97,7 +107,7 @@ export default function DocsPage() {
                             </div>
                         </li>
                         <li className="flex gap-4">
-                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold">4</span>
+                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold">5</span>
                             <div>
                                 <h3 className="font-semibold mb-1 text-gray-900 dark:text-white">Run Tests</h3>
                                 <p className="text-gray-600 dark:text-gray-400">Execute your test suite and ensure everything passes.</p>
@@ -107,7 +117,7 @@ export default function DocsPage() {
                             </div>
                         </li>
                         <li className="flex gap-4">
-                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center text-pink-600 dark:text-pink-400 font-bold">5</span>
+                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center text-pink-600 dark:text-pink-400 font-bold">6</span>
                             <div>
                                 <h3 className="font-semibold mb-1 text-gray-900 dark:text-white">Create Documentation</h3>
                                 <p className="text-gray-600 dark:text-gray-400">Update relevant documentation for your changes.</p>
@@ -117,7 +127,7 @@ export default function DocsPage() {
                             </div>
                         </li>
                         <li className="flex gap-4">
-                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">6</span>
+                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">7</span>
                             <div>
                                 <h3 className="font-semibold mb-1 text-gray-900 dark:text-white">Commit and Push</h3>
                                 <p className="text-gray-600 dark:text-gray-400">Commit your changes and push to the repository.</p>
@@ -132,6 +142,7 @@ export default function DocsPage() {
                     <div className="space-y-3 mb-8">
                         {[
                             { cmd: "start_task", desc: "Begin a new coding task" },
+                            { cmd: "create_feature_flow", desc: "Describe implementation plan with Mermaid" },
                             { cmd: "mark_bug_fixed", desc: "Mark feature/bugfix as complete" },
                             { cmd: "create_tests", desc: "Record that tests have been created" },
                             { cmd: "run_tests", desc: "Execute and record test results" },
