@@ -1,0 +1,24 @@
+graph TD
+    Start([Start Task]) --> FeatureFlow[Describe Feature Flow with Mermaid]
+    FeatureFlow --> Fix[Mark Bug Fixed / Implement Feature]
+    Fix --> CreateTests[Create Tests]
+    CreateTests --> RunTests{Run Tests}
+    RunTests -- Fail --> Fix
+    RunTests -- Pass --> CreateDocs[Create/Update Documentation]
+    CreateDocs --> ReadyCheck{Ready Check}
+    ReadyCheck -- Not Ready --> CreateDocs
+    ReadyCheck -- Ready --> Commit[Commit & Push]
+    Commit --> Release[Perform Release]
+    Release --> Complete([Complete Task])
+
+    subgraph "Core Workflow"
+        FeatureFlow
+        Fix
+        CreateTests
+        RunTests
+        CreateDocs
+    end
+
+    style Start fill:#f9f,stroke:#333,stroke-width:2px
+    style Complete fill:#f9f,stroke:#333,stroke-width:2px
+    style FeatureFlow fill:#ff9,stroke:#333,stroke-width:2px

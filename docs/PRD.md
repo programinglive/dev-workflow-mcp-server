@@ -38,6 +38,25 @@ Developers need structured guidance to maintain disciplined workflows across pro
 - Guard release commands to ensure prerequisites are satisfied.
 - Support `run_full_workflow` for scripted execution of all steps with validation.
 - Web dashboard displays version dynamically from `package.json` via `/api/version` endpoint to stay in sync after releases.
+
+## 8. Visual Workflow
+The complete development workflow is documented visually using Mermaid:
+- [View Mermaid Diagram](file:///d:/code/dev-workflow-mcp-server/docs/mermaid/feature-flow.mmd)
+
+```mermaid
+graph TD
+    Start([Start Task]) --> FeatureFlow[Describe Feature Flow with Mermaid]
+    FeatureFlow --> Fix[Mark Bug Fixed / Implement Feature]
+    Fix --> CreateTests[Create Tests]
+    CreateTests --> RunTests{Run Tests}
+    RunTests -- Fail --> Fix
+    RunTests -- Pass --> CreateDocs[Create/Update Documentation]
+    CreateDocs --> ReadyCheck{Ready Check}
+    ReadyCheck -- Not Ready --> CreateDocs
+    ReadyCheck -- Ready --> Commit[Commit & Push]
+    Commit --> Release[Perform Release]
+    Release --> Complete([Complete Task])
+```
 - [x] **Consolidated CI/CD**: Unified release and publish workflows.
 - [x] **Multi-Database Support**: SQLite, MySQL, and PostgreSQL adapters implemented and verified.
 - [x] **Environment Configuration**: `.env` file support added.

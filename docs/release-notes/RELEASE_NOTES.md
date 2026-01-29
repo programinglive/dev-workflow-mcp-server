@@ -4,6 +4,7 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 | Version | Date | Notes |
 |---------|------|-------|
+| 1.9.0 | 2026-01-29 | See CHANGELOG for details. |
 | 1.8.1 | 2025-12-26 | add release notes for v1.8.0 (5a4025b) |
 | 1.8.0 | 2025-12-27 | See CHANGELOG for details. |
 | 1.7.17 | 2025-12-26 | update release notes for v1.7.16 (0afd96b) |
@@ -50,6 +51,13 @@ Authoritative history of user-visible changes for the Development Workflow MCP S
 
 
 
+
+
+## 1.9.0
+
+Released on **2026-01-29**.
+
+- See CHANGELOG for details.
 
 ## 1.8.1 – 📝 Documentation
 
