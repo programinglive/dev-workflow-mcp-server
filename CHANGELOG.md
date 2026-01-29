@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.8.1...v1.9.0) (2026-01-29)
+
+
+### 📝 Documentation
+
+* record release notes for v1.8.1 ([fd213dd](https://github.com/programinglive/dev-workflow-mcp-server/commit/fd213ddd4bac9a4012af60257c030a0d8d11bbdb))
+
+
+### 🐛 Bug Fixes
+
+* **web:** sync version badges with package metadata ([b579113](https://github.com/programinglive/dev-workflow-mcp-server/commit/b5791136d60c88b9a0e08c772c0b840e481a9681))
+
+
+### ✨ Features
+
+* **workflow:** integrate mermaid feature flow and stabilize workflow logic ([88dfe56](https://github.com/programinglive/dev-workflow-mcp-server/commit/88dfe566423e12b4e76fd10231d4773254ce2c54))
+
+
+### 🧹 Chores
+
+* update commitlint dependencies and setup commiter ([6e016f9](https://github.com/programinglive/dev-workflow-mcp-server/commit/6e016f9b7c38e44bf9c91f075a1769a21f0c7f2d))
+
 ### [1.8.1](https://github.com/programinglive/dev-workflow-mcp-server/compare/v1.8.0...v1.8.1) (2025-12-26)
 
 
