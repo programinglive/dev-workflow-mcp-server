@@ -21,6 +21,11 @@ export function isReleaseSatisfied(state) {
   return Boolean(state?.released || state?.releaseSkipped);
 }
 
+export function isErrorResponse(response) {
+  const text = response?.content?.[0]?.text || "";
+  return /^\s*[⚠️❌]/u.test(text);
+}
+
 export async function resetToCommitIfWorkingChanges(workflowState, git) {
   if (!workflowState.state.commitAndPushCompleted) {
     return false;
@@ -92,7 +97,7 @@ export function getContinueGuidance(status) {
   switch (status.currentPhase) {
     case "coding": {
       const task = status.taskDescription ? ` "${status.taskDescription}"` : "";
-      return `Finish implementing${task} and then run 'mark_bug_fixed' with a brief summary of the change.`;
+      return `Describe your feature flow with Mermaid using 'create_feature_flow', then finish implementing${task} and run 'mark_bug_fixed' with a brief summary of the change.`;
     }
     case "testing":
       if (!status.testsCreated) {
@@ -127,45 +132,6 @@ export function getContinueGuidance(status) {
   }
 }
 
-export async function handleReadyCheck(workflowState) {
-  const status = workflowState.state;
-  const testsCreatedDone = status.testsSkipped || status.testsCreated;
-  const testsPassedDone = status.testsSkipped || status.testsPassed;
-  const checks = [
-    { name: "Task started", done: status.currentPhase !== "idle" },
-    { name: "Feature/bug fixed", done: status.bugFixed },
-    {
-      name: status.testsSkipped ? "Tests skipped (manual QA documented)" : "Tests created",
-      done: testsCreatedDone,
-    },
-    {
-      name: status.testsSkipped ? "Tests skipped acknowledged" : "Tests passed",
-      done: testsPassedDone,
-    },
-    { name: "Documentation created", done: status.documentationCreated },
-  ];
-
-  const allDone = checks.every((c) => c.done);
-  const checkList = formatChecklist(checks);
-
-  workflowState.state.readyCheckCompleted = allDone;
-  if (allDone) {
-    if (workflowState.state.commitAndPushCompleted) {
-      workflowState.state.currentPhase = isReleaseSatisfied(workflowState.state) ? "ready_to_complete" : "release";
-    } else {
-      workflowState.state.currentPhase = "commit";
-    }
-  }
-  await workflowState.save();
-
-  if (allDone) {
-    return textResponse(
-      `🎉 ALL CHECKS PASSED!\n\n${checkList}\n\n✅ Next actions:\n1. Run 'commit_and_push' (commits and pushes your changes)\n2. Run 'perform_release' (handles versioning, tags, and final push)\n3. Finish with 'complete_task'\n\nTip: Provide the optional 'branch' argument to 'commit_and_push' to push to a non-default branch.\n\nTask: ${status.taskDescription}`
-    );
-  }
-
-  return textResponse(`⚠️ NOT READY TO COMMIT!\n\n${checkList}\n\nPlease complete all steps before committing.`);
-}
 
 export async function loadProjectSummary(workflowState) {
   const summaryPath = path.join(path.dirname(workflowState.stateFile), PROJECT_SUMMARY_FILENAME);
@@ -180,7 +146,7 @@ export async function loadProjectSummary(workflowState) {
   }
 }
 
-export const prdPath = path.join(__dirname, "..", "docs", "product", "PRD.md");
+export const prdPath = path.join(__dirname, "..", "..", "docs", "PRD.md");
 
 export function ensurePrdExists() {
   return existsSync(prdPath);

@@ -1,14 +1,9 @@
-import { textResponse, isReleaseSatisfied } from "./shared.js";
-import { handleStartTask, handleMarkBugFixed, handleCreateTests, handleSkipTests, handleRunTests, handleCreateDocumentation } from "./workflow-handlers.js";
+import { textResponse, isReleaseSatisfied, isErrorResponse } from "./shared.js";
+import { handleStartTask, handleMarkBugFixed, handleCreateTests, handleSkipTests, handleRunTests, handleCreateDocumentation, handleCreateFeatureFlow } from "./workflow-handlers.js";
 import { handleSkipRelease, handlePerformRelease } from "./release-handlers.js";
 import { handleCommitAndPush, handleCompleteTask, handleForceCompleteTask, handleDropTask } from "./commit-handlers.js";
 import { handleProjectSummary, handleProjectSummaryData, handleProjectSummaryDb, handleViewHistory } from "./summary-handlers.js";
 import { handleGetWorkflowStatus, handleReadyCheck, handleContinueWorkflow, handleRerunWorkflow } from "./status-handlers.js";
-
-function isErrorResponse(response) {
-  const text = response?.content?.[0]?.text || "";
-  return /^\s*[⚠️❌]/u.test(text);
-}
 
 function summarizeResponse(label, response) {
   const text = response?.content?.[0]?.text || "";
@@ -80,6 +75,15 @@ async function handleRunFullWorkflow(args, { workflowState, exec, git, utils }) 
 
     if (!state.bugFixed) {
       const resp = await executeStep("mark_bug_fixed", handleMarkBugFixed, [{ summary: args.summary }, workflowState]);
+      if (isErrorResponse(resp)) return resp;
+      continue;
+    }
+
+    if (!state.featureFlowCreated) {
+      if (!args.mermaidCode || !args.featureFlowDescription) {
+        return textResponse("⚠️ 'run_full_workflow' now requires 'mermaidCode' and 'featureFlowDescription' to support the Mermaid step.");
+      }
+      const resp = await executeStep("create_feature_flow", handleCreateFeatureFlow, [{ mermaidCode: args.mermaidCode, description: args.featureFlowDescription }, workflowState]);
       if (isErrorResponse(resp)) return resp;
       continue;
     }
@@ -172,6 +176,8 @@ export async function handleToolCall({
         return handleStartTask(args, workflowState);
       case "mark_bug_fixed":
         return handleMarkBugFixed(args, workflowState);
+      case "create_feature_flow":
+        return handleCreateFeatureFlow(args, workflowState);
       case "create_tests":
         return handleCreateTests(workflowState);
       case "skip_tests":

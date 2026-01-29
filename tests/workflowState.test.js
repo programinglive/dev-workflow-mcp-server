@@ -275,6 +275,8 @@ test("WorkflowState persists data across save/load", async () => {
     state.state.lastPushBranch = "main";
     state.state.testsSkipped = true;
     state.state.testsSkippedReason = "Legacy app uses manual QA";
+    state.state.featureFlowCreated = true;
+    state.state.featureFlowDescription = "Premium design system";
     await state.save();
 
     const reloaded = new WorkflowState(state.stateFile);
@@ -296,6 +298,8 @@ test("WorkflowState persists data across save/load", async () => {
       reloaded.state.testsSkippedReason,
       "Legacy app uses manual QA"
     );
+    assert.equal(reloaded.state.featureFlowCreated, true);
+    assert.equal(reloaded.state.featureFlowDescription, "Premium design system");
   });
 });
 
@@ -384,6 +388,7 @@ test("WorkflowState reset keeps history but clears progress", async () => {
 
 test("getNextStep treats skipped tests as satisfied", () => {
   const skippedState = {
+    featureFlowCreated: true,
     bugFixed: true,
     testsCreated: true,
     testsPassed: true,
@@ -400,6 +405,7 @@ test("getNextStep treats skipped tests as satisfied", () => {
 
 test("getNextStep guides workflow progression", () => {
   const baseState = {
+    featureFlowCreated: false,
     bugFixed: false,
     testsCreated: false,
     testsPassed: false,
@@ -411,10 +417,16 @@ test("getNextStep guides workflow progression", () => {
 
   assert.equal(
     getNextStep(baseState),
+    "Describe feature flow with Mermaid"
+  );
+
+  const afterFlow = { ...baseState, featureFlowCreated: true };
+  assert.equal(
+    getNextStep(afterFlow),
     "Mark feature/bug as fixed"
   );
 
-  const afterFix = { ...baseState, bugFixed: true };
+  const afterFix = { ...afterFlow, bugFixed: true };
   assert.equal(
     getNextStep(afterFix),
     "Create tests"

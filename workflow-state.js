@@ -447,6 +447,8 @@ export class WorkflowState {
       commitAndPushCompleted: false,
       lastCommitMessage: "",
       lastPushBranch: "",
+      featureFlowCreated: false,
+      featureFlowDescription: "",
       history: [],
       taskType: "",
     };
@@ -499,6 +501,12 @@ export class WorkflowState {
       }
       if (typeof this.state.lastPushBranch !== "string") {
         this.state.lastPushBranch = "";
+      }
+      if (typeof this.state.featureFlowCreated !== "boolean") {
+        this.state.featureFlowCreated = false;
+      }
+      if (typeof this.state.featureFlowDescription !== "string") {
+        this.state.featureFlowDescription = "";
       }
     } catch (error) {
       if (error?.code !== "ENOENT") {
@@ -637,6 +645,8 @@ export class WorkflowState {
       commitAndPushCompleted: false,
       lastCommitMessage: "",
       lastPushBranch: "",
+      featureFlowCreated: false,
+      featureFlowDescription: "",
       history: this.state.history,
     };
   }

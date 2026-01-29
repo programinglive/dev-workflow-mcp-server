@@ -66,3 +66,31 @@ test("create_documentation verifies PRD file exists", async () => {
     );
   });
 });
+
+test("create_feature_flow records flow and guidance", async () => {
+  await withWorkflowState(async (workflowState) => {
+    workflowState.state.currentPhase = "coding";
+    await workflowState.save();
+
+    const response = await handleToolCall({
+      request: createRequest("create_feature_flow", {
+        mermaidCode: "graph TD; A-->B;",
+        description: "Test flow implementation",
+      }),
+      normalizeRequestArgs: (args) => ({ args, error: null }),
+      workflowState,
+      exec: async () => ({ stdout: "" }),
+      git: createGitMock(),
+      utils: testUtils,
+    });
+
+    assert.equal(workflowState.state.featureFlowCreated, true);
+    assert.equal(workflowState.state.mermaidCode, "graph TD; A-->B;");
+    assert.equal(workflowState.state.featureFlowDescription, "Test flow implementation");
+
+    const text = response.content[0].text;
+    assert.ok(text.includes("✅ Feature flow recorded!"), "Should confirm recording");
+    assert.ok(text.includes("Description: Test flow implementation"), "Should show description");
+    assert.ok(text.includes("⏳ Fix/implement the feature"), "Should show next steps");
+  });
+});

@@ -10,6 +10,7 @@ export function handleGetWorkflowStatus(workflowState) {
 
 Phase: ${status.currentPhase}
 Task: ${status.taskDescription || "(none)"}
+Feature flow: ${status.featureFlowCreated ? "✅" : "❌"}
 Bug fixed: ${status.bugFixed ? "✅" : "❌"}
 Tests created: ${status.testsCreated ? "✅" : "❌"}
 Tests passed: ${status.testsPassed ? "✅" : "❌"}
@@ -28,6 +29,7 @@ export async function handleReadyCheck(workflowState) {
   const testsPassedDone = status.testsSkipped || status.testsPassed;
   const checks = [
     { name: "Task started", done: status.currentPhase !== "idle" },
+    { name: "Feature flow described", done: status.featureFlowCreated },
     { name: "Feature/bug fixed", done: status.bugFixed },
     {
       name: status.testsSkipped ? "Tests skipped (manual QA documented)" : "Tests created",
@@ -129,6 +131,6 @@ export async function handleRerunWorkflow(workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `🔄 Rerunning workflow from the start!\n\nTask: ${currentDescription}\nType: ${currentType}\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Run 'check_ready_to_commit'\n7. ⏳ Run 'commit_and_push' (commits and pushes)\n8. ⏳ Run 'perform_release' (handles versioning and tags)\n9. ⏳ Complete task\n\n🎯 Be conscious about what you're coding!`
+    `🔄 Rerunning workflow from the start!\n\nTask: ${currentDescription}\nType: ${currentType}\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Describe feature flow with Mermaid\n3. ⏳ Fix/implement the feature\n4. ⏳ Create tests\n5. ⏳ Run tests (must pass!)\n6. ⏳ Create documentation\n7. ⏳ Run 'check_ready_to_commit'\n8. ⏳ Run 'commit_and_push' (commits and pushes)\n9. ⏳ Run 'perform_release' (handles versioning and tags)\n10. ⏳ Complete task\n\n🎯 Be conscious about what you're coding!`
   );
 }

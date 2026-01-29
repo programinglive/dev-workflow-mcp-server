@@ -43,6 +43,7 @@ function createRequest(name, args) {
 test("run_tests guidance mentions core documentation types", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.bugFixed = true;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.testsCreated = true;
     await workflowState.save();
 
@@ -82,6 +83,7 @@ test("run_tests guidance mentions core documentation types", async () => {
 test("create_documentation verifies PRD file exists", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.testsPassed = true;
+    workflowState.state.featureFlowCreated = true;
     await workflowState.save();
 
     const response = await handleToolCall({
@@ -127,6 +129,7 @@ test("commit_and_push commits changes and pushes", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.readyToCommit = true;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.testsSkipped = false;
     workflowState.state.testsCreated = true;
     workflowState.state.testsPassed = true;
@@ -195,6 +198,7 @@ test("run_full_workflow iterates until commit/release complete with clean tree",
     workflowState.state.readyCheckCompleted = true;
     workflowState.state.commitAndPushCompleted = false;
     workflowState.state.released = false;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.documentationType = "README";
     workflowState.state.documentationSummary = "Docs";
     workflowState.state.fixSummary = "Feature done";
@@ -230,6 +234,8 @@ test("run_full_workflow iterates until commit/release complete with clean tree",
         documentationSummary: "Docs",
         commitMessage: "feat: ship feature",
         releaseCommand: "npm run release:patch",
+        mermaidCode: "graph TD; A-->B;",
+        featureFlowDescription: "Test flow",
       }),
       normalizeRequestArgs,
       workflowState,
@@ -256,6 +262,7 @@ test("commit_and_push uses primary branch when no branch specified", async () =>
   await withWorkflowState(async (workflowState) => {
     workflowState.state.readyToCommit = true;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.testsSkipped = false;
     workflowState.state.testsCreated = true;
     workflowState.state.testsPassed = true;
@@ -307,6 +314,7 @@ test("commit_and_push falls back to master when main not found", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.readyToCommit = true;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.testsSkipped = false;
     workflowState.state.testsCreated = true;
     workflowState.state.testsPassed = true;
@@ -363,6 +371,7 @@ test("run_full_workflow uses provided branch for release push when commit is cle
     workflowState.state.readyCheckCompleted = true;
     workflowState.state.commitAndPushCompleted = false;
     workflowState.state.released = false;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.documentationType = "README";
     workflowState.state.documentationSummary = "Docs";
     workflowState.state.fixSummary = "Feature done";
@@ -400,6 +409,8 @@ test("run_full_workflow uses provided branch for release push when commit is cle
         commitMessage: "feat: ship feature",
         branch: branchName,
         releaseCommand: "npm run release:patch",
+        mermaidCode: "graph TD; A-->B;",
+        featureFlowDescription: "Test flow",
       }),
       normalizeRequestArgs,
       workflowState,
@@ -501,6 +512,7 @@ test("run_full_workflow executes all steps successfully", async () => {
     workflowState.state.taskDescription = "Ship feature";
     workflowState.state.taskType = "feature";
     workflowState.state.currentPhase = "coding";
+    workflowState.state.featureFlowCreated = true;
     await workflowState.save();
 
     const commands = [];
@@ -541,6 +553,8 @@ test("run_full_workflow executes all steps successfully", async () => {
         commitMessage: "feat: add feature",
         releaseCommand: "npm run release:patch",
         releaseNotes: "Automated release",
+        mermaidCode: "graph TD; A-->B;",
+        featureFlowDescription: "Test flow",
       }),
       normalizeRequestArgs,
       workflowState,
@@ -584,6 +598,7 @@ test("run_full_workflow resumes from current phase when steps are already comple
     workflowState.state.documentationCreated = true;
     workflowState.state.readyCheckCompleted = true;
     workflowState.state.commitAndPushCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     await workflowState.save();
 
     const commands = [];
@@ -617,6 +632,8 @@ test("run_full_workflow resumes from current phase when steps are already comple
         commitMessage: "feat: add feature",
         releaseCommand: "npm run release:patch",
         releaseNotes: "Automated release",
+        mermaidCode: "graph TD; A-->B;",
+        featureFlowDescription: "Test flow",
       }),
       normalizeRequestArgs,
       workflowState,
@@ -658,6 +675,8 @@ test("run_full_workflow validates required arguments", async () => {
         documentationSummary: "Doc",
         commitMessage: "feat: add feature",
         releaseCommand: "npm run release:patch",
+        mermaidCode: "graph TD; A-->B;",
+        featureFlowDescription: "Test flow",
       }),
       normalizeRequestArgs,
       workflowState,
@@ -729,6 +748,7 @@ test("perform_release blocks when new changes detected", async () => {
     workflowState.state.currentPhase = "release";
     workflowState.state.commitAndPushCompleted = true;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     await workflowState.save();
 
     const commands = [];
@@ -808,6 +828,7 @@ test("continue_workflow resets to commit when new changes detected", async () =>
     workflowState.state.currentPhase = "release";
     workflowState.state.commitAndPushCompleted = true;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     await workflowState.save();
 
     const git = {
@@ -845,6 +866,7 @@ test("commit_and_push recognizes already committed work", async () => {
   await withWorkflowState(async (workflowState) => {
     workflowState.state.readyToCommit = true;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.testsSkipped = false;
     workflowState.state.testsCreated = true;
     workflowState.state.testsPassed = true;
@@ -895,6 +917,7 @@ test("perform_release runs release command before pushing with tags", async () =
     workflowState.state.currentPhase = "release";
     workflowState.state.commitAndPushCompleted = true;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.lastPushBranch = "feature/split";
     workflowState.state.lastCommitMessage = "fix: address issue";
     await workflowState.save();
@@ -963,6 +986,7 @@ test("perform_release accepts shorthand patch command", async () => {
     workflowState.state.currentPhase = "release";
     workflowState.state.commitAndPushCompleted = true;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.lastCommitMessage = "fix: adjust labels";
     await workflowState.save();
 
@@ -1009,6 +1033,7 @@ test("skip_release records justification and advances to completion phase", asyn
     workflowState.state.currentPhase = "release";
     workflowState.state.commitAndPushCompleted = true;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.lastCommitMessage = "chore: docs";
     workflowState.state.releaseSkipped = false;
     workflowState.state.released = false;
@@ -1050,6 +1075,7 @@ test("perform_release respects explicit releaseType option", async () => {
     workflowState.state.currentPhase = "release";
     workflowState.state.commitAndPushCompleted = true;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     await workflowState.save();
 
     const commands = [];
@@ -1100,6 +1126,7 @@ test("perform_release requires commit_and_push completion when tree is clean", a
     workflowState.state.currentPhase = "release";
     workflowState.state.commitAndPushCompleted = false;
     workflowState.state.readyCheckCompleted = true;
+    workflowState.state.featureFlowCreated = true;
     workflowState.state.lastPushBranch = "";
     workflowState.state.lastCommitMessage = "";
     await workflowState.save();

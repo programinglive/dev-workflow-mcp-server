@@ -1,6 +1,4 @@
-import path from "path";
-import { existsSync } from "fs";
-import { textResponse, isReleaseSatisfied, resetToCommitIfWorkingChanges } from "./shared.js";
+import { textResponse, isReleaseSatisfied, isErrorResponse, ensurePrdExists } from "./shared.js";
 
 export async function handleStartTask(args, workflowState) {
   workflowState.reset();
@@ -15,7 +13,7 @@ export async function handleStartTask(args, workflowState) {
   await workflowState.save();
 
   return textResponse(
-    `✅ Task Started: ${args.description}\n\n🎯 Be conscious about what you're coding!\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Fix/implement the feature\n3. ⏳ Create tests\n4. ⏳ Run tests (must pass!)\n5. ⏳ Create documentation\n6. ⏳ Run 'check_ready_to_commit'\n7. ⏳ Run 'commit_and_push' (commits and pushes)\n8. ⏳ Run 'perform_release' (handles versioning and tags) or 'skip_release' (when no release is needed)\n9. ⏳ Complete task\n\nReminder: Focus on writing clean, maintainable code!`
+    `✅ Task Started: ${args.description}\n\n🎯 Be conscious about what you're coding!\n\nWorkflow Steps:\n1. ✓ Start task (current)\n2. ⏳ Describe feature flow with Mermaid\n3. ⏳ Fix/implement the feature\n4. ⏳ Create tests\n5. ⏳ Run tests (must pass!)\n6. ⏳ Create documentation\n7. ⏳ Run 'check_ready_to_commit'\n8. ⏳ Run 'commit_and_push' (commits and pushes)\n9. ⏳ Run 'perform_release' (handles versioning and tags) or 'skip_release' (when no release is needed)\n10. ⏳ Complete task\n\nReminder: Focus on writing clean, maintainable code!`
   );
 }
 
@@ -64,6 +62,29 @@ export async function handleMarkBugFixed(args, workflowState) {
 
   return textResponse(
     `✅ Feature/Bug marked as fixed!\n\n⚠️ CRITICAL REMINDER: You MUST create tests now!\n\nNext Steps:\n1. ✓ Fix/implement feature\n2. ⏳ Create tests for: ${args.summary}\n3. ⏳ Run tests (must be green!)\n4. ⏳ Create documentation\n5. ⏳ Run 'check_ready_to_commit'\n6. ⏳ Run 'commit_and_push'\n7. ⏳ Run 'perform_release' (or 'skip_release' if no release applies)\n8. ⏳ Complete task\n\n🚫 DO NOT SKIP TESTING!`
+  );
+}
+
+export async function handleCreateFeatureFlow(args, workflowState) {
+  if (workflowState.state.currentPhase === "idle") {
+    return textResponse("⚠️ Please start a task first using 'start_task'!");
+  }
+
+  const mermaidCode = typeof args.mermaidCode === "string" ? args.mermaidCode.trim() : "";
+  const description = typeof args.description === "string" ? args.description.trim() : "";
+
+  if (!mermaidCode || !description) {
+    return textResponse("⚠️ Please provide both 'mermaidCode' and 'description' when creating a feature flow.");
+  }
+
+  workflowState.state.featureFlowCreated = true;
+  workflowState.state.mermaidCode = mermaidCode;
+  workflowState.state.featureFlowDescription = description;
+  workflowState.state.readyCheckCompleted = false;
+  await workflowState.save();
+
+  return textResponse(
+    `✅ Feature flow recorded!\n\nDescription: ${description}\n\nNext Steps:\n1. ✓ Start task\n2. ✓ Describe feature flow\n3. ⏳ Fix/implement the feature\n4. ⏳ Create tests\n5. ⏳ Run tests\n6. ⏳ Create documentation\n7. ⏳ Run 'check_ready_to_commit'\n8. ⏳ Run 'commit_and_push'\n9. ⏳ Run 'perform_release'\n10. ⏳ Complete task`
   );
 }
 
@@ -190,10 +211,7 @@ export async function handleCreateDocumentation(args, workflowState) {
     return textResponse("⚠️ Please ensure tests are passing first! Run 'run_tests' with passed=true.");
   }
 
-  const prdPath = path.join(process.cwd(), "docs", "PRD.md");
-  const prdExists = existsSync(prdPath);
-
-  if (!prdExists) {
+  if (!ensurePrdExists()) {
     return textResponse(
       `⚠️ PRD file not found!\n\nExpected location: docs/PRD.md\n\nPlease create or update the PRD before marking documentation as complete.`
     );

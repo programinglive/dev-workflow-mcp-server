@@ -36,6 +36,25 @@ export function getToolList() {
       },
     },
     {
+      name: "create_feature_flow",
+      description:
+        "Record the feature flow using Mermaid syntax. This helps visualize the implementation plan.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          mermaidCode: {
+            type: "string",
+            description: "The Mermaid code representing the feature flow",
+          },
+          description: {
+            type: "string",
+            description: "A brief description of this flow",
+          },
+        },
+        required: ["mermaidCode", "description"],
+      },
+    },
+    {
       name: "create_tests",
       description: "Mark that tests covering the change have been created.",
       inputSchema: {

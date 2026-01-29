@@ -72,7 +72,8 @@ Developers need structured guidance to maintain disciplined workflows across pro
 5. **Multi-Database Support**: Refactor storage layer to support MySQL and PostgreSQL (complete v1.7.1).
 7. **v1.7.14 Performance & Resilience**: Implemented connection timeouts and optimized startup sequence for stdio clients (complete).
 8. **v1.7.15 Schema Alignment**: Implemented Postgres/MySQL column normalization and automated integer User ID hashing for cross-dashboard compatibility (complete).
-9. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
+9. **v1.8.1 Mermaid Feature Flow**: Integrated visual planning tool and stabilized core workflow logic (complete).
+10. **Future**: Expanded dashboard analytics, customizable workflows, richer integrations.
 
 ## 11. Risks & Mitigations
 - **Risk**: Workflow feels overly prescriptive. **Mitigation**: Provide escape hatches (`force_complete_task`, `drop_task`) with audit trails.

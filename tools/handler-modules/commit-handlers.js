@@ -1,4 +1,5 @@
-import { textResponse, isReleaseSatisfied, formatChecklist, handleReadyCheck } from "./shared.js";
+import { textResponse, isReleaseSatisfied, formatChecklist } from "./shared.js";
+import { handleReadyCheck } from "./status-handlers.js";
 import { containsTestFilesInStatus } from "../../git-helpers.js";
 
 export async function handleCommitAndPush(args, context) {

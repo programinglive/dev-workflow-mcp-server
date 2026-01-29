@@ -85,6 +85,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // Helper function
 export function getNextStep(status) {
+  if (!status.featureFlowCreated) return "Describe feature flow with Mermaid";
   if (!status.bugFixed) return "Mark feature/bug as fixed";
   if (!status.testsCreated) return "Create tests";
   if (!status.testsPassed) return "Run tests";
@@ -127,11 +128,11 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
    - Use 'start_task' to declare what you're coding
    - Be clear about your intention
 
-2. 🔨 CODE WITH PURPOSE
-   - Implement your feature or fix
-   - Follow best practices
+2. 🌀 DESIGN FLOW
+   - Describe your feature flow using Mermaid
+   - Use 'create_feature_flow' to record it
 
-3. 🧪 ALWAYS CREATE TESTS
+3. 🔨 CODE WITH PURPOSE
    - After fixing/implementing, create tests
    - Use 'mark_bug_fixed' when done
 
